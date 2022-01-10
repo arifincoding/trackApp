@@ -161,13 +161,13 @@ class ServiceRepository extends Repository{
             'picked'=>false,
             'entryDate'=> $now->format("d-m-Y"),
             'entryTime'=> $now->format("H:i"),
-            'csName'=>'arifin'
+            'csName'=>'arifin',
+            'completeness'=> $inputs['kelengkapan'] ?? null,
+            'note'=> $inputs['catatan'] ?? null,
+            'downPayment'=> $inputs['uangMuka'] ?? null,
+            'estimatePrice'=> $inputs['estimasiHarga'] ?? null,
+            'productDefects'=> $inputs['cacatProduk'] ?? null
         ];
-        $attributs['completeness']= isset($inputs['kelengkapan']) ? $inputs['kelengkapan'] : null;
-        $attributs['note']= isset($inputs['catatan']) ? $inputs['catatan'] : null;
-        $attributs['downPayment']= isset($inputs['uangMuka']) ? $inputs['uangMuka'] : null;
-        $attributs['estimatePrice']= isset($inputs['estimasiHarga']) ? $inputs['estimasiHarga'] : null;
-        $attributs['productDefects']=isset($inputs['cacatProduk']) ? $inputs['cacatProduk'] : null;
         return $attributs;
     }
 }

@@ -72,8 +72,8 @@ class userRepository extends Repository{
     function getlistData(array $filters):array
     {
         $columns = ['id','username','firstName','lastName','role','status'];
-        $limit = isset($filters['limit']) ? $filters['limit'] : 10;
-        $status = isset($filters['status']) ? $filters['status'] : 'all';
+        $limit = $filters['limit'] ?? 10;
+        $status = $filters['status'] ?? 'all';
         
         if($status == 'all'){
             $data = $this->getAll($limit,['firstName','asc'])->get($columns);

@@ -15,7 +15,7 @@ class Repository{
         return $data;
     }
 
-    protected function getAll(int $limit=10, array $orderBy=['id','desc']){
+    protected function getAll($limit=null, array $orderBy=['id','desc']){
         $data = $this->model->orderBy($orderBy[0],$orderBy[1])->take($limit);
         return $data;
     }
