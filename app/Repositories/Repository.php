@@ -29,4 +29,9 @@ class Repository{
         $data = DB::table($table1)->join($table2,$table1.'.'.$column1,'=',$table2.'.'.$column2);
         return $data;
     }
+
+    protected function delete(string $filter, string $filterName='id'){
+        $data = $this->model->where($filterName, $filter)->delete();
+        return true;
+    }
 }

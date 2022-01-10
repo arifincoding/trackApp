@@ -29,4 +29,9 @@ $router->post('/services/{id}/diagnosas','ServiceController@newServiceDiagnosa')
 $router->get('/services/{id}/diagnosas','ServiceController@getListServiceDiagnosa');
 $router->post('/services/{id}/warranty','ServiceController@newServiceWarranty');
 $router->get('/services/{id}/warranty','ServiceController@getServiceWarranty');
+$router->post('/categories','CategoryController@newCategory');
+$router->get('/categories','CategoryController@getListCategory');
+$router->get('/categories/{id}','CategoryController@getCategoryById');
+$router->put('/categories/{id}','CategoryController@updateCategory');
+$router->delete('/categories/{id}','CategoryController@deleteCategory');
 ?>
