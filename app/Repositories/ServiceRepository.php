@@ -100,7 +100,7 @@ class ServiceRepository extends Repository{
         ];
         if($first === true){
             $columns2 = [
-                'completeness','note','estimatePrice','price','downPayment','productDefects','entryDate','entryTime','pickDate','pickTime','warranty','csName'
+                'completeness','note','estimatePrice','price','downPayment','productDefects','entryDate','entryTime','pickDate','pickTime','warranty','csUseName','technicianUserName'
             ];
             $columns = array_merge($columns,$columns2);
         }
@@ -112,6 +112,7 @@ class ServiceRepository extends Repository{
 
         $arrData['customer'] = [
             'nama' => $data->customerName,
+            'jenisKelamin'=>$data->gender,
             'noHp' => $data->phoneNumber,
             'mendukungWhatsapp' => boolval($data->whatsapp)
         ];
@@ -140,7 +141,8 @@ class ServiceRepository extends Repository{
                 ,'tanggalAmbil'=>$data->pickDate
                 ,'jamAmbil'=>$data->pickTime
                 ,'lamaGaransi'=>$data->warranty
-                ,'customerService'=>$data->csName
+                ,'customerService'=>$data->csUserName
+                ,'teknisi'=>$data->technicianUserName
             ];
             $arrData['product'] = array_merge($arrData['product'],$product);
         }
@@ -161,7 +163,7 @@ class ServiceRepository extends Repository{
             'picked'=>false,
             'entryDate'=> $now->format("d-m-Y"),
             'entryTime'=> $now->format("H:i"),
-            'csName'=>'arifin',
+            'csUserName'=>auth()->payload()->get('user'),
             'completeness'=> $inputs['kelengkapan'] ?? null,
             'note'=> $inputs['catatan'] ?? null,
             'downPayment'=> $inputs['uangMuka'] ?? null,

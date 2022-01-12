@@ -19,6 +19,7 @@ class CreateTableUsers extends Migration
             $table->string('password');
             $table->string('firstName',30);
             $table->string('lastName',50);
+            $table->string('shortName',30);
             $table->string('phoneNumber',20)->nullable();
             $table->string('role',20);
             $table->string('gender',15);

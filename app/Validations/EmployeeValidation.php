@@ -15,6 +15,7 @@ class EmployeeValidation extends Validation{
         $this->rules = [
             'namaDepan'=> 'required|regex:/^[\pL\s\-]+$/u',
             'namaBelakang'=> 'required|regex:/^[\pL\s\-]+$/u',
+            'namaPendek'=> 'required|regex:/^[\pL\s\-]+$/u',
             'jenisKelamin'=> 'required|regex:/^[\pL\s\-]+$/u',
             'noHp'=> 'required|numeric',
             'email'=> 'required|unique:users|email',

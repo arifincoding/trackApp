@@ -21,6 +21,7 @@ class CustomerRepository extends Repository{
             }
             $attributs = [
                 'name'=>$inputs['namaCustomer'],
+                'gender'=>$inputs['jenisKelamin'],
                 'phoneNumber'=>$inputs['noHp'],
                 'whatsapp'=> $wa
             ];

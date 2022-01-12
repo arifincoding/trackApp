@@ -35,6 +35,7 @@ $router->get('/categories/{id}','CategoryController@getCategoryById');
 $router->put('/categories/{id}','CategoryController@updateCategory');
 $router->delete('/categories/{id}','CategoryController@deleteCategory');
 $router->post('/user/login','AuthController@login');
+$router->get('/user/{username}','UserController@getUserByUsername');
 
 $router->group(['prefix'=>'','middleware'=>['auth','role:developer,teknisi']],function () use ($router){
     $router->get('/categories','CategoryController@getListCategory');

@@ -36,8 +36,8 @@ class CreateTableServices extends Migration
             $table->string('pickDate',20)->nullable();
             $table->string('entryTime',10);
             $table->string('pickTime',10)->nullable();
-            $table->string('csName',70);
-            $table->string('technicianName',70)->nullable();
+            $table->string('csUserName',30);
+            $table->string('technicianUserName',70)->nullable();
             $table->timestamps();
         });
     }

@@ -16,12 +16,72 @@ class userRepository extends Repository{
         parent::__construct($model);
     }
 
+    function getlistData(array $filters):array
+    {
+        $columns = ['id','username','firstName','lastName','role','status'];
+        $limit = $filters['limit'] ?? 10;
+        $status = $filters['status'] ?? 'all';
+        
+        if($status == 'all'){
+            $data = $this->getAll($limit,['firstName','asc'])->get($columns);
+        }else{
+            $data = $this->getAll($limit,['firstName','asc'])->where('status',$status)->get($columns);
+        }
+        
+        $arrayData = [];
+        foreach($data as $key => $item){
+            $arrayData[$key]['idPegawai'] = $item->id;
+            $arrayData[$key]['namaPengguna'] = $item->username;
+            $arrayData[$key]['nama'] = $item->firstName.' '.$item->lastName;
+            $arrayData[$key]['peran'] = $item->role;
+            $arrayData[$key]['status'] = $item->status;
+        }
+
+        if($arrayData===[]){
+            throw new ModelNotFoundException('not found');
+        }
+        return $arrayData;
+    }
+
+    function getDataById($id):array
+    {
+        $data = $this->findById($id);
+        return[
+            'idPegawai' => $data->id,
+            'namaPengguna' => $data->username,
+            'nama' => $data->firstName.' '.$data->lastName,
+            'namaDepan' => $data->firstName,
+            'namaBelakang' => $data->lastName,
+            'namaPendek'=>$data->shortName,
+            'peran' => $data->role,
+            'status' => $data->status,
+            'email' => $data->email,
+            'noHp' => $data->phoneNumber,
+            'alamat'=> $data->address
+        ];
+    }
+
+    function getDataByUsername($username):array
+    {
+        $data = $this->model->where('username',$username)->firstOrFail();
+
+        return [
+            'namaPengguna'=>$data->username,
+            'nama'=>$data->firstName.' '.$data->lastName,
+            'namaPendek'=>$data->shortName,
+            'noHp'=>$data->phoneNumber,
+            'alamat'=>$data->address,
+            'peran'=>$data->role
+        ];
+    }
+
     function create(array $input):array
     {
         $akun = $input['namaDepan'].Str::random(3);
         $attribut = [
             'firstName'=>$input['namaDepan'],
             'lastName'=>$input['namaBelakang'],
+            'shortName'=>$input['namaPendek'],
             'username'=>$akun,
             'password'=>Hash::make($akun),
             'gender'=>$input['jenisKelamin'],
@@ -67,49 +127,5 @@ class userRepository extends Repository{
             return ['idPegawai'=>$id];
         }
         throw new Exception('tidak bisa update status pegawai karena pegawai belum mengganti username dan password akunnya');
-    }
-
-    function getlistData(array $filters):array
-    {
-        $columns = ['id','username','firstName','lastName','role','status'];
-        $limit = $filters['limit'] ?? 10;
-        $status = $filters['status'] ?? 'all';
-        
-        if($status == 'all'){
-            $data = $this->getAll($limit,['firstName','asc'])->get($columns);
-        }else{
-            $data = $this->getAll($limit,['firstName','asc'])->where('status',$status)->get($columns);
-        }
-        
-        $arrayData = [];
-        foreach($data as $key => $item){
-            $arrayData[$key]['idPegawai'] = $item->id;
-            $arrayData[$key]['namaPengguna'] = $item->username;
-            $arrayData[$key]['nama'] = $item->firstName.' '.$item->lastName;
-            $arrayData[$key]['peran'] = $item->role;
-            $arrayData[$key]['status'] = $item->status;
-        }
-
-        if($arrayData===[]){
-            throw new ModelNotFoundException('not found');
-        }
-        return $arrayData;
-    }
-
-    function getDataById($id):array
-    {
-        $data = $this->findById($id);
-        return[
-            'idPegawai' => $data->id,
-            'namaPengguna' => $data->username,
-            'nama' => $data->firstName.' '.$data->lastName,
-            'namaDepan' => $data->firstName,
-            'namaBelakang' => $data->lastName,
-            'peran' => $data->role,
-            'status' => $data->status,
-            'email' => $data->email,
-            'noHp' => $data->phoneNumber,
-            'alamat'=> $data->address
-        ];
     }
 }
