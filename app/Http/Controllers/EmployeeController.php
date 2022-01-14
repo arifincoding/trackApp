@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Repositories\UserRepository;
 use App\Validations\EmployeeValidation;
 use Illuminate\Http\JsonResponse;
+use App\Mails\EmployeeMail;
+use Illuminate\Support\Facades\Mail;
 
 class EmployeeController extends Controller{
     function __construct(UserRepository $repository){
@@ -32,7 +34,8 @@ class EmployeeController extends Controller{
         $validator->post();
         $validation = $validator->validate($request->all());
         $data = $this->repository->create($request->all());
-        return $this->jsonSuccess('sukses',200,$data);
+        Mail::to($data['email'])->send(new EmployeeMail($data['username'],$data['password']));
+        return $this->jsonSuccess('sukses',200,['idPegawai'=>$data['idPegawai']]);
     }
 
     function newTechnicianResponbilities(Request $request, $id){

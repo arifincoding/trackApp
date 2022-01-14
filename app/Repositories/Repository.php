@@ -12,6 +12,9 @@ class Repository{
 
     protected function save(array $attribut, string $filter = null, string $filterName = 'id'){
         $data = ($filter === null) ? $this->model->create($attribut) : $this->model->where($filterName,$filter)->update($attribut);
+        if($filter !== null){
+            return $this->model->where($filterName,$filter)->first();
+        }
         return $data;
     }
 

@@ -21,6 +21,6 @@ class DateAndTime{
 
     public static function setDateFromString(string $value, string $format ='d-m-Y'){
         $date = DateTime::createFromFormat($format, $value);
-        return $data;
+        return $date;
     }
 }

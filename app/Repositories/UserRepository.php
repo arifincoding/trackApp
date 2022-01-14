@@ -91,8 +91,6 @@ class userRepository extends Repository{
             'firstName'=>$input['namaDepan'],
             'lastName'=>$input['namaBelakang'],
             'shortName'=>$input['namaPendek'],
-            'username'=>$akun,
-            'password'=>Hash::make($akun),
             'gender'=>$input['jenisKelamin'],
             'joiningDate'=>$input['tanggalBergabung'],
             'phoneNumber'=>$input['noHp'],
@@ -102,29 +100,16 @@ class userRepository extends Repository{
             'status'=>'registered'
         ];
         $data = $this->save($attribut);
-        if($data->role == 'teknisi' && isset($input['idKategori'])){
-            $this->newTechnicianResponbilities(['idKetegori'=>$input['idKategori']],$data->id);
-        }
         $register = $this->registerUser($data->joiningDate, $data->id);
-        return ['idPegawai'=>$data->id];
-    }
-
-    private function registerUser(string $joiningDate, string $idUser){
-        $date = DateAndTime::setDateFromString($joiningDate);
-        $attributs=[
-            'username'=>$date->format('y').$date->format('m').sprintf("%03d",$idUser),
-            'password'=> Str::random(8)
-        ];
-        $data = $this->save($inputs,$idUser);
-    }
-
-    function newTechnicianResponbilities(array $inputs ,string $id){
-        $check = $this->model->where('id',$id)->firstOrFail();
-        if($check->role !== 'teknisi'){
-            throw new Exception('gagal tambah tanggung jawab karena pegawai ini bukan teknisi');
+        if($data->role == 'teknisi' && isset($input['idKategori'])){
+            $this->newTechnicianResponbilities(['idKategori'=>$input['idKategori']],$data->id);
         }
-        $data = $this->responbility->create(['username'=>$check->username,'idKategori'=>$inputs['idKategori']]);
-        return $data;
+        return [
+            'idPegawai'=>$data->id, 
+            'username'=>$register['username'],
+            'password'=>$register['password'],
+            'email'=>$data->email
+        ];
     }
 
     function update(array $input, string $id):array
@@ -158,6 +143,29 @@ class userRepository extends Repository{
             $data = $this->save($attribut,$id);
             return ['idPegawai'=>$id];
         }
-        throw new Exception('tidak bisa update status pegawai karena pegawai belum mengganti username dan password akunnya');
+        throw new Exception('tidak bisa update status pegawai karena pegawai belum mengganti password akunnya');
+    }
+
+    function newTechnicianResponbilities(array $inputs ,string $id){
+        $check = $this->model->where('id',$id)->firstOrFail();
+        if($check->role !== 'teknisi'){
+            throw new Exception('gagal tambah tanggung jawab karena pegawai ini bukan teknisi');
+        }
+        $data = $this->responbility->create(['username'=>$check->username,'idKategori'=>$inputs['idKategori']]);
+        return $data;
+    }
+
+    private function registerUser(string $joiningDate, string $idUser){
+        $date = DateAndTime::setDateFromString($joiningDate);
+        $password = Str::random(8);
+        $attributs=[
+            'username'=>$date->format('y').$date->format('m').sprintf("%03d",$idUser),
+            'password'=> Hash::make($password)
+        ];
+        $data = $this->save($attributs,$idUser);
+        return [
+            'username'=> $data->username,
+            'password'=>$password
+        ];
     }
 }
