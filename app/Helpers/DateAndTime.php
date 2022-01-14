@@ -18,4 +18,9 @@ class DateAndTime{
         $now->setTimezone(new DateTimeZone("Asia/Jakarta"));
         return $now->format('H:i');
     }
+
+    public static function setDateFromString(string $value, string $format ='d-m-Y'){
+        $date = DateTime::createFromFormat($format, $value);
+        return $data;
+    }
 }

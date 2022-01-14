@@ -4,16 +4,19 @@ namespace App\Repositories;
 
 use App\Models\User;
 use App\Repositories\Repository;
+use App\Repositories\ResponbilityRepository;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Exception;
 use App\Exceptions\Handler;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Helpers\DateAndTime;
 
 class userRepository extends Repository{
 
-    function __construct(User $model){
+    function __construct(User $model, ResponbilityRepository $responbility){
         parent::__construct($model);
+        $this->responbility = $responbility;
     }
 
     function getlistData(array $filters):array
@@ -46,7 +49,8 @@ class userRepository extends Repository{
     function getDataById($id):array
     {
         $data = $this->findById($id);
-        return[
+        $dataResponbility = $this->responbility->getListDataByIdUser($data->username);
+        $returnData = [
             'idPegawai' => $data->id,
             'namaPengguna' => $data->username,
             'nama' => $data->firstName.' '.$data->lastName,
@@ -57,8 +61,14 @@ class userRepository extends Repository{
             'status' => $data->status,
             'email' => $data->email,
             'noHp' => $data->phoneNumber,
-            'alamat'=> $data->address
+            'alamat'=> $data->address,
+            'tanggungjawab'=>null
         ];
+        if($dataResponbility !== false){
+            $returnData['tanggungJawab'] = $dataResponbility;
+        }
+
+        return $returnData;
     }
 
     function getDataByUsername($username):array
@@ -77,7 +87,6 @@ class userRepository extends Repository{
 
     function create(array $input):array
     {
-        $akun = $input['namaDepan'].Str::random(3);
         $attribut = [
             'firstName'=>$input['namaDepan'],
             'lastName'=>$input['namaBelakang'],
@@ -85,6 +94,7 @@ class userRepository extends Repository{
             'username'=>$akun,
             'password'=>Hash::make($akun),
             'gender'=>$input['jenisKelamin'],
+            'joiningDate'=>$input['tanggalBergabung'],
             'phoneNumber'=>$input['noHp'],
             'address'=>$input['alamat'],
             'role'=>$input['peran'],
@@ -92,7 +102,29 @@ class userRepository extends Repository{
             'status'=>'registered'
         ];
         $data = $this->save($attribut);
-        return ['idPegawai'=>$data->id,'username'=>$data->username,'password'=>$data->username];
+        if($data->role == 'teknisi' && isset($input['idKategori'])){
+            $this->newTechnicianResponbilities(['idKetegori'=>$input['idKategori']],$data->id);
+        }
+        $register = $this->registerUser($data->joiningDate, $data->id);
+        return ['idPegawai'=>$data->id];
+    }
+
+    private function registerUser(string $joiningDate, string $idUser){
+        $date = DateAndTime::setDateFromString($joiningDate);
+        $attributs=[
+            'username'=>$date->format('y').$date->format('m').sprintf("%03d",$idUser),
+            'password'=> Str::random(8)
+        ];
+        $data = $this->save($inputs,$idUser);
+    }
+
+    function newTechnicianResponbilities(array $inputs ,string $id){
+        $check = $this->model->where('id',$id)->firstOrFail();
+        if($check->role !== 'teknisi'){
+            throw new Exception('gagal tambah tanggung jawab karena pegawai ini bukan teknisi');
+        }
+        $data = $this->responbility->create(['username'=>$check->username,'idKategori'=>$inputs['idKategori']]);
+        return $data;
     }
 
     function update(array $input, string $id):array

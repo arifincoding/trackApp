@@ -35,6 +35,11 @@ class EmployeeController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
+    function newTechnicianResponbilities(Request $request, $id){
+        $data = $this->repository->newTechnicianResponbilities($request->all(), $id);
+        return $this->jsonSuccess('sukses',200,$data);
+    }
+
     function updateEmployee(Request $request,$id, EmployeeValidation $validator): JsonResponse
     {
         $validator->post($id);

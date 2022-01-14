@@ -28,17 +28,17 @@ class Handler extends ExceptionHandler
         NotFoundHttpException::class => [
             'status'=>404,
             'message'=>'error 404',
-            'error'=>'resource tidak ditemukan'
+            'error'=>'permintaan gagal, resource tidak ditemukan'
         ],
         ModelNotFoundException::class => [
             'status'=>404,
             'message'=>'error 404',
-            'error'=>'data tidak ditemukan'
+            'error'=>'permintaan gagal, data tidak ditemukan'
         ],
         ValidationException::class => [
             'status'=>400,
-            'message'=>'kesalahan validasi',
-            'error'=>'data tidak ditemukan'
+            'message'=>'permintaan gagal, kesalahan validasi',
+            'error'=>'kesalahan dalam input'
         ]
     ];
 
