@@ -16,9 +16,7 @@ class CategoryValidation extends Validation{
         $this->rules= [
             'kategori'=>'required|unique:categories,title'];
         if($id !== null){
-            $this->rules = [
-                'kategori'=>'required|unique:categories,title,'.$id
-            ];
+            $this->rules = ['kategori'=>'required|unique:categories,title,'.$id];
         }
     }
 }

@@ -16,7 +16,9 @@ class Validation {
         'alpha'=> ':attribute harus berupa karakter alfabet',
         'in'=> 'nilai dari :attribute tidak diizinkan',
         'regex'=> ':attribute hanya mengizinkan karakter alfabet dan spasi',
-        'between'=> 'jumlah karakter :attribute minimal :min , maksimal :max'
+        'between'=> 'jumlah karakter :attribute minimal :min , maksimal :max',
+        'exists'=> ':attribute tidak tersedia',
+        'array'=> ':Attribute harus berupa array'
     ];
 
     protected array $attributes = [];

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Repositories\UserRepository;
 use App\Validations\EmployeeValidation;
+use App\Validations\ResponbilityValidation;
 use Illuminate\Http\JsonResponse;
 use App\Mails\EmployeeMail;
 use Illuminate\Support\Facades\Mail;
@@ -38,7 +39,9 @@ class EmployeeController extends Controller{
         return $this->jsonSuccess('sukses',200,['idPegawai'=>$data['idPegawai']]);
     }
 
-    function newTechnicianResponbilities(Request $request, $id){
+    function newTechnicianResponbilities(Request $request, $id, ResponbilityValidation $validator){
+        $validator->post($id,$request->only(['idKategori']));
+        $validation = $validator->validate($request->all());
         $data = $this->repository->newTechnicianResponbilities($request->all(), $id);
         return $this->jsonSuccess('sukses',200,$data);
     }
