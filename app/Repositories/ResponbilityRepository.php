@@ -10,12 +10,17 @@ class ResponbilityRepository extends Repository{
         $this->model = $model;
     }
 
-    function getListDataByIdUser(string $username){
-        $data = $this->getAllWithInnerJoin('responbilities','categories','idCategory','id')->where('username',$username)->get();
+    function getListDataByUsername(string $username){
+        $columns=[
+            'responbilities.id as idResponbility',
+            'categories.id as idCategory',
+            'title'
+        ];
+        $data = $this->getAllWithInnerJoin('responbilities','categories','idCategory','id')->where('username',$username)->get($columns);
         $arrData = [];
         foreach($data as $key=>$item){
             $arrData[$key]=[
-                'idTanggungJawab'=>$item->id,
+                'idTanggungJawab'=>$item->idResponbility,
                 'kategori'=>$item->title
             ];
         }
@@ -41,6 +46,13 @@ class ResponbilityRepository extends Repository{
         $data = $this->model->insert($arrAtribut);
         return [
             'message'=>'sukses tambah data tanggung jawab'
+        ];
+    }
+
+    function deleteDataById(string $id){
+        $data = $this->delete($id);
+        return [
+            'sukses' => $data
         ];
     }
 }

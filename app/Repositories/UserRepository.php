@@ -49,7 +49,7 @@ class userRepository extends Repository{
     function getDataById($id):array
     {
         $data = $this->findById($id);
-        $dataResponbility = $this->responbility->getListDataByIdUser($data->username);
+        $dataResponbility = $this->responbility->getListDataByUsername($data->username);
         $returnData = [
             'idPegawai' => $data->id,
             'namaPengguna' => $data->username,
@@ -141,6 +141,20 @@ class userRepository extends Repository{
             return ['idPegawai'=>$id];
         }
         throw new Exception('tidak bisa update status pegawai karena pegawai belum mengganti password akunnya');
+    }
+
+    function changePassword(array $inputs, string $username){
+        $check = $this->model->where('username',$username)->firstOrFail();
+        if(Hash::check($inputs['sandiLama'],$check->password)){
+            $attributs = [
+                'password'=>Hash::make($inputs['sandiBaru']),
+            ];
+            if($check->status === 'registered'){
+                $attributs['status'] = 'active';
+            }
+            $data = $this->save($attributs,$check->id);
+        }
+        return ['sukses'=>true];
     }
 
     function newTechnicianResponbilities(array $inputs ,string $id){

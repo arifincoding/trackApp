@@ -34,6 +34,7 @@ class Repository{
     }
 
     protected function delete(string $filter, string $filterName='id'){
+        $isExist = $this->model->where($filterName, $filter)->firstOrFail();
         $data = $this->model->where($filterName, $filter)->delete();
         return true;
     }

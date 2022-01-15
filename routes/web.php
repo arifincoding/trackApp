@@ -37,9 +37,11 @@ $router->delete('/categories/{id}','CategoryController@deleteCategory');
 $router->post('/user/login','AuthController@login');
 $router->get('/user/{username}','UserController@getUserByUsername');
 $router->post('/employes/{id}/technician/responbility','EmployeeController@newTechnicianResponbilities');
+$router->delete('/responbility/{id}','ResponbilityController@delete');
 
 $router->group(['prefix'=>'','middleware'=>['auth','role:developer,teknisi']],function () use ($router){
     // $router->get('/categories','CategoryController@getListCategory');
+    $router->put('user/change-password','UserController@changeMyPassword');
 });
 
 ?>
