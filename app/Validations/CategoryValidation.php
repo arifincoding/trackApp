@@ -14,11 +14,9 @@ class CategoryValidation extends Validation{
     }
     function post(string $id = null){
         $this->rules= [
-            'kode'=>'required|between:2,4|unique:categories,code',
             'kategori'=>'required|unique:categories,title'];
         if($id !== null){
             $this->rules = [
-                'kode'=>'required|between:2,4|unique:categories,code,'.$id,
                 'kategori'=>'required|unique:categories,title,'.$id
             ];
         }

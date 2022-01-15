@@ -14,8 +14,7 @@ class CategoryRepository extends Repository{
 
     function saveData(array $inputs=[], string $id=null){
         $attributs = [
-            'title'=>$inputs['kategori'],
-            'code'=>$inputs['kode']
+            'title'=>$inputs['kategori']
         ];
         if($id !== null){
             $checkData = $this->findById($id);
@@ -35,7 +34,6 @@ class CategoryRepository extends Repository{
         foreach($data as $key=>$item){
             $arrData[$key]=[
                 'idKategori'=>$item->id,
-                'kode'=>$item->code,
                 'kategori'=>$item->title
             ];
         }
@@ -46,14 +44,13 @@ class CategoryRepository extends Repository{
     }
 
     private function setQuerySearch($q, $search){
-        $q->where('title','LIKE','%'.$search.'%')->orWhere('code','LIKE','%'.$search.'%');
+        $q->where('title','LIKE','%'.$search.'%');
     }
 
     function getDataById(string $id){
         $data = $this->findById($id);
         return [
             'idKategori'=>$data->id,
-            'kode'=>$data->code,
             'kategori'=>$data->title
         ];
     }

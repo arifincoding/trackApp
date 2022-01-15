@@ -62,7 +62,7 @@ class userRepository extends Repository{
             'email' => $data->email,
             'noHp' => $data->phoneNumber,
             'alamat'=> $data->address,
-            'tanggungjawab'=>null
+            'tanggungJawab'=>null
         ];
         if($dataResponbility !== false){
             $returnData['tanggungJawab'] = $dataResponbility;
@@ -101,9 +101,6 @@ class userRepository extends Repository{
         ];
         $data = $this->save($attribut);
         $register = $this->registerUser($data->joiningDate, $data->id);
-        if($data->role == 'teknisi' && isset($input['idKategori'])){
-            $this->newTechnicianResponbilities(['idKategori'=>$input['idKategori']],$data->id);
-        }
         return [
             'idPegawai'=>$data->id, 
             'username'=>$register['username'],

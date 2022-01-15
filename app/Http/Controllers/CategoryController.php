@@ -27,14 +27,14 @@ class CategoryController extends Controller{
 
     function newCategory(Request $request, CategoryValidation $validator){
         $validator->post();
-        $validation = $validator->validate($request->only(['kategori','kode']));
+        $validation = $validator->validate($request->only(['kategori']));
         $data = $this->repository->saveData($request->all());
         return $this->jsonSuccess('sukses',200,$data);
     }
 
     function updateCategory(Request $request, $id, CategoryValidation $validator){
         $validator->post($id);
-        $validation = $validator->validate($request->only(['kategori','kode']));
+        $validation = $validator->validate($request->only(['kategori']));
         $data = $this->repository->saveData($request->all(),$id);
         return $this->jsonSuccess('sukses',200,$data);
     }

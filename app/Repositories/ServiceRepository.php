@@ -13,6 +13,7 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Helpers\DateAndTime;
 
 class ServiceRepository extends Repository{
     public function __construct(Service $model,CustomerRepository $customer, DiagnosaRepository $diagnosa,WarrantyRepository $warranty,ServiceTrackRepository $serviceTrack)
@@ -33,6 +34,7 @@ class ServiceRepository extends Repository{
             'title'=>'barang service masuk dan menunggu untuk di diagnosa',
             'status'=>'antri'
         ];
+        $this->setCodeService($data->toArray());
         $this->serviceTrack->create($track);
         return ['idService'=>$data->id];
     }
@@ -95,7 +97,7 @@ class ServiceRepository extends Repository{
             'phoneNumber',
             'whatsapp',
             'code',
-            'category','complaint','status','totalPrice','picked',
+            'idCategory','complaint','status','totalPrice','picked',
             'services.id as idService'
         ];
         if($first === true){
@@ -120,7 +122,7 @@ class ServiceRepository extends Repository{
         $arrData['product'] = [
             'id' => $data->idService
             ,'nama' => $data->productName
-            ,'kategori' => $data->category
+            ,'idKategori' => $data->idCategory
             ,'kode' => $data->code
             ,'keluhan' => $data->complaint
             ,'status' => $data->status
@@ -154,7 +156,7 @@ class ServiceRepository extends Repository{
         $now->setTimezone(new DateTimeZone("Asia/Jakarta"));
         $attributs = [
             'name'=>$inputs['namaBarang'],
-            'category'=>$inputs['kategori'],
+            'idCategory'=>$inputs['idKategori'],
             'complaint'=>$inputs['keluhan'],
             'status'=>'mulai',
             'idCustomer'=>$idCustomer,
@@ -171,5 +173,13 @@ class ServiceRepository extends Repository{
             'productDefects'=> $inputs['cacatProduk'] ?? null
         ];
         return $attributs;
+    }
+
+    private function setCodeService(array $inputs){
+        $date = DateAndTime::setDateFromString($inputs['entryDate']);
+        $attributs = [
+            'code'=>$date->format('y').$date->format('m')->$date->format('d').$inputs['idCategory'].sprintf("%03d",$inputs['id'])
+        ];
+        $data = $this->save($attributs, $inputs['id']);
     }
 }

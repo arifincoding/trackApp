@@ -10,7 +10,7 @@ class Validation {
 
     protected array $messages = [
         'required'=> ':attribute tidak boleh kosong',
-        'unique'=> ':attribute sudah digunakan',
+        'unique'=> ':attribute ini sudah digunakan',
         'numeric'=>'nilai dari :attribute harus berupa angka',
         'filled'=> ':attribute tidak boleh kosong',
         'alpha'=> ':attribute harus berupa karakter alfabet',
