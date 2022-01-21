@@ -19,7 +19,8 @@ class EmployeeValidation extends Validation{
             'jenisKelamin'=> 'required|regex:/^[\pL\s\-]+$/u',
             'noHp'=> 'required|numeric',
             'email'=> 'required|unique:users|email',
-            'peran' => 'required'
+            'peran' => 'required',
+            'tanggalBergabung'=>'required'
         ];
         if($id !== null){
             $this->rules['email'] = 'required|email|unique:users,email,'.$id;

@@ -57,6 +57,8 @@ class userRepository extends Repository{
             'namaDepan' => $data->firstName,
             'namaBelakang' => $data->lastName,
             'namaPendek'=>$data->shortName,
+            'jenisKelamin'=>$data->gender,
+            'tanggalBergabung'=>$data->joiningDate,
             'peran' => $data->role,
             'status' => $data->status,
             'email' => $data->email,
@@ -114,7 +116,9 @@ class userRepository extends Repository{
         $attribut=[
             'firstName'=>$input['namaDepan'],
             'lastName'=>$input['namaBelakang'],
+            'shortName'=>$input['namaPendek'],
             'gender'=>$input['jenisKelamin'],
+            'joiningDate'=>$input['tanggalBergabung'],
             'phoneNumber'=>$input['noHp'],
             'address'=>$input['alamat'],
             'role'=>$input['peran'],
@@ -122,8 +126,7 @@ class userRepository extends Repository{
         ];
         $find = $this->findById($id);
         if($find->email !== $input['email'] && $find->status === 'registered'){
-            $akun = $input['namaDepan'].Str::random(3);
-            $attribut['username'] = $akun;
+            $akun = Str::random(8);
             $attribut['password'] = Hash::make($akun);
         }
         $data = $this->save($attribut, $id);

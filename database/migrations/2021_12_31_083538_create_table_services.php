@@ -17,7 +17,7 @@ class CreateTableServices extends Migration
             $table->id();
             $table->string('code',30)->nullable();
             $table->string('name',60);
-            $table->string('idCategory',30);
+            $table->string('category',30);
             $table->string('complaint');
             $table->string('productDefects')->nullable();
             $table->string('completeness',60)->nullable();
