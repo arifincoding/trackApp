@@ -40,7 +40,7 @@ class EmployeeController extends Controller{
     }
 
     function newTechnicianResponbilities(Request $request, $id, ResponbilityValidation $validator){
-        $validator->post($id,$request->only(['idKategori']));
+        $validator->post($id,$request->only(['kategori']));
         $validation = $validator->validate($request->all());
         $data = $this->repository->newTechnicianResponbilities($request->all(), $id);
         return $this->jsonSuccess('sukses',200,$data);

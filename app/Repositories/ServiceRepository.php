@@ -14,15 +14,17 @@ use DateTimeZone;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Helpers\DateAndTime;
+use Illuminate\Support\Facades\DB;
 
 class ServiceRepository extends Repository{
-    public function __construct(Service $model,CustomerRepository $customer, DiagnosaRepository $diagnosa,WarrantyRepository $warranty,ServiceTrackRepository $serviceTrack)
+    public function __construct(Service $model,CustomerRepository $customer, DiagnosaRepository $diagnosa,WarrantyRepository $warranty,ServiceTrackRepository $serviceTrack, DB $query)
     {
         parent::__construct($model);
         $this->customer = $customer;
         $this->diagnosa = $diagnosa;
         $this->warranty = $warranty;
         $this->serviceTrack = $serviceTrack;
+        $this->query = $query;
     }
     
     public function create(array $inputs,string $idCustomer):array
@@ -97,7 +99,7 @@ class ServiceRepository extends Repository{
             'phoneNumber',
             'whatsapp',
             'code',
-            'idCategory','complaint','status','totalPrice','picked',
+            'category','complaint','status','totalPrice','picked',
             'services.id as idService'
         ];
         if($first === true){
@@ -122,7 +124,7 @@ class ServiceRepository extends Repository{
         $arrData['product'] = [
             'id' => $data->idService
             ,'nama' => $data->productName
-            ,'idKategori' => $data->idCategory
+            ,'kategori' => $data->category
             ,'kode' => $data->code
             ,'keluhan' => $data->complaint
             ,'status' => $data->status
@@ -156,7 +158,7 @@ class ServiceRepository extends Repository{
         $now->setTimezone(new DateTimeZone("Asia/Jakarta"));
         $attributs = [
             'name'=>$inputs['namaBarang'],
-            'idCategory'=>$inputs['idKategori'],
+            'category'=>$inputs['kategori'],
             'complaint'=>$inputs['keluhan'],
             'status'=>'mulai',
             'idCustomer'=>$idCustomer,
@@ -176,9 +178,10 @@ class ServiceRepository extends Repository{
     }
 
     private function setCodeService(array $inputs){
+        $dataCtgr = $this->query->table('categories')->where('title',$inputs['category'])->first();
         $date = DateAndTime::setDateFromString($inputs['entryDate']);
         $attributs = [
-            'code'=>$date->format('y').$date->format('m')->$date->format('d').$inputs['idCategory'].sprintf("%03d",$inputs['id'])
+            'code'=>$date->format('y').$date->format('m')->$date->format('d').$dataCtgr->id.sprintf("%03d",$inputs['id'])
         ];
         $data = $this->save($attributs, $inputs['id']);
     }

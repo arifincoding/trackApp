@@ -14,7 +14,7 @@ class ServiceValidation extends Validation{
             'noHp'=>'numeric',
             'mendukungWhatsapp'=>'in:true,false',
             'namaBarang'=>'required',
-            'kategori'=>'required',
+            'kategori'=>'required|exists:categories,title',
             'keluhan'=>'required',
             'membutuhkanSpesialis'=>'required|in:true,false',
             'membutuhkanKonfirmasi'=>'required|in:true,false'

@@ -49,7 +49,7 @@ class userRepository extends Repository{
     function getDataById($id):array
     {
         $data = $this->findById($id);
-        $dataResponbility = $this->responbility->getListDataByUsername($data->username);
+        // $dataResponbility = $this->responbility->getListDataByUsername($data->username);
         $returnData = [
             'idPegawai' => $data->id,
             'namaPengguna' => $data->username,
@@ -66,9 +66,9 @@ class userRepository extends Repository{
             'alamat'=> $data->address,
             'tanggungJawab'=>null
         ];
-        if($dataResponbility !== false){
-            $returnData['tanggungJawab'] = $dataResponbility;
-        }
+        // if($dataResponbility !== false){
+        //     $returnData['tanggungJawab'] = $dataResponbility;
+        // }
 
         return $returnData;
     }
@@ -165,7 +165,7 @@ class userRepository extends Repository{
         if($check->role !== 'teknisi'){
             throw new Exception('gagal tambah tanggung jawab karena pegawai ini bukan teknisi');
         }
-        $data = $this->responbility->create(['username'=>$check->username,'idKategori'=>$inputs['idKategori']]);
+        $data = $this->responbility->create(['username'=>$check->username,'category'=>$inputs['kategori']]);
         return $data;
     }
 
