@@ -44,6 +44,8 @@ class WarrantyRepository extends Repository{
         $data = $this->save($attributs);
         return ['idGaransi'=>$data->id];
     }
+
+    
     function getListDataByIdService(string $idService){
         $data = $this->model->where('idService',$idService)->orderBy('id','desc')->get();
         $arrData = [];

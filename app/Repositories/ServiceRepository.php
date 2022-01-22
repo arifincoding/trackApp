@@ -6,23 +6,17 @@ use App\Models\Service;
 use App\Repositories\Repository;
 use App\Exceptions\Handler;
 use App\Repositories\CustomerRepository;
-use App\Repositories\DiagnosaRepository;
-use App\Repositories\WarrantyRepository;
 use App\Repositories\ServiceTrackRepository;
-use DateTime;
-use DateTimeZone;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Helpers\DateAndTime;
 use Illuminate\Support\Facades\DB;
 
 class ServiceRepository extends Repository{
-    public function __construct(Service $model,CustomerRepository $customer, DiagnosaRepository $diagnosa,WarrantyRepository $warranty,ServiceTrackRepository $serviceTrack, DB $query)
+    public function __construct(Service $model,CustomerRepository $customer, ServiceTrackRepository $serviceTrack, DB $query)
     {
         parent::__construct($model);
         $this->customer = $customer;
-        $this->diagnosa = $diagnosa;
-        $this->warranty = $warranty;
         $this->serviceTrack = $serviceTrack;
         $this->query = $query;
     }
@@ -123,8 +117,7 @@ class ServiceRepository extends Repository{
     }
 
     private function setAttributs(array $inputs,string $idCustomer){
-        $now = new DateTime();
-        $now->setTimezone(new DateTimeZone("Asia/Jakarta"));
+        
         $attributs = [
             'name'=>$inputs['namaBarang'],
             'category'=>$inputs['kategori'],
@@ -134,8 +127,8 @@ class ServiceRepository extends Repository{
             'specialised'=>filter_var($inputs['membutuhkanSpesialis'],FILTER_VALIDATE_BOOLEAN),
             'confirmed'=>filter_var($inputs['membutuhkanKonfirmasi'],FILTER_VALIDATE_BOOLEAN),
             'picked'=>false,
-            'entryDate'=> $now->format("d-m-Y"),
-            'entryTime'=> $now->format("H:i"),
+            'entryDate'=> DateAndTime::getDateNow(),
+            'entryTime'=> DateAndTime::getTimeNow(),
             'csUserName'=>auth()->payload()->get('user'),
             'completeness'=> $inputs['kelengkapan'] ?? null,
             'note'=> $inputs['catatan'] ?? null,

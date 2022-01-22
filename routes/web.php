@@ -22,22 +22,28 @@ $router->put('/employes/{id}','EmployeeController@updateEmployee');
 $router->put('/employes/{id}/status','EmployeeController@changeStatusEmployee');
 $router->get('/employes','EmployeeController@getListEmployee');
 $router->get('/employes/{id}','EmployeeController@getEmployeeById');
+
+$router->post('/employes/{id}/technician/responbility','ResponbilityController@newTechnicianResponbilities');
+$router->delete('/employes/technician/responbility/{id}','ResponbilityController@delete');
+
 $router->post('/services','ServiceController@newService');
 $router->get('/services','ServiceController@getListService');
 $router->get('/services/{id}','ServiceController@getServiceById');
-$router->post('/services/{id}/diagnosas','ServiceController@newServiceDiagnosa');
-$router->get('/services/{id}/diagnosas','ServiceController@getListServiceDiagnosa');
-$router->post('/services/{id}/warranty','ServiceController@newServiceWarranty');
-$router->get('/services/{id}/warranty','ServiceController@getServiceWarranty');
+
+$router->post('/services/{id}/diagnosas','DiagnosaController@newDiagnosaByIdService');
+$router->get('/services/{id}/diagnosas','DiagnosaController@getListDiagnosaByIdService');
+
+$router->post('/services/{id}/warranty','WarrantyController@newWarrantyByIdService');
+$router->get('/services/{id}/warranty','WarrantyController@getServiceWarrantyByIdService');
+
 $router->post('/categories','CategoryController@newCategory');
 $router->get('/categories','CategoryController@getListCategory');
 $router->get('/categories/{id}','CategoryController@getCategoryById');
 $router->put('/categories/{id}','CategoryController@updateCategory');
 $router->delete('/categories/{id}','CategoryController@deleteCategory');
+
 $router->post('/user/login','AuthController@login');
 $router->get('/user/{username}','UserController@getUserByUsername');
-$router->post('/employes/{id}/technician/responbility','EmployeeController@newTechnicianResponbilities');
-$router->delete('/responbility/{id}','ResponbilityController@delete');
 
 $router->group(['prefix'=>'','middleware'=>['auth','role:developer,teknisi']],function () use ($router){
     // $router->get('/categories','CategoryController@getListCategory');

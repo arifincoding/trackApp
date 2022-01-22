@@ -19,7 +19,7 @@ class DiagnosaController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function newDiagnosa(Request $request,$id,DiagnosaValidation $validator){
+    public function newDiagnosaByIdService(Request $request,$id,DiagnosaValidation $validator){
         $validation = $validator->validate($request->only(['judul']));
         $data = $this->repository->create($request->all(),$id);
         return $this->jsonSuccess('sukses',200,$data);

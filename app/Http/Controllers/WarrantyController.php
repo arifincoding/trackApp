@@ -15,7 +15,7 @@ class WarrantyController extends Controller{
 
     function newWarrantyByIdService(Request $request, $id,WarrantyValidation $validator){
         $validation = $validator->validate($request->all());
-        $data = $this->repository->createWarrantyByIdService($request->all(), $id);
+        $data = $this->repository->create($request->all(), $id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
