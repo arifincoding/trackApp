@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Repositories\WarrantyRepository;
+use App\Validations\WarrantyValidation;
 
 class WarrantyController extends Controller{
 
@@ -12,7 +13,14 @@ class WarrantyController extends Controller{
         $this->repository = $repository;
     }
 
-    function newWarrantyDiagnosa(Request $request, $id){
-        
+    function newWarrantyByIdService(Request $request, $id,WarrantyValidation $validator){
+        $validation = $validator->validate($request->all());
+        $data = $this->repository->createWarrantyByIdService($request->all(), $id);
+        return $this->jsonSuccess('sukses',200,$data);
+    }
+
+    function getServiceWarrantyByIdService($id){
+        $data = $this->repository->getListDataByIdService($id);
+        return $this->jsonSuccess('sukses',200,$data);
     }
 }

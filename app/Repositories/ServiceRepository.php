@@ -41,37 +41,6 @@ class ServiceRepository extends Repository{
         return ['idService'=>$data->id];
     }
 
-    public function createDiagnosa(array $inputs,string $idService){
-        $checkService = $this->model->find($idService);
-        if(!$checkService){
-            throw new Exception('gagal tambah data diagnosa, data service tidak ditemukan');
-        }
-        $confirm = null;
-        if($checkService->confirmed === 0){
-            $confirm = true;
-        }
-        $attributs = [
-            'title'=>$inputs['judul'],
-            'idService'=>$idService,
-            'status'=>'antri',
-            'confirmed'=>$confirm,
-        ];
-        $data = $this->diagnosa->create($attributs);
-        return $data;
-    }
-
-    public function createWarranty(array $inputs, string $idService){
-        $checkService = $this->model->find($idService);
-        if(!$checkService){
-            throw new Exception('gagal membuat garansi baru, karena data service tidak ditemukan');
-        }
-        if($checkService->pickDate == null){
-            throw new Exception('gagal membuat garansi baru,karena barang belum diambil');
-        }
-        $data = $this->warranty->create($inputs,$idService);
-        return $data;
-    }
-
     public function getListData(){
         $columns = $this->setSelectColumn();
         $data = $this->getAllWithInnerJoin('services','customers','idCustomer','id')->get($columns);

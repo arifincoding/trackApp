@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Repositories\ServiceRepository;
 use App\Validations\ServiceValidation;
-use App\Validations\DiagnosaValidation;
 use App\Validations\WarrantyValidation;
 
 class ServiceController extends Controller{
@@ -43,28 +42,6 @@ class ServiceController extends Controller{
 
     function getServiceById($id){
         $data = $this->repository->getDataById($id);
-        return $this->jsonSuccess('sukses',200,$data);
-    }
-
-    function newServiceDiagnosa(Request $request,$id,DiagnosaValidation $validator){
-        $validation = $validator->validate($request->only(['judul']));
-        $data = $this->repository->createDiagnosa($request->all(),$id);
-        return $this->jsonSuccess('sukses',200,$data);
-    }
-
-    function newServiceWarranty(Request $request, $id,WarrantyValidation $validator){
-        $validation = $validator->validate($request->all());
-        $data = $this->repository->createWarranty($request->all(), $id);
-        return $this->jsonSuccess('sukses',200,$data);
-    }
-
-    function getListServiceDiagnosa($id){
-        $data = $this->repository->diagnosa->getListData($id);
-        return $this->jsonSuccess('sukses',200,$data);
-    }
-
-    function getServiceWarranty($id){
-        $data = $this->repository->warranty->getListDataByIdService($id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 }

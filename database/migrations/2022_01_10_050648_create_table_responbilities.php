@@ -16,7 +16,7 @@ class CreateTableResponbilities extends Migration
         Schema::create('responbilities', function (Blueprint $table) {
             $table->id();
             $table->string('username',50);
-            $table->string('category',30);
+            $table->string('idCategory',30);
             $table->timestamps();
         });
     }

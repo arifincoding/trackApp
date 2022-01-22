@@ -7,5 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 class Responbility extends Model{
 
     protected $table = 'responbilities';
-    protected $fillable =['username','category'];
+    protected $fillable =['username','idCategory'];
 }

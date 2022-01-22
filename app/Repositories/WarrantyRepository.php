@@ -4,30 +4,41 @@ namespace App\Repositories;
 
 use App\Models\Warranty;
 use App\Repositories\Repository;
-use DateTime;
-use DateTimeZone;
+use App\Helpers\DateAndTime;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class WarrantyRepository extends Repository{
-    function __construct(Warranty $model){
+    function __construct(Warranty $model, DB $query){
         parent::__construct($model);
+    $this->query = $query;
     }
     function create(array $inputs, string $idService){
-        $find = $this->model->where('idService',$idService)->orderBy('id','desc')->first();
-        if($find && $find->pickDate == null){
+        
+        $checkService = $this->query->table('services')->where('id',$idService)->first();
+        
+        if(!$checkService){
+            throw new Exception('gagal membuat garansi baru, karena data service tidak ditemukan');
+        }
+        else if($checkService->pickDate == null){
             throw new Exception('gagal membuat garansi baru,karena barang belum diambil');
         }
-        $now = new DateTime();
-        $now->setTimeZone(new DateTimeZone('Asia/Jakarta'));
+        
+        $checkWarranty = $this->model->where('idService',$idService)->orderBy('id','desc')->first();
+        
+        if($checkWarranty && $checkWarranty->pickDate == null){
+            throw new Exception('gagal membuat garansi baru,karena barang belum diambil');
+        }
+        
         $attributs = [
             'idService'=>$idService,
             'completeness'=>$inputs['kelengkapan'],
             'complaint'=>$inputs['keluhan'],
             'productDefects'=>$inputs['cacatProduk'],
             'note'=>$inputs['catatan'],
-            'entryDate'=> $now->format('d-m-Y'),
-            'entryTime'=> $now->format('H:i'),
+            'entryDate'=> DateAndTime::getDateNow(),
+            'entryTime'=> DateAndTime::getTimeNow(),
             'csName'=> $inputs['customerService']
         ];
         $data = $this->save($attributs);
