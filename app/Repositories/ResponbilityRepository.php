@@ -8,9 +8,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ResponbilityRepository extends Repository{
-    function __construct(Responbility $model, DB $query){
+    function __construct(Responbility $model){
         $this->model = $model;
-        $this->query = $query;
     }
 
     function getListDataByUsername(string $username){
@@ -35,7 +34,7 @@ class ResponbilityRepository extends Repository{
 
     function create(array $inputs){
         
-        $check = $this->query->table('users')->where('id',$id)->first();
+        $check = DB::table('users')->where('id',$id)->first();
         if(!$check){
             throw new ModelNotFoundException();
         }

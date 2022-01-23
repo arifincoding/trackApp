@@ -19,30 +19,41 @@ class ServiceController extends Controller{
         return $this->jsonSuccess('sukses',200,$data['data']);
     }
 
+    function getServiceById($id){
+        $data = $this->repository->getDataById($id);
+        return $this->jsonSuccess('sukses',200,$data);
+    }
+
     function newService(Request $request, ServiceValidation $validator):JsonResponse
     {
         $validator->post();
         $validation = $validator->validate($request->all());
-        if($validation === true){
-            $customerExist = false;
-            if(!empty($request->input('noHp'))){
-                $customerExist = $this->repository->customer->isCustomerExist($request->only(['namaCustomer','noHp']));
-            }
-            if($customerExist === false){
-                $dataCustomer = $this->repository->customer->create($request->all());
-                $idCustomer = $dataCustomer['idCustomer'];
-            }else{
-                $idCustomer = $customerExist['idCustomer'];
-            }
-            $dataService = $this->repository->create($request->all(),$idCustomer);
-            return $this->jsonSuccess('sukses',200,$dataService);
+        $customerExist = false;
+        if(!empty($request->input('noHp'))){
+            $customerExist = $this->repository->customer->isCustomerExist($request->only(['namaCustomer','noHp']));
         }
-        return $this->jsonValidationError($validation);
+        if($customerExist === false){
+            $dataCustomer = $this->repository->customer->create($request->all());
+            $idCustomer = $dataCustomer['idCustomer'];
+        }else{
+            $idCustomer = $customerExist['idCustomer'];
+        }
+        $dataService = $this->repository->create($request->all(),$idCustomer);
+        return $this->jsonSuccess('sukses',200,$dataService);
     }
 
-    function getServiceById($id){
-        $data = $this->repository->getDataById($id);
+    public function updateService(Request $request, $id, ServiceValidation $validator){
+        $validator->post();
+        $validation = $validator->validate($request->all());
+        $dataCustomer = $this->repository->customer->update($request->all(), $id);
+        $data = $this->repository->update($request->all(),$dataCustomer['idCustomer'],$id);
         return $this->jsonSuccess('sukses',200,$data);
+    }
+
+    public function deleteService($id){
+        $this->repository->customer->deleteById($id);
+        $data = $this->repository->deleteById($id);
+        return $this->jsonSUccess('sukses',200,$data);
     }
 }
 

@@ -9,13 +9,12 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 
 class DiagnosaRepository extends Repository{
-    function __construct(Diagnosa $model, DB $query){
+    function __construct(Diagnosa $model){
         parent::__construct($model);
-        $this->query = $query;
     }
 
     function create(array $inputs,string $idService){
-        $checkService = $this->query->table('services')->where('id',$idService)->first();
+        $checkService = DB::table('services')->where('id',$idService)->first();
         if(!$checkService){
             throw new Exception('gagal tambah data diagnosa, data service tidak ditemukan');
         }

@@ -13,28 +13,13 @@ use App\Helpers\DateAndTime;
 use Illuminate\Support\Facades\DB;
 
 class ServiceRepository extends Repository{
-    public function __construct(Service $model,CustomerRepository $customer, ServiceTrackRepository $serviceTrack, DB $query)
+    public function __construct(Service $model,CustomerRepository $customer, ServiceTrackRepository $serviceTrack)
     {
         parent::__construct($model);
         $this->customer = $customer;
         $this->serviceTrack = $serviceTrack;
-        $this->query = $query;
     }
     
-    public function create(array $inputs,string $idCustomer):array
-    {
-        $attributs = $this->setAttributs($inputs, $idCustomer);
-        $data = $this->save($attributs);
-        $track = [
-            'idService'=>$data->id,
-            'title'=>'barang service masuk dan menunggu untuk di diagnosa',
-            'status'=>'antri'
-        ];
-        $this->setCodeService($data->toArray());
-        $this->serviceTrack->create($track);
-        return ['idService'=>$data->id];
-    }
-
     public function getListData(){
         $columns = $this->setSelectColumn();
         $data = $this->getAllWithInnerJoin('services','customers','idCustomer','id')->get($columns);
@@ -55,12 +40,40 @@ class ServiceRepository extends Repository{
         return $this->setReturnData($data,true);
     }
 
+    public function create(array $inputs,string $idCustomer):array
+    {
+        $attributs = $this->setAttributs($inputs, $idCustomer);
+        $data = $this->save($attributs);
+        $track = [
+            'idService'=>$data->id,
+            'title'=>'barang service masuk dan menunggu untuk di diagnosa',
+            'status'=>'antri'
+        ];
+        $this->setCodeService($data->toArray());
+        $this->serviceTrack->create($track);
+        return ['idService'=>$data->id];
+    }
+
+    public function update(array $inputs, string $idCustomer,$id):array{
+        $attributs = $this->setAttributs($inputs,$idCustomer,true);
+        $data = $this->save($attributs,$id);
+        return ['idService'=>$data->id];
+    }
+
+    public function deleteById(string $id){
+        $data = $this->delete($id);
+        return ['sukses'=>$data];
+    }
+
+    
+    // private function
+    
     private function setSelectColumn($first=false){
         $columns = [
             'customers.name as customerName',
             'services.name as productName',
             'phoneNumber',
-            'whatsapp',
+            'whatsapp','gender',
             'code',
             'category','complaint','status','totalPrice','picked',
             'services.id as idService'
@@ -116,34 +129,36 @@ class ServiceRepository extends Repository{
         return $arrData;
     }
 
-    private function setAttributs(array $inputs,string $idCustomer){
+    private function setAttributs(array $inputs,string $idCustomer, bool $isUpdate = false){
         
         $attributs = [
             'name'=>$inputs['namaBarang'],
             'category'=>$inputs['kategori'],
             'complaint'=>$inputs['keluhan'],
-            'status'=>'mulai',
             'idCustomer'=>$idCustomer,
             'specialised'=>filter_var($inputs['membutuhkanSpesialis'],FILTER_VALIDATE_BOOLEAN),
             'confirmed'=>filter_var($inputs['membutuhkanKonfirmasi'],FILTER_VALIDATE_BOOLEAN),
-            'picked'=>false,
-            'entryDate'=> DateAndTime::getDateNow(),
-            'entryTime'=> DateAndTime::getTimeNow(),
-            'csUserName'=>auth()->payload()->get('user'),
             'completeness'=> $inputs['kelengkapan'] ?? null,
             'note'=> $inputs['catatan'] ?? null,
             'downPayment'=> $inputs['uangMuka'] ?? null,
             'estimatePrice'=> $inputs['estimasiHarga'] ?? null,
             'productDefects'=> $inputs['cacatProduk'] ?? null
         ];
+        if($isUpdate === false){
+            $attributs['status']='mulai';
+            $attributs['picked']=false;
+            $attributs['entryDate']= DateAndTime::getDateNow();
+            $attributs['entryTime']= DateAndTime::getTimeNow();
+            $attributs['csUserName']=  'arifin';
+        }
         return $attributs;
     }
 
     private function setCodeService(array $inputs){
-        $dataCtgr = $this->query->table('categories')->where('title',$inputs['category'])->first();
+        $dataCtgr = DB::table('categories')->where('title',$inputs['category'])->first();
         $date = DateAndTime::setDateFromString($inputs['entryDate']);
         $attributs = [
-            'code'=>$date->format('y').$date->format('m')->$date->format('d').$dataCtgr->id.sprintf("%03d",$inputs['id'])
+            'code'=>$date->format('y').$date->format('m').$date->format('d').$dataCtgr->id.sprintf("%03d",$inputs['id'])
         ];
         $data = $this->save($attributs, $inputs['id']);
     }

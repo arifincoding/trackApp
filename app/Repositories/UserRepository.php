@@ -133,6 +133,11 @@ class userRepository extends Repository{
         return ['idPegawai'=>$id];
     }
 
+    function deleteById(string $id){
+        $data = $this->delete($id);
+        return ['sukses'=>$data];
+    }
+
     function changeStatus(string $status, $id):array
     {
         $check = $this->findById($id);

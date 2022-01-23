@@ -16,9 +16,6 @@ class CategoryRepository extends Repository{
         $attributs = [
             'title'=>$inputs['kategori']
         ];
-        if($id !== null){
-            $checkData = $this->findById($id);
-        }
         $data = $this->save($attributs,$id);
         return [
             'idKategori'=>$data->id ?? $id

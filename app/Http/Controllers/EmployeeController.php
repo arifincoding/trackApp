@@ -38,7 +38,7 @@ class EmployeeController extends Controller{
         return $this->jsonSuccess('sukses',200,['idPegawai'=>$data['idPegawai']]);
     }
 
-    function updateEmployee(Request $request,$id, EmployeeValidation $validator): JsonResponse
+    function updateEmployee(Request $request, $id, EmployeeValidation $validator): JsonResponse
     {
         $validator->post($id);
         $validation = $validator->validate($request->all());
@@ -51,6 +51,11 @@ class EmployeeController extends Controller{
         $validator->status();
         $validation = $validator->validate($request->only(['status']));
         $data = $this->repository->changeStatus($request->input('status'),$id);
+        return $this->jsonSuccess('sukses',200,$data);
+    }
+
+    function deleteEmployee($id){
+        $data = $this->repository->deleteById($id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 

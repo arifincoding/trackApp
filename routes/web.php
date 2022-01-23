@@ -22,6 +22,7 @@ $router->put('/employes/{id}','EmployeeController@updateEmployee');
 $router->put('/employes/{id}/status','EmployeeController@changeStatusEmployee');
 $router->get('/employes','EmployeeController@getListEmployee');
 $router->get('/employes/{id}','EmployeeController@getEmployeeById');
+$router->delete('/employes/{id}','EmployeeController@deleteEmployee');
 
 $router->post('/employes/{id}/technician/responbility','ResponbilityController@newTechnicianResponbilities');
 $router->delete('/employes/technician/responbility/{id}','ResponbilityController@delete');
@@ -29,6 +30,8 @@ $router->delete('/employes/technician/responbility/{id}','ResponbilityController
 $router->post('/services','ServiceController@newService');
 $router->get('/services','ServiceController@getListService');
 $router->get('/services/{id}','ServiceController@getServiceById');
+$router->put('/services/{id}','ServiceController@updateService');
+$router->delete('/services/{id}','ServiceController@deleteService');
 
 $router->post('/services/{id}/diagnosas','DiagnosaController@newDiagnosaByIdService');
 $router->get('/services/{id}/diagnosas','DiagnosaController@getListDiagnosaByIdService');

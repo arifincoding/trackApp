@@ -10,13 +10,12 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 
 class WarrantyRepository extends Repository{
-    function __construct(Warranty $model, DB $query){
+    function __construct(Warranty $model){
         parent::__construct($model);
-    $this->query = $query;
     }
     function create(array $inputs, string $idService){
         
-        $checkService = $this->query->table('services')->where('id',$idService)->first();
+        $checkService = DB::table('services')->where('id',$idService)->first();
         
         if(!$checkService){
             throw new Exception('gagal membuat garansi baru, karena data service tidak ditemukan');
