@@ -9,18 +9,29 @@ use App\Validations\WarrantyValidation;
 
 class WarrantyController extends Controller{
 
-    function __construct(WarrantyRepository $repository){
+    public function __construct(WarrantyRepository $repository){
         $this->repository = $repository;
     }
 
-    function newWarrantyByIdService(Request $request, $id,WarrantyValidation $validator){
+    public function getServiceWarrantyByIdService($id){
+        $data = $this->repository->getListDataByIdService($id);
+        return $this->jsonSuccess('sukses',200,$data);
+    }
+
+    public function newWarrantyByIdService(Request $request, $id,WarrantyValidation $validator){
         $validation = $validator->validate($request->all());
         $data = $this->repository->create($request->all(), $id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    function getServiceWarrantyByIdService($id){
-        $data = $this->repository->getListDataByIdService($id);
+    public function updateWarranty(Request $request, $id, WarrantyValidation $validator){
+        $validation = $validator->validate($request->all());
+        $data = $this->repository->update($request->all(),$id);
+        return $this->jsonSuccess('sukses',200,$data);
+    }
+
+    public function deleteWarranty($id){
+        $data = $this->repository->deleteById($request->all(),$id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 }

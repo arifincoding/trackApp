@@ -35,9 +35,14 @@ $router->delete('/services/{id}','ServiceController@deleteService');
 
 $router->post('/services/{id}/diagnosas','DiagnosaController@newDiagnosaByIdService');
 $router->get('/services/{id}/diagnosas','DiagnosaController@getListDiagnosaByIdService');
+$router->get('/services/diagnosas/{id}','DiagnosaController@getDiagnosaById');
+$router->put('/services/diagnosas/{id}','DiagnosaController@updateDiagnosa');
+$router->delete('/services/diagnosas/{id}','DiagnosaController@deleteDiagnosa');
 
 $router->post('/services/{id}/warranty','WarrantyController@newWarrantyByIdService');
 $router->get('/services/{id}/warranty','WarrantyController@getServiceWarrantyByIdService');
+$router->put('/services/warranty/{id}','WarrantyController@updateWarranty');
+$router->delete('/services/warranty/{id}','WarrantyController@deleteWarranty');
 
 $router->post('/categories','CategoryController@newCategory');
 $router->get('/categories','CategoryController@getListCategory');

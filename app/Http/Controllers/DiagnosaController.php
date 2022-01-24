@@ -24,4 +24,20 @@ class DiagnosaController extends Controller{
         $data = $this->repository->create($request->all(),$id);
         return $this->jsonSuccess('sukses',200,$data);
     }
+
+    public function getDiagnosaById($id){
+        $data = $this->repository->getDataById($id);
+        return $this->jsonSuccess('sukses',200,$data);
+    }
+
+    public function updateDiagnosa(Request $request, $id, DiagnosaValidation $validator){
+        $validation = $validator->validate($request->only(['judul']));
+        $data = $this->repository->update($request->all(),$id);
+        return $this->jsonSuccess('sukses',200,$data);
+    }
+
+    public function deleteDiagnosa($id){
+        $data = $this->repository->deleteById($id);
+        return $this->jsonSuccess('sukses',200,$data);
+    }
 }

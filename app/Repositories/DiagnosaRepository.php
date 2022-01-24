@@ -49,6 +49,25 @@ class DiagnosaRepository extends Repository{
         }
         return $arrData;
     }
+
+    function update(array $inputs, string $id){
+        $attributs = [
+            'title'=> $inputs['judul'],
+            'status'=> $inputs['status']
+        ];
+
+        $data = $this->save($attributs,$id);
+        return [
+            'idDiagnosa'=>$data->id
+        ];
+    }
+
+    function deleteById(string $id){
+        $data = $this->delete($id);
+        return[
+            'sukses'=>$data
+        ];
+    }
 }
 
 ?>
