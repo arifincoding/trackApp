@@ -16,7 +16,7 @@ class DiagnosaRepository extends Repository{
     function create(array $inputs,string $idService){
         $checkService = DB::table('services')->where('id',$idService)->first();
         if(!$checkService){
-            throw new Exception('gagal tambah data diagnosa, data service tidak ditemukan');
+            throw new ModelNotFoundException();
         }
         $confirm = null;
         if($checkService->confirmed === 0){
@@ -50,6 +50,16 @@ class DiagnosaRepository extends Repository{
         return $arrData;
     }
 
+    function getDataById(string $id){
+        $data = $this->findById($id);
+        return [
+            'judul'=>$data->title,
+            'status'=>$data->status,
+            'harga'=>$data->price,
+            'konfirmasi'=>$data->confirmed
+        ];
+    }
+
     function update(array $inputs, string $id){
         $attributs = [
             'title'=> $inputs['judul'],
@@ -58,7 +68,8 @@ class DiagnosaRepository extends Repository{
 
         $data = $this->save($attributs,$id);
         return [
-            'idDiagnosa'=>$data->id
+            'idDiagnosa'=>$data->id,
+            'idService'=>$data->idService
         ];
     }
 

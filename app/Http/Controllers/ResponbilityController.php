@@ -14,7 +14,7 @@ class ResponbilityController extends Controller{
     }
 
     function newTechnicianResponbilities(Request $request, $id, ResponbilityValidation $validator){
-        $validator->post($id,$request->only(['kategori']));
+        $validator->post($id,$request->only(['idKategori']));
         $validation = $validator->validate($request->all());
         $data = $this->repository->create($request->all(), $id);
         return $this->jsonSuccess('sukses',200,$data);

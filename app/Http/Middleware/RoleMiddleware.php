@@ -16,6 +16,6 @@ class RoleMiddleware{
         return response()->json([
             'status'=>301,
             'message'=>'forbidden'
-        ]);
+        ],301);
     }
 }

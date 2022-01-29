@@ -80,7 +80,7 @@ class ServiceRepository extends Repository{
         ];
         if($first === true){
             $columns2 = [
-                'completeness','note','estimatePrice','price','downPayment','productDefects','entryDate','entryTime','pickDate','pickTime','warranty','csUseName','technicianUserName'
+                'completeness','note','estimatePrice','price','downPayment','productDefects','entryDate','entryTime','pickDate','pickTime','warranty','csUserName','technicianUserName','specialised','confirmed'
             ];
             $columns = array_merge($columns,$columns2);
         }
@@ -122,7 +122,9 @@ class ServiceRepository extends Repository{
                 ,'jamAmbil'=>$data->pickTime
                 ,'lamaGaransi'=>$data->warranty
                 ,'customerService'=>$data->csUserName
-                ,'teknisi'=>$data->technicianUserName
+                ,'teknisi'=>$data->technicianUserName,
+                'membutuhkanSpesialis'=>boolval($data->specialised),
+                'membutuhkanKonfirmasi'=>boolval($data->confirmed)
             ];
             $arrData['product'] = array_merge($arrData['product'],$product);
         }

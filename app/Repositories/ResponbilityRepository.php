@@ -16,8 +16,12 @@ class ResponbilityRepository extends Repository{
         $columns=[
             'responbilities.id as idResponbility',
             'categories.id as idCategory',
-            'title'
+            'title','username'
         ];
+        $checkData = $this->model->where('username',$username)->first();
+        if(!$checkData){
+            return false;
+        }
         $data = $this->getAllWithInnerJoin('responbilities','categories','idCategory','id')->where('username',$username)->get($columns);
         $arrData = [];
         foreach($data as $key=>$item){
@@ -32,7 +36,7 @@ class ResponbilityRepository extends Repository{
         return $arrData;
     }
 
-    function create(array $inputs){
+    function create(array $inputs,string $id){
         
         $check = DB::table('users')->where('id',$id)->first();
         if(!$check){
@@ -44,12 +48,12 @@ class ResponbilityRepository extends Repository{
         $arrAtribut = [];
         if(is_array($inputs['idKategori']) == true){
             foreach($inputs['idKategori'] as $key=>$item){
-                $arrAtribut[$key]['username'] = $inputs['username'];
+                $arrAtribut[$key]['username'] = $check->username;
                 $arrAtribut[$key]['idCategory'] = $item;
             }
         }else{
             $arrAtribut = [
-                'username'=>$inputs['username'],
+                'username'=>auth()->payload()->get('username'),
                 'idCategory'=>$inputs['idKategori']
             ];
         }
