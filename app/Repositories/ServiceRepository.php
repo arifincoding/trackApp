@@ -30,6 +30,86 @@ class ServiceRepository extends Repository{
         return ['data'=>$arrData];
     }
 
+    public function getDataQueue($resp){
+        $responbility = $resp->getListDataByUsername(auth()->payload()->get('username'));
+        if($responbility !== false){
+        $data = $this->getAll()->where('status','antri')->where(function ($q) use ($responbility){
+            $this->setFilterDataQueue($q,$responbility);
+        })->get();
+        $arrData = [];
+        foreach($data as $key=>$item){
+            $arrData[$key]=[
+                'idService'=>$item->id,
+                'nama'=>$item->name,
+                'kategori'=>$item->category,
+                'keluhan'=>$item->complaint,
+                'status'=>$item->status
+            ];
+        }
+        if($arrData === []){
+            throw new ModelNotFoundException();
+        }
+        return $arrData;
+        }
+        throw new ModelNotFoundException();
+    }
+
+    public function getListDataByTechUsername(string $username){
+        $data = $this->getAll()->where('technicianUserName',$username)->get();
+        $arrData = [];
+        foreach($data as $key=>$item){
+            $arrData[$key]=[
+                'idService'=>$item->id,
+                'nama'=>$item->name,
+                'kategori'=>$item->category,
+                'keluhan'=>$item->complaint,
+                'status'=>$item->status
+            ];
+        }
+        if($arrData === []){
+            throw new ModelNotFoundException();
+        }
+        return $arrData;
+    }
+
+    public function updateDataStatus(array $inputs, string $id){
+        $this->addServiceTrack($inputs['status'],$id);
+        $attributs = [
+            'technicianUserName'=>auth()->payload()->get('username'),
+            'status'=>$inputs['status']
+        ];
+        $data = $this->save($attributs,$id);
+        return [
+            'idService'=>$data->id
+        ];
+    }
+
+    private function addServiceTrack(string $status, string $id){
+        $message = '';
+        $service = DB::table('services')->where('id',$id)->first();
+        if($status=='antri'){
+            $message = 'barang service masuk dan menunggu untuk di diagnosa';
+        }else if($status === 'diagnosa'){
+            $message = $service->category.' anda sedang dalam proses diagnosa';
+        }else if($status ==  'proses'){
+            $message = $service->category.' anda sedang dalam proses perbaikan';
+        }else if($status == 'selesai'){
+            $message = $service->category.' anda telah selesai diperbaiki';
+        }
+        $attributs = [
+            'idService'=>$id,
+            'title'=>$message,
+            'status'=>$status
+        ];
+        $this->serviceTrack->create($attributs);
+    }
+
+    private function setFilterDataQueue($q,$responbility){
+        foreach($responbility as $item){
+            $q->orWhere('category',$item['kategori']);
+        }
+    }
+
     public function getDataById($id){
         $columns = $this->setSelectColumn(true);
         $data = $this->getAllWithInnerJoin('services','customers','idCustomer','id')->where('services.id',$id)->first($columns);
@@ -44,13 +124,8 @@ class ServiceRepository extends Repository{
     {
         $attributs = $this->setAttributs($inputs, $idCustomer);
         $data = $this->save($attributs);
-        $track = [
-            'idService'=>$data->id,
-            'title'=>'barang service masuk dan menunggu untuk di diagnosa',
-            'status'=>'antri'
-        ];
+        $this->addServiceTrack($data->status,$id);
         $this->setCodeService($data->toArray());
-        $this->serviceTrack->create($track);
         return ['idService'=>$data->id];
     }
 
@@ -147,11 +222,11 @@ class ServiceRepository extends Repository{
             'productDefects'=> $inputs['cacatProduk'] ?? null
         ];
         if($isUpdate === false){
-            $attributs['status']='mulai';
+            $attributs['status']='antri';
             $attributs['picked']=false;
             $attributs['entryDate']= DateAndTime::getDateNow();
             $attributs['entryTime']= DateAndTime::getTimeNow();
-            $attributs['csUserName']=  'arifin';
+            $attributs['csUserName']=  auth()->payload()->get('username');
         }
         return $attributs;
     }

@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use App\Repositories\ServiceRepository;
 use App\Validations\ServiceValidation;
 use App\Validations\WarrantyValidation;
+use App\Repositories\ResponbilityRepository;
 
 class ServiceController extends Controller{
     
@@ -21,6 +22,16 @@ class ServiceController extends Controller{
 
     function getServiceById($id){
         $data = $this->repository->getDataById($id);
+        return $this->jsonSuccess('sukses',200,$data);
+    }
+
+    function getServiceQueue(ResponbilityRepository $resp){
+        $data = $this->repository->getDataQueue($resp);
+        return $this->jsonSuccess('sukses',200,$data);
+    }
+
+    function getProgressService(){
+        $data = $this->repository->getListDataByTechUsername(auth()->payload()->get('username'));
         return $this->jsonSuccess('sukses',200,$data);
     }
 
@@ -47,6 +58,11 @@ class ServiceController extends Controller{
         $validation = $validator->validate($request->all());
         $dataCustomer = $this->repository->customer->update($request->all(), $id);
         $data = $this->repository->update($request->all(),$dataCustomer['idCustomer'],$id);
+        return $this->jsonSuccess('sukses',200,$data);
+    }
+
+    public function updateServiceStatus(Request $request,$id){
+        $data = $this->repository->updateDataStatus($request->all(),$id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 

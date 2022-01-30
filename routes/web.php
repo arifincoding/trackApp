@@ -24,6 +24,10 @@ $router->delete('/services/warranty/{id}','WarrantyController@deleteWarranty');
 
 $router->post('/user/login','AuthController@login');
 $router->get('/user/{username}','UserController@getUserByUsername');
+$router->get('/services/queue','ServiceController@getServiceQueue');
+$router->get('/services/myprogress','ServiceController@getProgressService');
+
+$router->put('/services/{id}/status','ServiceController@updateServiceStatus');
 
 $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik']],function () use ($router){
 

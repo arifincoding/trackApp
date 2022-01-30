@@ -69,7 +69,6 @@ class userRepository extends Repository{
         if($dataResponbility !== false){
             $returnData['tanggungJawab'] = $dataResponbility;
         }
-
         return $returnData;
     }
 
