@@ -24,10 +24,6 @@ $router->delete('/services/warranty/{id}','WarrantyController@deleteWarranty');
 
 $router->post('/user/login','AuthController@login');
 $router->get('/user/{username}','UserController@getUserByUsername');
-$router->get('/services/queue','ServiceController@getServiceQueue');
-$router->get('/services/myprogress','ServiceController@getProgressService');
-
-$router->put('/services/{id}/status','ServiceController@updateServiceStatus');
 
 $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik']],function () use ($router){
 
@@ -56,21 +52,29 @@ $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik,customer servic
 
     // service
     $router->post('/services','ServiceController@newService');
-    $router->get('/services/{id}','ServiceController@getServiceById');
     $router->put('/services/{id}','ServiceController@updateService');
     $router->delete('/services/{id}','ServiceController@deleteService');
+});
+
+$router->group(['prefix'=>'','middleware'=>['auth']],function () use ($router){
+    $router->get('/services/{id}','ServiceController@getServiceById');
     $router->get('/services','ServiceController@getListService');
     $router->put('user/change-password','UserController@changeMyPassword');
+    $router->get('/services/{id}/diagnosas','DiagnosaController@getListDiagnosaByIdService');
 });
 
 $router->group(['prefix'=>'','middleware'=>['auth','role:teknisi']],function() use ($router){
     
     // diagnosa
     $router->post('/services/{id}/diagnosas','DiagnosaController@newDiagnosaByIdService');
-    $router->get('/services/{id}/diagnosas','DiagnosaController@getListDiagnosaByIdService');
     $router->get('/services/diagnosas/{id}','DiagnosaController@getDiagnosaById');
     $router->put('/services/diagnosas/{id}','DiagnosaController@updateDiagnosa');
     $router->delete('/services/diagnosas/{id}','DiagnosaController@deleteDiagnosa');
+
+    // service
+    $router->get('/services/queue','ServiceController@getServiceQueue');
+    $router->get('/services/myprogress','ServiceController@getProgressService');
+    $router->put('/services/{id}/status','ServiceController@updateServiceStatus');
 
 });
 ?>
