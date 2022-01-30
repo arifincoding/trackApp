@@ -51,14 +51,14 @@ $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik,customer servic
     $router->get('/categories','CategoryController@getListCategory');
 
     // service
+    $router->get('/services','ServiceController@getListService');
     $router->post('/services','ServiceController@newService');
     $router->put('/services/{id}','ServiceController@updateService');
     $router->delete('/services/{id}','ServiceController@deleteService');
 });
 
 $router->group(['prefix'=>'','middleware'=>['auth']],function () use ($router){
-    $router->get('/services/{id}','ServiceController@getServiceById');
-    $router->get('/services','ServiceController@getListService');
+    $router->get('/services/{id}/detail','ServiceController@getServiceById');
     $router->put('user/change-password','UserController@changeMyPassword');
     $router->get('/services/{id}/diagnosas','DiagnosaController@getListDiagnosaByIdService');
 });
@@ -73,7 +73,7 @@ $router->group(['prefix'=>'','middleware'=>['auth','role:teknisi']],function() u
 
     // service
     $router->get('/services/queue','ServiceController@getServiceQueue');
-    $router->get('/services/myprogress','ServiceController@getProgressService');
+    $router->get('/services/progress','ServiceController@getProgressService');
     $router->put('/services/{id}/status','ServiceController@updateServiceStatus');
 
 });

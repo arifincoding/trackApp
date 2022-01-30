@@ -40,6 +40,7 @@ class ServiceRepository extends Repository{
         foreach($data as $key=>$item){
             $arrData[$key]=[
                 'idService'=>$item->id,
+                'kode'=>$item->code,
                 'nama'=>$item->name,
                 'kategori'=>$item->category,
                 'keluhan'=>$item->complaint,
@@ -60,6 +61,7 @@ class ServiceRepository extends Repository{
         foreach($data as $key=>$item){
             $arrData[$key]=[
                 'idService'=>$item->id,
+                'kode'=>$item->code,
                 'nama'=>$item->name,
                 'kategori'=>$item->category,
                 'keluhan'=>$item->complaint,
@@ -91,6 +93,8 @@ class ServiceRepository extends Repository{
             $message = 'barang service masuk dan menunggu untuk di diagnosa';
         }else if($status === 'diagnosa'){
             $message = $service->category.' anda sedang dalam proses diagnosa';
+        }else if($status ==  'selesai diagnosa'){
+            $message = $service->category.' anda selesai di diagnosa';
         }else if($status ==  'proses'){
             $message = $service->category.' anda sedang dalam proses perbaikan';
         }else if($status == 'selesai'){
