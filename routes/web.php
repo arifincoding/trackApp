@@ -41,6 +41,9 @@ $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik']],function () 
     $router->put('/categories/{id}','CategoryController@updateCategory');
     $router->delete('/categories/{id}','CategoryController@deleteCategory');
 
+    // diagnosas
+    $router->put('/services/diagnosas/{id}/cost','DiagnosaController@updateDiagnosaCost');
+
     // responbility
     $router->post('/employes/{id}/technician/responbility','ResponbilityController@newTechnicianResponbilities');
     $router->delete('/employes/technician/responbility/{id}','ResponbilityController@delete');
@@ -55,6 +58,7 @@ $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik,customer servic
     $router->post('/services','ServiceController@newService');
     $router->put('/services/{id}','ServiceController@updateService');
     $router->delete('/services/{id}','ServiceController@deleteService');
+    $router->put('/services/{id}/take','ServiceController@updateServiceTake');
 });
 
 $router->group(['prefix'=>'','middleware'=>['auth']],function () use ($router){
@@ -69,6 +73,7 @@ $router->group(['prefix'=>'','middleware'=>['auth','role:teknisi']],function() u
     $router->post('/services/{id}/diagnosas','DiagnosaController@newDiagnosaByIdService');
     $router->get('/services/diagnosas/{id}','DiagnosaController@getDiagnosaById');
     $router->put('/services/diagnosas/{id}','DiagnosaController@updateDiagnosa');
+    $router->put('/services/diagnosas/{id}/status','DiagnosaController@updateDiagnosaStatus');
     $router->delete('/services/diagnosas/{id}','DiagnosaController@deleteDiagnosa');
 
     // service

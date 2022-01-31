@@ -36,6 +36,16 @@ class DiagnosaController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
+    public function updateDiagnosaStatus(Request $request, $id){
+        $data = $this->repository->updateStatus($request->all(),$id);
+        return $this->jsonSUccess('sukses',200,$data);
+    }
+
+    public function updateDiagnosaCost(Request $request, $id){
+        $data = $this->repository->updateCost($request->all(),$id);
+        return $this->jsonSuccess('sukses',200,$data);
+    }
+
     public function deleteDiagnosa($id){
         $data = $this->repository->deleteById($id);
         return $this->jsonSuccess('sukses',200,$data);

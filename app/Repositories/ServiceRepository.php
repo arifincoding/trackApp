@@ -99,6 +99,8 @@ class ServiceRepository extends Repository{
             $message = $service->category.' anda sedang dalam proses perbaikan';
         }else if($status == 'selesai'){
             $message = $service->category.' anda telah selesai diperbaiki';
+        }else if($status == 'diambil'){
+            $message = $service->category.' anda telah diambil';
         }
         $attributs = [
             'idService'=>$id,
@@ -137,6 +139,19 @@ class ServiceRepository extends Repository{
         $attributs = $this->setAttributs($inputs,$idCustomer,true);
         $data = $this->save($attributs,$id);
         return ['idService'=>$data->id];
+    }
+
+    public function updateTake(array $inputs, string $id){
+        $attributs = [
+            'picked'=>filter_var($inputs['ambil'],FILTER_VALIDATE_BOOLEAN),
+            'pickDate'=>DateAndTime::getDateNow(),
+            'pickTime'=>DateAndTime::getTimeNow()
+        ];
+        $data = $this->save($attributs, $id);
+        $this->addServiceTrack('diambil',$id);
+        return [
+            'idService'=>$data->id
+        ];
     }
 
     public function deleteById(string $id){
