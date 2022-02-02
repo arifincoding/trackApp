@@ -16,7 +16,6 @@ class ServiceValidation extends Validation{
             'namaBarang'=>'required',
             'kategori'=>'required|exists:categories,title',
             'keluhan'=>'required',
-            'membutuhkanSpesialis'=>'required|in:true,false',
             'membutuhkanKonfirmasi'=>'required|in:true,false'
         ];
     }

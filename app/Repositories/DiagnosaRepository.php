@@ -43,6 +43,7 @@ class DiagnosaRepository extends Repository{
                 'idDiagnosa' => $item->id,
                 'judul'=>$item->title,
                 'status'=>$item->status,
+                'biaya'=>$item->price,
                 'konfirmasi'=>$item->confirmed
             ];
         }
@@ -100,7 +101,8 @@ class DiagnosaRepository extends Repository{
         $this->service->where('id',$service->id)->update($attributs);
         $data = $this->save(['price'=>$inputs['biaya']],$id);
         return [
-            'idDiagnosa'=>$data->id
+            'idDiagnosa'=>$data->id,
+            'idService'=>$data->idService
         ];
     }
 

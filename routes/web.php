@@ -65,13 +65,13 @@ $router->group(['prefix'=>'','middleware'=>['auth']],function () use ($router){
     $router->get('/services/{id}/detail','ServiceController@getServiceById');
     $router->put('user/change-password','UserController@changeMyPassword');
     $router->get('/services/{id}/diagnosas','DiagnosaController@getListDiagnosaByIdService');
+    $router->get('/services/diagnosas/{id}','DiagnosaController@getDiagnosaById');
 });
 
 $router->group(['prefix'=>'','middleware'=>['auth','role:teknisi']],function() use ($router){
     
     // diagnosa
     $router->post('/services/{id}/diagnosas','DiagnosaController@newDiagnosaByIdService');
-    $router->get('/services/diagnosas/{id}','DiagnosaController@getDiagnosaById');
     $router->put('/services/diagnosas/{id}','DiagnosaController@updateDiagnosa');
     $router->put('/services/diagnosas/{id}/status','DiagnosaController@updateDiagnosaStatus');
     $router->delete('/services/diagnosas/{id}','DiagnosaController@deleteDiagnosa');

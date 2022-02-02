@@ -130,7 +130,7 @@ class ServiceRepository extends Repository{
     {
         $attributs = $this->setAttributs($inputs, $idCustomer);
         $data = $this->save($attributs);
-        $this->addServiceTrack($data->status,$id);
+        $this->addServiceTrack($data->status,$data->id);
         $this->setCodeService($data->toArray());
         return ['idService'=>$data->id];
     }
@@ -174,7 +174,7 @@ class ServiceRepository extends Repository{
         ];
         if($first === true){
             $columns2 = [
-                'completeness','note','estimatePrice','price','downPayment','productDefects','entryDate','entryTime','pickDate','pickTime','warranty','csUserName','technicianUserName','specialised','confirmed'
+                'completeness','note','estimatePrice','price','downPayment','productDefects','entryDate','entryTime','pickDate','pickTime','warranty','csUserName','technicianUserName','needConfirm','confirmed','confirmCost'
             ];
             $columns = array_merge($columns,$columns2);
         }
@@ -217,8 +217,9 @@ class ServiceRepository extends Repository{
                 ,'lamaGaransi'=>$data->warranty
                 ,'customerService'=>$data->csUserName
                 ,'teknisi'=>$data->technicianUserName,
-                'membutuhkanSpesialis'=>boolval($data->specialised),
-                'membutuhkanKonfirmasi'=>boolval($data->confirmed)
+                'membutuhkanKonfirmasi'=>boolval($data->needConfirm),
+                'sudahdikonfirmasi'=>boolval($data->confirmed),
+                'sudahKonfirmasiBiaya'=>boolval($data->confirmCost),
             ];
             $arrData['product'] = array_merge($arrData['product'],$product);
         }
@@ -232,8 +233,7 @@ class ServiceRepository extends Repository{
             'category'=>$inputs['kategori'],
             'complaint'=>$inputs['keluhan'],
             'idCustomer'=>$idCustomer,
-            'specialised'=>filter_var($inputs['membutuhkanSpesialis'],FILTER_VALIDATE_BOOLEAN),
-            'confirmed'=>filter_var($inputs['membutuhkanKonfirmasi'],FILTER_VALIDATE_BOOLEAN),
+            'needConfirm'=>filter_var($inputs['membutuhkanKonfirmasi'],FILTER_VALIDATE_BOOLEAN),
             'completeness'=> $inputs['kelengkapan'] ?? null,
             'note'=> $inputs['catatan'] ?? null,
             'downPayment'=> $inputs['uangMuka'] ?? null,
@@ -242,6 +242,8 @@ class ServiceRepository extends Repository{
         ];
         if($isUpdate === false){
             $attributs['status']='antri';
+            $attributs['confirmed']=false;
+            $attributs['confirmCost']=false;
             $attributs['picked']=false;
             $attributs['entryDate']= DateAndTime::getDateNow();
             $attributs['entryTime']= DateAndTime::getTimeNow();
