@@ -44,6 +44,10 @@ $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik']],function () 
     // diagnosas
     $router->put('/services/diagnosas/{id}/cost','DiagnosaController@updateDiagnosaCost');
 
+    // services
+    $router->put('/services/{id}/confirm-cost','ServiceController@updateServiceConfirmCost');
+    $router->put('/services/{id}/warranty','ServiceController@updateServiceWarranty');
+
     // responbility
     $router->post('/employes/{id}/technician/responbility','ResponbilityController@newTechnicianResponbilities');
     $router->delete('/employes/technician/responbility/{id}','ResponbilityController@delete');

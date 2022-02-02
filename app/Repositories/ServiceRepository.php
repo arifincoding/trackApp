@@ -86,36 +86,6 @@ class ServiceRepository extends Repository{
         ];
     }
 
-    private function addServiceTrack(string $status, string $id){
-        $message = '';
-        $service = DB::table('services')->where('id',$id)->first();
-        if($status=='antri'){
-            $message = 'barang service masuk dan menunggu untuk di diagnosa';
-        }else if($status === 'diagnosa'){
-            $message = $service->category.' anda sedang dalam proses diagnosa';
-        }else if($status ==  'selesai diagnosa'){
-            $message = $service->category.' anda selesai di diagnosa';
-        }else if($status ==  'proses'){
-            $message = $service->category.' anda sedang dalam proses perbaikan';
-        }else if($status == 'selesai'){
-            $message = $service->category.' anda telah selesai diperbaiki';
-        }else if($status == 'diambil'){
-            $message = $service->category.' anda telah diambil';
-        }
-        $attributs = [
-            'idService'=>$id,
-            'title'=>$message,
-            'status'=>$status
-        ];
-        $this->serviceTrack->create($attributs);
-    }
-
-    private function setFilterDataQueue($q,$responbility){
-        foreach($responbility as $item){
-            $q->orWhere('category',$item['kategori']);
-        }
-    }
-
     public function getDataById($id){
         $columns = $this->setSelectColumn(true);
         $data = $this->getAllWithInnerJoin('services','customers','idCustomer','id')->where('services.id',$id)->first($columns);
@@ -154,11 +124,30 @@ class ServiceRepository extends Repository{
         ];
     }
 
+    public function updateConfirmCost(array $inputs, string $id){
+        $attributs = [
+            'confirmCost'=>filter_var($inputs['konfirmasiBiaya'],FILTER_VALIDATE_BOOLEAN)
+        ];
+        $data = $this->save($attributs,$id);
+        return [
+            'idService'=>$data->id
+        ];
+    }
+
+    public function updateWarranty(array $inputs, string $id){
+        $attributs = [
+            'warranty'=>$inputs['garansi']
+        ];
+        $data = $this->save($attributs,$id);
+        return [
+            'idService'=>$data->id
+        ];
+    }
+
     public function deleteById(string $id){
         $data = $this->delete($id);
         return ['sukses'=>$data];
     }
-
     
     // private function
     
@@ -259,5 +248,35 @@ class ServiceRepository extends Repository{
             'code'=>$date->format('y').$date->format('m').$date->format('d').$dataCtgr->id.sprintf("%03d",$inputs['id'])
         ];
         $data = $this->save($attributs, $inputs['id']);
+    }
+
+    private function setFilterDataQueue($q,$responbility){
+        foreach($responbility as $item){
+            $q->orWhere('category',$item['kategori']);
+        }
+    }
+    
+    private function addServiceTrack(string $status, string $id){
+        $message = '';
+        $service = DB::table('services')->where('id',$id)->first();
+        if($status=='antri'){
+            $message = 'barang service masuk dan menunggu untuk di diagnosa';
+        }else if($status === 'diagnosa'){
+            $message = $service->category.' anda sedang dalam proses diagnosa';
+        }else if($status ==  'selesai diagnosa'){
+            $message = $service->category.' anda selesai di diagnosa';
+        }else if($status ==  'proses'){
+            $message = $service->category.' anda sedang dalam proses perbaikan';
+        }else if($status == 'selesai'){
+            $message = $service->category.' anda telah selesai diperbaiki';
+        }else if($status == 'diambil'){
+            $message = $service->category.' anda telah diambil';
+        }
+        $attributs = [
+            'idService'=>$id,
+            'title'=>$message,
+            'status'=>$status
+        ];
+        $this->serviceTrack->create($attributs);
     }
 }

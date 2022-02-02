@@ -71,6 +71,16 @@ class ServiceController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
+    public function updateServiceConfirmCost(Request $request, $id){
+        $data = $this->repository->updateConfirmCost($request->all(),$id);
+        return $this->jsonSuccess('sukses',200,$data);
+    }
+
+    public function updateServiceWarranty(Request $request, $id){
+        $data = $this->repository->updateWarranty($request->all(),$id);
+        return $this->jsonSuccess('sukses',200,$data);
+    }
+
     public function deleteService($id){
         $this->repository->customer->deleteById($id);
         $data = $this->repository->deleteById($id);
