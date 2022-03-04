@@ -144,6 +144,16 @@ class ServiceRepository extends Repository{
         ];
     }
 
+    public function updateConfirmation(array $inputs, string $id){
+        $attributs = [
+            'confirmed'=>$inputs['konfirmasi']
+        ];
+        $data = $this->save($attributs,$id);
+        return [
+            'idService'=>$data->id
+        ];
+    }
+
     public function deleteById(string $id){
         $data = $this->delete($id);
         return ['sukses'=>$data];
@@ -231,7 +241,6 @@ class ServiceRepository extends Repository{
         ];
         if($isUpdate === false){
             $attributs['status']='antri';
-            $attributs['confirmed']=false;
             $attributs['confirmCost']=false;
             $attributs['picked']=false;
             $attributs['entryDate']= DateAndTime::getDateNow();

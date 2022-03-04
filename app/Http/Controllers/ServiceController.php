@@ -81,6 +81,11 @@ class ServiceController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
+    public function updateServiceConfirmation(Request $request, $id){
+        $data = $this->repository->updateConfirmation($request->all(),$id);
+        return $this->jsonSuccess('sukses',200,$data);
+    }
+
     public function deleteService($id){
         $this->repository->customer->deleteById($id);
         $data = $this->repository->deleteById($id);

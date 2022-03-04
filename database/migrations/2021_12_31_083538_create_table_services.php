@@ -30,7 +30,7 @@ class CreateTableServices extends Migration
             $table->string('warranty',20)->nullable();
             $table->string('idCustomer',20);
             $table->boolean('needConfirm');
-            $table->boolean('confirmed');
+            $table->boolean('confirmed')->nullable();
             $table->boolean('confirmCost');
             $table->boolean('picked');
             $table->string('entryDate',20);

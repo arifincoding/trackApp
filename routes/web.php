@@ -47,6 +47,7 @@ $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik']],function () 
     // services
     $router->put('/services/{id}/confirm-cost','ServiceController@updateServiceConfirmCost');
     $router->put('/services/{id}/warranty','ServiceController@updateServiceWarranty');
+    $router->put('/services/{id}/confirmation','ServiceController@updateServiceConfirmation');
 
     // responbility
     $router->post('/employes/{id}/technician/responbility','ResponbilityController@newTechnicianResponbilities');
