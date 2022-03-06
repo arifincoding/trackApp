@@ -3,25 +3,18 @@
 namespace App\Repositories;
 
 use App\Repositories\Repository;
-use App\Models\Service;
 use App\Models\Diagnosa;
 use App\Exceptions\Handler;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\DB;
 
 class DiagnosaRepository extends Repository{
-    function __construct(Diagnosa $model, Service $service){
+    function __construct(Diagnosa $model){
         parent::__construct($model);
-        $this->service = $service;
     }
 
-    function create(array $inputs,string $idService){
-        $checkService = DB::table('services')->where('id',$idService)->first();
-        if(!$checkService){
-            throw new ModelNotFoundException();
-        }
+    function create(array $inputs,string $idService, int $confirmed=0){
         $confirm = null;
-        if($checkService->confirmed === 0){
+        if($confirmed === 0){
             $confirm = true;
         }
         $attributs = [
@@ -56,6 +49,7 @@ class DiagnosaRepository extends Repository{
     function getDataById(string $id){
         $data = $this->findById($id);
         return [
+            'idDiagnosa'=>$data->id,
             'judul'=>$data->title,
             'status'=>$data->status,
             'harga'=>$data->price,
@@ -87,18 +81,6 @@ class DiagnosaRepository extends Repository{
     }
 
     function updateCost(array $inputs, string $id){
-        $find = $this->findById($id);
-        $service = $this->service->where('id',$find->idService)->first();
-        $attributs=[];
-        if($find->price !== null){
-            $attributs['totalPrice'] = $service->totalPrice + ($inputs['biaya'] - $find->price);
-        }
-        else if($service->totalPrice !== null){
-            $attributs['totalPrice'] = $service->totalPrice + $inputs['biaya'];
-        }else{
-            $attributs['totalPrice'] = $inputs['biaya'];
-        }
-        $this->service->where('id',$service->id)->update($attributs);
         $data = $this->save(['price'=>$inputs['biaya']],$id);
         return [
             'idDiagnosa'=>$data->id,

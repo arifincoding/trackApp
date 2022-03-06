@@ -4,28 +4,32 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Repositories\UserRepository;
+use App\Repositories\ResponbilityRepository;
 use App\Validations\EmployeeValidation;
 use Illuminate\Http\JsonResponse;
 use App\Mails\EmployeeMail;
 use Illuminate\Support\Facades\Mail;
 
 class EmployeeController extends Controller{
-    function __construct(UserRepository $repository){
-        $this->repository = $repository;
+    function __construct(UserRepository $user, ResponbilityRepository $responbility){
+        $this->userRepository = $user;
+        $this->responbilityRepository = $responbility;
     }
 
     function getListEmployee(Request $request, EmployeeValidation $validator): JsonResponse
     {
         $filters = $request->only(['limit','status']);
         $validation = $validator->validate($filters);
-        $data = $this->repository->getListData($filters);
+        $data = $this->userRepository->getListData($filters);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
     function getEmployeeById($id): JsonResponse
     {
-        $data = $this->repository->getDataById($id);
-        return $this->jsonSuccess('sukses',200,$data);
+        $dataUser = $this->userRepository->getDataById($id);
+        $dataResponbility = $this->responbilityRepository->getListDataByUsername($dataUser['namaPengguna']);
+        $dataUser['tanggungJawab'] = $dataResponbility;
+        return $this->jsonSuccess('sukses',200,$dataUser);
     }
 
     function createEmployee(Request $request, EmployeeValidation $validator): JsonResponse
@@ -33,7 +37,7 @@ class EmployeeController extends Controller{
 
         $validator->post();
         $validation = $validator->validate($request->all());
-        $data = $this->repository->create($request->all());
+        $data = $this->userRepository->create($request->all());
         Mail::to($data['email'])->send(new EmployeeMail($data['username'],$data['password']));
         return $this->jsonSuccess('sukses',200,['idPegawai'=>$data['idPegawai']]);
     }
@@ -42,7 +46,7 @@ class EmployeeController extends Controller{
     {
         $validator->post($id);
         $validation = $validator->validate($request->all());
-        $data = $this->repository->update($request->all(), $id);
+        $data = $this->userRepository->update($request->all(), $id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
@@ -50,12 +54,12 @@ class EmployeeController extends Controller{
     {
         $validator->status();
         $validation = $validator->validate($request->only(['status']));
-        $data = $this->repository->changeStatus($request->input('status'),$id);
+        $data = $this->userRepository->changeStatus($request->input('status'),$id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
     function deleteEmployee($id){
-        $data = $this->repository->deleteById($id);
+        $data = $this->userRepository->deleteById($id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 

@@ -49,8 +49,7 @@ class userRepository extends Repository{
     function getDataById($id):array
     {
         $data = $this->findById($id);
-        $dataResponbility = $this->responbility->getListDataByUsername($data->username);
-        $returnData = [
+        return [
             'idPegawai' => $data->id,
             'namaPengguna' => $data->username,
             'nama' => $data->firstName.' '.$data->lastName,
@@ -63,13 +62,8 @@ class userRepository extends Repository{
             'status' => $data->status,
             'email' => $data->email,
             'noHp' => $data->phoneNumber,
-            'alamat'=> $data->address,
-            'tanggungJawab'=>null
+            'alamat'=> $data->address
         ];
-        if($dataResponbility !== false){
-            $returnData['tanggungJawab'] = $dataResponbility;
-        }
-        return $returnData;
     }
 
     function getDataByUsername($username):array

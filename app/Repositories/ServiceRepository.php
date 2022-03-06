@@ -5,19 +5,15 @@ namespace App\Repositories;
 use App\Models\Service;
 use App\Repositories\Repository;
 use App\Exceptions\Handler;
-use App\Repositories\CustomerRepository;
-use App\Repositories\ServiceTrackRepository;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Helpers\DateAndTime;
 use Illuminate\Support\Facades\DB;
 
 class ServiceRepository extends Repository{
-    public function __construct(Service $model,CustomerRepository $customer, ServiceTrackRepository $serviceTrack)
+    public function __construct(Service $model)
     {
         parent::__construct($model);
-        $this->customer = $customer;
-        $this->serviceTrack = $serviceTrack;
     }
     
     public function getListData(){
@@ -30,9 +26,12 @@ class ServiceRepository extends Repository{
         return ['data'=>$arrData];
     }
 
-    public function getDataQueue($resp){
-        $responbility = $resp->getListDataByUsername(auth()->payload()->get('username'));
-        if($responbility !== false){
+    public function getDataById(string $id){
+        $data = $this->findById($id);
+        return $data->toArray();
+    }
+
+    public function getDataQueue(array $responbility){
         $data = $this->getAll()->where('status','antri')->where(function ($q) use ($responbility){
             $this->setFilterDataQueue($q,$responbility);
         })->get();
@@ -51,8 +50,6 @@ class ServiceRepository extends Repository{
             throw new ModelNotFoundException();
         }
         return $arrData;
-        }
-        throw new ModelNotFoundException();
     }
 
     public function getListDataByTechUsername(string $username){
@@ -75,7 +72,6 @@ class ServiceRepository extends Repository{
     }
 
     public function updateDataStatus(array $inputs, string $id){
-        $this->addServiceTrack($inputs['status'],$id);
         $attributs = [
             'technicianUserName'=>auth()->payload()->get('username'),
             'status'=>$inputs['status']
@@ -86,7 +82,7 @@ class ServiceRepository extends Repository{
         ];
     }
 
-    public function getDataById($id){
+    public function getDataJoinCustomerById($id){
         $columns = $this->setSelectColumn(true);
         $data = $this->getAllWithInnerJoin('services','customers','idCustomer','id')->where('services.id',$id)->first($columns);
 
@@ -100,7 +96,6 @@ class ServiceRepository extends Repository{
     {
         $attributs = $this->setAttributs($inputs, $idCustomer);
         $data = $this->save($attributs);
-        $this->addServiceTrack($data->status,$data->id);
         $this->setCodeService($data->toArray());
         return ['idService'=>$data->id];
     }
@@ -118,7 +113,6 @@ class ServiceRepository extends Repository{
             'pickTime'=>DateAndTime::getTimeNow()
         ];
         $data = $this->save($attributs, $id);
-        $this->addServiceTrack('diambil',$id);
         return [
             'idService'=>$data->id
         ];
@@ -152,6 +146,11 @@ class ServiceRepository extends Repository{
         return [
             'idService'=>$data->id
         ];
+    }
+
+    public function updateTotalPrice(string $id, int $totalPrice){
+        $attributs['totalPrice'] = $totalPrice;
+        $data = $this->save($attributs,$id);
     }
 
     public function deleteById(string $id){
@@ -263,29 +262,5 @@ class ServiceRepository extends Repository{
         foreach($responbility as $item){
             $q->orWhere('category',$item['kategori']);
         }
-    }
-    
-    private function addServiceTrack(string $status, string $id){
-        $message = '';
-        $service = DB::table('services')->where('id',$id)->first();
-        if($status=='antri'){
-            $message = 'barang service masuk dan menunggu untuk di diagnosa';
-        }else if($status === 'diagnosa'){
-            $message = $service->category.' anda sedang dalam proses diagnosa';
-        }else if($status ==  'selesai diagnosa'){
-            $message = $service->category.' anda selesai di diagnosa';
-        }else if($status ==  'proses'){
-            $message = $service->category.' anda sedang dalam proses perbaikan';
-        }else if($status == 'selesai'){
-            $message = $service->category.' anda telah selesai diperbaiki';
-        }else if($status == 'diambil'){
-            $message = $service->category.' anda telah diambil';
-        }
-        $attributs = [
-            'idService'=>$id,
-            'title'=>$message,
-            'status'=>$status
-        ];
-        $this->serviceTrack->create($attributs);
     }
 }

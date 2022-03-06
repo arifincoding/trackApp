@@ -39,12 +39,9 @@ class WarrantyRepository extends Repository{
     }
 
     function create(array $inputs, string $idService){
-        
-        $checkService = DB::table('services')->where('id',$idService)->first();
-        
-        if(!$checkService){
-            throw new Exception('gagal membuat garansi baru, karena data service tidak ditemukan');
-        }
+        // if(!$checkService){
+        //     throw new Exception('gagal membuat garansi baru, karena data service tidak ditemukan');
+        // }
         // else if($checkService->pickDate == null){
         //     throw new Exception('gagal membuat garansi baru,karena barang belum diambil');
         // }

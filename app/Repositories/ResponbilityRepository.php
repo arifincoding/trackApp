@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Models\Responbility;
 use App\Repositories\Repository;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ResponbilityRepository extends Repository{
@@ -20,7 +19,7 @@ class ResponbilityRepository extends Repository{
         ];
         $checkData = $this->model->where('username',$username)->first();
         if(!$checkData){
-            return false;
+            return null;
         }
         $data = $this->getAllWithInnerJoin('responbilities','categories','idCategory','id')->where('username',$username)->get($columns);
         $arrData = [];
@@ -31,24 +30,19 @@ class ResponbilityRepository extends Repository{
             ];
         }
         if($arrData == []){
-            return false;
+            return null;
         }
         return $arrData;
     }
 
-    function create(array $inputs,string $id){
-        
-        $check = DB::table('users')->where('id',$id)->first();
-        if(!$check){
-            throw new ModelNotFoundException();
-        }
-        else if($check->role !== 'teknisi'){
+    function create(array $inputs, string $role, string $username){
+        if($role !== 'teknisi'){
             throw new Exception('gagal tambah tanggung jawab karena pegawai ini bukan teknisi');
         }
         $arrAtribut = [];
         if(is_array($inputs['idKategori']) == true){
             foreach($inputs['idKategori'] as $key=>$item){
-                $arrAtribut[$key]['username'] = $check->username;
+                $arrAtribut[$key]['username'] = $username;
                 $arrAtribut[$key]['idCategory'] = $item;
             }
         }else{

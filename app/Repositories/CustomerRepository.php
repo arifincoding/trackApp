@@ -5,7 +5,6 @@ namespace App\Repositories;
 use App\Models\Customer;
 use App\Repositories\Repository;
 use App\Exceptions\Handler;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CustomerRepository extends Repository{
@@ -37,25 +36,38 @@ class CustomerRepository extends Repository{
 
     public function isCustomerExist(array $inputs)
     {
-        $findData = $this->model->where('name',$inputs['namaCustomer'])->where('phoneNumber',$inputs['noHp'])->first();
-        if($findData){
-            $attributs = [
-                'count'=> $findData->count + 1
-            ];
-            $data = $this->save($attributs, $findData->id);
-            return ['idCustomer'=>$data->id];
+        if(!empty($inputs['noHp'])){
+            $findData = $this->model->where('name',$inputs['namaCustomer'])->where('phoneNumber',$inputs['noHp'])->first();
+            if($findData){
+                return [
+                    'exist'=>true,
+                    'idCustomer'=>$data->id
+                ];
+            }
         }
-        return false;
+        return ['exist'=>false];
     }
 
-    public function update(array $inputs, string $idService){
-        $getIdCustomer = DB::table('services')->where('id',$idService)->first();
-        
-        if(!$getIdCustomer){
-            throw new ModelNotFoundException();
-        }
+    public function findDataById(string $id){
+        $data = $this->findById($id);
+        return $data->toArray();
+    }
 
-        $findData = $this->findById($getIdCustomer->idCustomer);
+    public function updateCount(array $id, string $operator){
+        $attributs['count'] = 0;
+        $findData = $this->findById($id);
+        if($operator === 'plus'){
+            $attributs['count'] = $findData->count + 1;
+        }else if($operator === 'minus'){
+            $attributs['count'] = $findData->count - 1;
+        }
+        $data = $this->save($attributs,$findData->id);
+        return ['idCustomer'=>$data->id];
+    }
+
+    public function update(array $inputs, string $idCustomer){
+
+        $findData = $this->findById($idCustomer);
         
         $noHp = $inputs['noHp'] ?? null;
         $wa = false;
@@ -65,7 +77,7 @@ class CustomerRepository extends Repository{
 
         if($inputs['namaCustomer'] !== $findData->name || $inputs['noHp'] !== $findData->phoneNumber){
             if($findData->count > 1){
-                $this->save(['count' => $findData->count - 1],$getIdCustomer->idCustomer);
+                $this->save(['count' => $findData->count - 1],$idCustomer);
                 return $this->create($inputs);
             }
         }
@@ -77,21 +89,12 @@ class CustomerRepository extends Repository{
             'whatsapp'=> $wa,
         ];
         
-        $data = $this->save($attributs, $getIdCustomer->idCustomer);
+        $data = $this->save($attributs, $idCustomer);
         return ['idCustomer'=>$data->id];
     }
 
-    public function deleteById($idService){
-        $getIdCustomer = DB::table('services')->where('id',$idService)->first();
-        if(!$getIdCustomer){
-            throw new ModelNotFoundException();
-        }
-        $findData = $this->findById($getIdCustomer->idCustomer);
-        if($findData->count > 1){
-            $data = $this->save(['count' => $findData->count - 1],$getIdCustomer->idCustomer);
-            return ['sukses'=>true];
-        }
-        $data = $this->delete($getIdCustomer->idCustomer);
+    public function deleteById(string $idCustomer){
+        $data = $this->delete($idCustomer);
         return ['sukses'=>true];
     }
 }
