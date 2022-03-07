@@ -66,7 +66,7 @@ class ServiceController extends Controller{
         }
         
         $dataService = $this->serviceRepository->create($request->all(),$idCustomer);
-        $this->addServiceTrack('antri',$data->id);
+        $this->addServiceTrack('antri',$dataService['idService']);
         return $this->jsonSuccess('sukses',200,$dataService);
     }
 
