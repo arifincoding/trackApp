@@ -23,7 +23,6 @@ $router->put('/services/warranty/{id}','WarrantyController@updateWarranty');
 $router->delete('/services/warranty/{id}','WarrantyController@deleteWarranty');
 
 $router->post('/user/login','AuthController@login');
-$router->get('/user/{username}','UserController@getUserByUsername');
 
 $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik']],function () use ($router){
 
@@ -83,8 +82,11 @@ $router->group(['prefix'=>'','middleware'=>['auth','role:teknisi']],function() u
 
     // service
     $router->get('/services/queue','ServiceController@getServiceQueue');
-    $router->get('/services/progress','ServiceController@getProgressService');
+    $router->get('/services/progress','ServiceController@getMyProgressService');
     $router->put('/services/{id}/status','ServiceController@updateServiceStatus');
+
+    // responbility
+    $router->get('/employes/technician/responbility','ResponbilityController@getTechnicianResponbilities');
 
 });
 ?>

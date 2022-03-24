@@ -27,7 +27,7 @@ class ServiceController extends Controller{
     }
 
     function getListService(){
-        $data = $this->serviceRepository->getListData();
+        $data = $this->serviceRepository->getListDataJoinCustomer();
         return $this->jsonSuccess('sukses',200,$data['data']);
     }
 
@@ -37,16 +37,19 @@ class ServiceController extends Controller{
     }
 
     function getServiceQueue(){
-        $resp = $this->responbilityRepository->getListDataByUsername(auth()->payload()->get('username'));
+        $username = auth()->payload()->get('username');
+        $resp = $this->responbilityRepository->getListDataByUsername($username);
         if($resp){
-            $data = $this->serviceRepository->getDataQueue($resp);
+            $data = $this->serviceRepository->getListDataQueue($resp);
             return $this->jsonSuccess('sukses',200,$data);
         }
         throw new ModelNotFoundException();
     }
 
-    function getProgressService(){
-        $data = $this->serviceRepository->getListDataByTechUsername(auth()->payload()->get('username'));
+    function getMyProgressService(){
+        $username = auth()->payload()->get('username');
+        $status = ['diagnosa','tunggu','proses','batal','selesai'];
+        $data = $this->serviceRepository->getListDataMyProgress($username,$status);
         return $this->jsonSuccess('sukses',200,$data);
     }
 

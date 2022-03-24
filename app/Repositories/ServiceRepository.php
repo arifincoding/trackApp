@@ -16,7 +16,7 @@ class ServiceRepository extends Repository{
         parent::__construct($model);
     }
     
-    public function getListData(){
+    public function getListDataJoinCustomer(){
         $columns = $this->setSelectColumn();
         $data = $this->getAllWithInnerJoin('services','customers','idCustomer','id')->get($columns);
         $arrData = [];
@@ -31,9 +31,35 @@ class ServiceRepository extends Repository{
         return $data->toArray();
     }
 
-    public function getDataQueue(array $responbility){
+    public function getListDataQueue(array $responbility){
         $data = $this->getAll()->where('status','antri')->where(function ($q) use ($responbility){
-            $this->setFilterDataQueue($q,$responbility);
+            foreach($responbility as $item){
+                $q->orWhere('category',$item['kategori']);
+            }
+        })->get();
+        
+        $arrData = [];
+        foreach($data as $key=>$item){
+            $arrData[$key]=[
+                'idService'=>$item->id,
+                'kode'=>$item->code,
+                'nama'=>$item->name,
+                'kategori'=>$item->category,
+                'keluhan'=>$item->complaint,
+                'status'=>$item->status
+            ];
+        }
+        if($arrData === []){
+            throw new ModelNotFoundException();
+        }
+        return $arrData;
+    }
+
+    public function getListDataMyProgress(string $username,array $status){
+        $data = $this->getAll()->where('technicianUserName',$username)->where(function ($q) use ($status){
+            foreach($status as $item){
+                $q->orWhere('status',$item);
+            }
         })->get();
         $arrData = [];
         foreach($data as $key=>$item){
@@ -50,36 +76,6 @@ class ServiceRepository extends Repository{
             throw new ModelNotFoundException();
         }
         return $arrData;
-    }
-
-    public function getListDataByTechUsername(string $username){
-        $data = $this->getAll()->where('technicianUserName',$username)->get();
-        $arrData = [];
-        foreach($data as $key=>$item){
-            $arrData[$key]=[
-                'idService'=>$item->id,
-                'kode'=>$item->code,
-                'nama'=>$item->name,
-                'kategori'=>$item->category,
-                'keluhan'=>$item->complaint,
-                'status'=>$item->status
-            ];
-        }
-        if($arrData === []){
-            throw new ModelNotFoundException();
-        }
-        return $arrData;
-    }
-
-    public function updateDataStatus(array $inputs, string $id){
-        $attributs = [
-            'technicianUserName'=>auth()->payload()->get('username'),
-            'status'=>$inputs['status']
-        ];
-        $data = $this->save($attributs,$id);
-        return [
-            'idService'=>$data->id
-        ];
     }
 
     public function getDataJoinCustomerById($id){
@@ -151,6 +147,17 @@ class ServiceRepository extends Repository{
     public function updateTotalPrice(string $id, int $totalPrice){
         $attributs['totalPrice'] = $totalPrice;
         $data = $this->save($attributs,$id);
+    }
+
+    public function updateDataStatus(array $inputs, string $id){
+        $attributs = [
+            'technicianUserName'=>auth()->payload()->get('username'),
+            'status'=>$inputs['status']
+        ];
+        $data = $this->save($attributs,$id);
+        return [
+            'idService'=>$data->id
+        ];
     }
 
     public function deleteById(string $id){
@@ -256,11 +263,5 @@ class ServiceRepository extends Repository{
             'code'=>$date->format('y').$date->format('m').$date->format('d').$dataCtgr->id.sprintf("%03d",$inputs['id'])
         ];
         $data = $this->save($attributs, $inputs['id']);
-    }
-
-    private function setFilterDataQueue($q,$responbility){
-        foreach($responbility as $item){
-            $q->orWhere('category',$item['kategori']);
-        }
     }
 }
