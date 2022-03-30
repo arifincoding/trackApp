@@ -16,9 +16,25 @@ class ServiceRepository extends Repository{
         parent::__construct($model);
     }
     
-    public function getListDataJoinCustomer(){
+    public function getListDataJoinCustomer(int $limit=0, array $filters=[]){
         $columns = $this->setSelectColumn();
-        $data = $this->getAllWithInnerJoin('services','customers','idCustomer','id')->get($columns);
+        $where = [
+            'services.category' => $filters['kategori'] ?? null,
+            'services.status' => $filters['status'] ?? null
+        ];
+        $likeWhere = [];
+        $cari = $filters['cari'] ?? null;
+        if($cari){
+            $likeWhere = [
+                'services.name'=> $cari,
+                'customers.name'=> $cari,
+                'services.code'=> $cari,
+                'customers.phoneNumber'=> $cari
+            ];
+        }
+        $table1= ['table'=>'services', 'key'=>'idCustomer'];
+        $table2= ['table'=>'customers', 'key'=>'id'];
+        $data = $this->getAllWithInnerJoin($table1,$table2,$limit,$where,$likeWhere)->get($columns);
         $arrData = [];
         foreach($data as $key=>$item){
             $arrData[$key] = $this->setReturnData($item);
@@ -31,13 +47,32 @@ class ServiceRepository extends Repository{
         return $data->toArray();
     }
 
-    public function getListDataQueue(array $responbility){
-        $data = $this->getAll()->where('status','antri')->where(function ($q) use ($responbility){
-            foreach($responbility as $item){
-                $q->orWhere('category',$item['kategori']);
-            }
-        })->get();
+    public function getListDataQueue(array $responbility, int $limit=0, array $filter=[]){
+
+        $resp = [];
+        $likeWhere = [];
+        $orWhere = [];
         
+        $where = [
+            'status'=>'antri',
+            'category'=> $filter['kategori'] ?? null
+        ];
+
+        foreach($responbility as $item){
+            array_push($resp,$item['kategori']);
+        }
+        
+        if(isset($filter['cari'])){
+            $likeWhere = [
+                'code' => $filter['cari'],
+                'name' => $filter['cari'],
+            ];
+        }
+        
+        $orWhere = ['category'=>$resp];
+        
+        $data = $this->getWhere($limit,$where,$orWhere,$likeWhere);
+
         $arrData = [];
         foreach($data as $key=>$item){
             $arrData[$key]=[
@@ -55,12 +90,23 @@ class ServiceRepository extends Repository{
         return $arrData;
     }
 
-    public function getListDataMyProgress(string $username,array $status){
-        $data = $this->getAll()->where('technicianUserName',$username)->where(function ($q) use ($status){
-            foreach($status as $item){
-                $q->orWhere('status',$item);
-            }
-        })->get();
+    public function getListDataMyProgress(string $username=null,int $limit=0,array $filter=[]){
+        $likeWhere = [];
+        $where = [
+            'technicianUserName'=>$username,
+            'status'=> $filter['status'] ?? null,
+            'category'=> $filter['kategori'] ?? null
+        ];
+        $limit = $limit;
+        if(isset($filter['cari'])){
+            $likeWhere = [
+                'name'=>$filter['cari'],
+                'code'=>$filter['cari']
+            ];
+        }
+
+        $data = $this->getWhere($limit,$where,[],$likeWhere);
+        
         $arrData = [];
         foreach($data as $key=>$item){
             $arrData[$key]=[
@@ -80,7 +126,10 @@ class ServiceRepository extends Repository{
 
     public function getDataJoinCustomerById($id){
         $columns = $this->setSelectColumn(true);
-        $data = $this->getAllWithInnerJoin('services','customers','idCustomer','id')->where('services.id',$id)->first($columns);
+        $table1= ['table'=>'services', 'key'=>'idCustomer'];
+        $table2= ['table'=>'customers', 'key'=>'id'];
+        $where = ['services.id'=>$id];
+        $data = $this->getAllWithInnerJoin($table1,$table2,0,$where)->first($columns);
 
         if(!$data){
             throw new ModelNotFoundException('data tidak ditemukan');

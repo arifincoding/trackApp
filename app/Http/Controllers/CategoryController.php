@@ -14,7 +14,7 @@ class CategoryController extends Controller{
     function getListCategory(Request $request, CategoryValidation $validator){
         $validator->query();
         $validation = $validator->validate($request->only(['limit','cari']));
-        $limit = $request->query('limit') ?? null;
+        $limit = $request->query('limit') ?? 0;
         $search = $request->query('cari') ?? '';
         $data = $this->repository->getListData($limit,$search);
         return $this->jsonSuccess('sukses',200,$data);

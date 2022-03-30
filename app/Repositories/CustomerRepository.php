@@ -41,7 +41,7 @@ class CustomerRepository extends Repository{
             if($findData){
                 return [
                     'exist'=>true,
-                    'idCustomer'=>$data->id
+                    'idCustomer'=>$findData->id
                 ];
             }
         }
@@ -53,7 +53,7 @@ class CustomerRepository extends Repository{
         return $data->toArray();
     }
 
-    public function updateCount(array $id, string $operator){
+    public function updateCount(string $id, string $operator){
         $attributs['count'] = 0;
         $findData = $this->findById($id);
         if($operator === 'plus'){

@@ -27,14 +27,84 @@ class Repository{
         return $data;
     }
 
+    protected function getWhere(int $limit=0, array $where=[], array $orWhere=[],array $likeWhere=[]){
+        $query = $this->model->orderByDesc('id');
+        
+        if($limit !== 0){
+            $query->take($limit);
+        }
+        
+        if($where !== []){
+            foreach($where as $key => $item){
+                if($item !== null){
+                    $query->where($key,$item);
+                }
+            }
+        }
+        
+        if($orWhere !== []){
+            $query->where(function ($q) use ($orWhere){
+                foreach($orWhere as $key => $item){
+                    if(is_array($item)){
+                        foreach($item as $val){
+                            if($val !== null){
+                                $q->orWhere($key,$val);
+                            }
+                        }
+                    }else{
+                        if($item !== null){
+                            $q->orWhere($key, $item);
+                        }
+                    }
+                }
+            });
+            
+        }
+        
+        if($likeWhere !==[]){
+
+            $query->where(function ($q) use ($likeWhere){
+                foreach($likeWhere as $keys=>$items){
+                    if($items !== null){
+                        $q->orWhere($keys,'LIKE','%'.$items.'%');
+                    }
+                }
+            });
+        }
+        
+        return $query->get();
+    }
+
     protected function findById(string $id){
         $data = $this->model->findOrFail($id);
         return $data;
     }
 
-    protected function getAllWithInnerJoin(string $table1, string $table2, string $column1, string $column2){
-        $data = DB::table($table1)->join($table2,$table1.'.'.$column1,'=',$table2.'.'.$column2);
-        return $data;
+    protected function getAllWithInnerJoin(array $table1, array $table2,int $limit=0, array $where=[], array $likeWhere=[]){
+        
+        $query = DB::table($table1['table'])->join($table2['table'],$table1['table'].'.'.$table1['key'],'=',$table2['table'].'.'.$table2['key']);
+        
+        if($limit !== 0){
+            $query->take($limit);
+        }
+
+        if($where !== []){
+            foreach($where as $key=>$item){
+                if($item !== null){
+                    $query->where($key,$item);
+                }
+            }
+        }
+        
+        if($likeWhere !== []){
+            $query->where(function ($q) use ($likeWhere){
+                foreach($likeWhere as $key=>$item){
+                    $q->orWhere($key,'LIKE','%'.$item.'%');
+                }
+            });
+        }
+
+        return $query;
     }
 
     protected function delete(string $filter, string $filterName='id'){

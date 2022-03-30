@@ -18,7 +18,7 @@ class EmployeeController extends Controller{
 
     function getListEmployee(Request $request, EmployeeValidation $validator): JsonResponse
     {
-        $filters = $request->only(['limit','status']);
+        $filters = $request->only(['limit','status','peran','cari']);
         $validation = $validator->validate($filters);
         $data = $this->userRepository->getListData($filters);
         return $this->jsonSuccess('sukses',200,$data);

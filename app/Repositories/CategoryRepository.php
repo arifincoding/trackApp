@@ -22,10 +22,15 @@ class CategoryRepository extends Repository{
         ];
     }
 
-    function getListData($limit = null, $search = ''){
-        $data = $this->model->orderBy('title','asc')->where(fn ($q) =>
-            $this->setQuerySearch($q, $search)
-        )->take($limit)->get();
+    function getListData(int $limit = 0, string $search = ''){
+        $likeWhere = [];
+        if($search !== ''){
+            $likeWhere = [
+                'title'=>$search
+            ];
+        }
+        $data = $this->getWhere($limit,[],[],$likeWhere);
+        
         $arrData = [];
 
         foreach($data as $key=>$item){
@@ -38,10 +43,6 @@ class CategoryRepository extends Repository{
             throw new ModelNotFoundException();
         }
         return $arrData;
-    }
-
-    private function setQuerySearch($q, $search){
-        $q->where('title','LIKE','%'.$search.'%');
     }
 
     function getDataById(string $id){

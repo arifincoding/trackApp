@@ -21,15 +21,20 @@ class userRepository extends Repository{
 
     function getlistData(array $filters):array
     {
-        $columns = ['id','username','firstName','lastName','role','status'];
-        $limit = $filters['limit'] ?? 10;
-        $status = $filters['status'] ?? 'all';
-        
-        if($status == 'all'){
-            $data = $this->getAll($limit,['firstName','asc'])->get($columns);
-        }else{
-            $data = $this->getAll($limit,['firstName','asc'])->where('status',$status)->get($columns);
+        $limit = $filters['limit'] ?? 0;
+        $where=[
+            'status'=> $filters['status'] ?? null,
+            'role'=> $filters['peran'] ?? null
+        ];
+        $likeWhere=[];
+        if(isset($filters['cari'])){
+            $likeWhere=[
+                'username'=>$filters['cari'],
+                'firstName'=>$filters['cari'],
+                'lastName'=>$filters['cari']
+            ];
         }
+        $data = $this->getWhere($limit,$where,[],$likeWhere);
         
         $arrayData = [];
         foreach($data as $key => $item){

@@ -26,8 +26,10 @@ class ServiceController extends Controller{
         $this->customerRepository = $customer;
     }
 
-    function getListService(){
-        $data = $this->serviceRepository->getListDataJoinCustomer();
+    function getListService(Request $request){
+        $limit = $request->query('limit',0);
+        $filter = $request->only('kategori','status','cari');
+        $data = $this->serviceRepository->getListDataJoinCustomer($limit,$filter);
         return $this->jsonSuccess('sukses',200,$data['data']);
     }
 
@@ -36,20 +38,23 @@ class ServiceController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    function getServiceQueue(){
+    function getServiceQueue(Request $request){
         $username = auth()->payload()->get('username');
+        $filter = $request->only('limit','kategori','cari');
+        $limit = $request->query('limit',0);
         $resp = $this->responbilityRepository->getListDataByUsername($username);
         if($resp){
-            $data = $this->serviceRepository->getListDataQueue($resp);
+            $data = $this->serviceRepository->getListDataQueue($resp, $limit, $filter);
             return $this->jsonSuccess('sukses',200,$data);
         }
         throw new ModelNotFoundException();
     }
 
-    function getMyProgressService(){
+    function getMyProgressService(Request $request){
         $username = auth()->payload()->get('username');
-        $status = ['diagnosa','tunggu','proses','batal','selesai'];
-        $data = $this->serviceRepository->getListDataMyProgress($username,$status);
+        $filter = $request->only('status','cari','kategori');
+        $limit = $request->query('limit',0);
+        $data = $this->serviceRepository->getListDataMyProgress($username,$limit,$filter);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
