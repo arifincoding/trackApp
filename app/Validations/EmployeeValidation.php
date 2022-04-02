@@ -7,7 +7,7 @@ class EmployeeValidation extends Validation{
     function __construct(){
         $this->rules = [
             'limit'=> 'filled|numeric',
-            'status'=> 'filled|alpha|in:active,deactive,registered,all',
+            // 'status'=> 'filled|alpha|in:active,deactive,registered,all',
         ];
     }
 

@@ -17,21 +17,31 @@ class ResponbilityRepository extends Repository{
             'categories.id as idCategory',
             'title','username'
         ];
+        
         $checkData = $this->model->where('username',$username)->first();
+        
         if(!$checkData){
             return null;
         }
-        $data = $this->getAllWithInnerJoin('responbilities','categories','idCategory','id')->where('username',$username)->get($columns);
+        
+        $table1 = ['table'=>'responbilities','key'=>'idCategory'];
+        $table2 = ['table'=>'categories', 'key'=>'id'];
+        $where = ['username'=>$username];
+        
+        $data = $this->getAllWithInnerJoin($table1,$table2,0,$where)->get($columns);
         $arrData = [];
+        
         foreach($data as $key=>$item){
             $arrData[$key]=[
                 'idTanggungJawab'=>$item->idResponbility,
                 'kategori'=>$item->title
             ];
         }
+        
         if($arrData == []){
             return null;
         }
+        
         return $arrData;
     }
 
