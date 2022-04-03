@@ -29,8 +29,8 @@ class DiagnosaRepository extends Repository{
 
     function getListDataByIdService(string $idService){
         $attributs=['id as idDiagnosa','idService','judul','status','biaya','dikonfirmasi'];
-        $where = ['idService'=>$idService];
-        $data = $this->getWhere($attributs,0,$where);
+        $filters = ['where'=>['idService'=>$idService]];
+        $data = $this->getWhere($attributs,$filters);
         return $data->toArray();
     }
 

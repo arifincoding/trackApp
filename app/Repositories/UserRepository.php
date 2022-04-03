@@ -19,23 +19,25 @@ class userRepository extends Repository{
         $this->responbility = $responbility;
     }
 
-    function getlistData(array $filters):array
+    function getlistData(array $inputs):array
     {
-        $limit = $filters['limit'] ?? 0;
-        $where=[
-            'status'=> $filters['status'] ?? null,
-            'peran'=> $filters['peran'] ?? null
+        $filters = [
+            'limit'=>$inputs['limit'] ?? 0,
+            'where'=>[
+                'status'=> $inputs['status'] ?? null,
+                'peran'=> $inputs['peran'] ?? null
+            ]
         ];
-        $likeWhere=[];
-        if(isset($filters['cari'])){
-            $likeWhere=[
-                'username'=>$filters['cari'],
-                'namaDepan'=>$filters['cari'],
-                'namaBelakang'=>$filters['cari']
+        $cari = $inputs['cari'] ?? null;
+        if($cari){
+            $filters['likeWhere']=[
+                'username'=>$cari,
+                'namaDepan'=>$cari,
+                'namaBelakang'=>$cari
             ];
         }
         $attributs = ['id as idPegawai','username','namaDepan','namaBelakang','noHp','peran','status'];
-        $data = $this->getWhere($attributs,$limit,$where,[],$likeWhere);
+        $data = $this->getWhere($attributs,$filters);
         return $data->toArray();
     }
 

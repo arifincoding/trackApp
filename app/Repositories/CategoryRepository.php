@@ -23,14 +23,16 @@ class CategoryRepository extends Repository{
     }
 
     function getListData(int $limit = 0, string $search = ''){
-        $likeWhere = [];
+        $filters = [
+            'limit'=>$limit
+        ];
         if($search !== ''){
-            $likeWhere = [
+            $filters['likeWhere'] = [
                 'nama'=>$search
             ];
         }
         $attributs = ['id as idKategori','nama'];
-        $data = $this->getWhere($attributs,$limit,[],[],$likeWhere);
+        $data = $this->getWhere($attributs,$filters);
         return $data->toArray();
     }
 

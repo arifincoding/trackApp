@@ -16,16 +16,18 @@ class ServiceRepository extends Repository{
         parent::__construct($model);
     }
     
-    public function getListDataJoinCustomer(int $limit=0, array $filters=[]){
+    public function getListDataJoinCustomer(int $limit=0, array $inputs=[]){
         $columns = $this->setSelectColumn();
-        $where = [
-            'services.kategori' => $filters['kategori'] ?? null,
-            'services.status' => $filters['status'] ?? null
+        $filters = [
+            'limit'=>$limit,
+            'where'=>[
+                'services.kategori' => $inputs['kategori'] ?? null,
+                'services.status' => $inputs['status'] ?? null
+            ]
         ];
-        $likeWhere = [];
-        $cari = $filters['cari'] ?? null;
+        $cari = $inputs['cari'] ?? null;
         if($cari){
-            $likeWhere = [
+            $filters['likeWhere'] = [
                 'services.nama'=> $cari,
                 'customers.nama'=> $cari,
                 'services.kode'=> $cari,
@@ -34,7 +36,7 @@ class ServiceRepository extends Repository{
         }
         $table1= ['table'=>'services', 'key'=>'idCustomer'];
         $table2= ['table'=>'customers', 'key'=>'id'];
-        $data = $this->getAllWithInnerJoin($table1,$table2,$limit,$where,$likeWhere)->get($columns);
+        $data = $this->getAllWithInnerJoin($table1,$table2,$filters)->get($columns);
         $arrData = [];
         foreach($data as $key=>$item){
             $arrData[$key] = $this->setReturnData($item);
@@ -47,50 +49,50 @@ class ServiceRepository extends Repository{
         return $data->toArray();
     }
 
-    public function getListDataQueue(array $responbility, int $limit=0, array $filter=[]){
+    public function getListDataQueue(array $responbility, int $limit=0, array $inputs=[]){
 
         $resp = [];
-        $likeWhere = [];
-        $orWhere = [];
-        
-        $where = [
-            'status'=>'antri',
-            'kategori'=> $filter['kategori'] ?? null
-        ];
-
         foreach($responbility as $item){
             array_push($resp,$item['kategori']);
         }
-        
-        if(isset($filter['cari'])){
-            $likeWhere = [
-                'kode' => $filter['cari'],
-                'nama' => $filter['cari'],
+        $filters=[
+            'limit'=>$limit,
+            'where'=>[
+                'status'=>'antri',
+                'kategori'=> $inputs['kategori'] ?? null
+            ],
+            'orWhere'=>['kategori'=>$resp]
+        ];
+        $cari = $inputs['cari'] ?? null;
+        if($cari){
+            $filters['likeWhere'] = [
+                'kode' => $cari,
+                'nama' => $cari,
             ];
         }
-        
-        $orWhere = ['kategori'=>$resp];
         $attributs=['id as idService','kode','nama','kategori','keluhan','status'];
-        $data = $this->getWhere($limit,$where,$orWhere,$likeWhere);
+        $data = $this->getWhere($attributs,$filters);
         return $data->toArray();
     }
 
-    public function getListDataMyProgress(string $username=null,int $limit=0,array $filter=[]){
-        $likeWhere = [];
-        $where = [
-            'usernameTeknisi'=>$username,
-            'status'=> $filter['status'] ?? null,
-            'kategori'=> $filter['kategori'] ?? null
+    public function getListDataMyProgress(string $username=null,int $limit=0,array $inputs=[]){
+        $filters = [
+            'limit'=>$limit,
+            'where'=>[
+                'usernameTeknisi'=>$username,
+                'status'=> $inputs['status'] ?? null,
+                'kategori'=> $inputs['kategori'] ?? null
+            ]
         ];
-        $limit = $limit;
-        if(isset($filter['cari'])){
-            $likeWhere = [
-                'nama'=>$filter['cari'],
-                'kode'=>$filter['cari']
+        $cari = $inputs['cari'] ?? null;
+        if($cari){
+            $filters['likeWhere'] = [
+                'nama'=>$cari,
+                'kode'=>$cari
             ];
         }
         $attributs=['id as idService','kode','kategori','keluhan','status'];
-        $data = $this->getWhere($attributs,$limit,$where,[],$likeWhere);
+        $data = $this->getWhere($attributs,$filters);
         return $data->toArray();
     }
 
@@ -98,8 +100,8 @@ class ServiceRepository extends Repository{
         $columns = $this->setSelectColumn(true);
         $table1= ['table'=>'services', 'key'=>'idCustomer'];
         $table2= ['table'=>'customers', 'key'=>'id'];
-        $where = ['services.id'=>$id];
-        $data = $this->getAllWithInnerJoin($table1,$table2,0,$where)->first($columns);
+        $filters = ['where'=>['services.id'=>$id]];
+        $data = $this->getAllWithInnerJoin($table1,$table2,$filters)->first($columns);
 
         if(!$data){
             throw new ModelNotFoundException('data tidak ditemukan');
