@@ -18,48 +18,31 @@ class DiagnosaRepository extends Repository{
             $confirm = true;
         }
         $attributs = [
-            'title'=>$inputs['judul'],
+            'judul'=>$inputs['judul'],
             'idService'=>$idService,
             'status'=>'antri',
-            'confirmed'=>$confirm,
+            'dikonfirmasi'=>$confirm,
         ];
         $data = $this->save($attributs);
         return ['idDiagnosa'=>$data->id];
     }
 
     function getListDataByIdService(string $idService){
-        $data = $this->model->where('idService',$idService)->get();
-        $arrData = [];
-        foreach($data as $key=>$item){
-            $arrData[$key]=[
-                'idService' => $item->idService,
-                'idDiagnosa' => $item->id,
-                'judul'=>$item->title,
-                'status'=>$item->status,
-                'biaya'=>$item->price,
-                'konfirmasi'=>$item->confirmed
-            ];
-        }
-        if($arrData == []){
-            throw new ModelNotFoundException();
-        }
-        return $arrData;
+        $attributs=['id as idDiagnosa','idService','judul','status','biaya','dikonfirmasi'];
+        $where = ['idService'=>$idService];
+        $data = $this->getWhere($attributs,0,$where);
+        return $data->toArray();
     }
 
     function getDataById(string $id){
-        $data = $this->findById($id);
-        return [
-            'idDiagnosa'=>$data->id,
-            'judul'=>$data->title,
-            'status'=>$data->status,
-            'harga'=>$data->price,
-            'konfirmasi'=>$data->confirmed
-        ];
+        $attributs = ['id as idDiagnosa','judul','status','biaya','dikonfirmasi'];
+        $data = $this->findById($id,$attributs);
+        return $data->toArray();
     }
 
     function update(array $inputs, string $id){
         $attributs = [
-            'title'=> $inputs['judul'],
+            'judul'=> $inputs['judul'],
             'status'=> $inputs['status']
         ];
 
@@ -81,7 +64,7 @@ class DiagnosaRepository extends Repository{
     }
 
     function updateCost(array $inputs, string $id){
-        $data = $this->save(['price'=>$inputs['biaya']],$id);
+        $data = $this->save(['biaya'=>$inputs['biaya']],$id);
         return [
             'idDiagnosa'=>$data->id,
             'idService'=>$data->idService

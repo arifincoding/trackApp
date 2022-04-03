@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model{
     protected $fillable = [
-        'name','phoneNumber','whatsapp','gender','count'
+        'nama','noHp','whatsapp','jumlahService'
     ];
 }
 

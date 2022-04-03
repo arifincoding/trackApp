@@ -13,8 +13,8 @@ class ServiceTrackRepository extends Repository{
     }
 
     function create(array $attributs):void{
-        $attributs['date'] = DateAndTime::getDateNow();
-        $attributs['time'] = DateAndTime::getTimeNow();
+        $attributs['tanggal'] = DateAndTime::getDateNow();
+        $attributs['jam'] = DateAndTime::getTimeNow();
         $data = $this->save($attributs);
     }
 }

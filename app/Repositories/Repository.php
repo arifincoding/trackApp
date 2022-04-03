@@ -27,8 +27,8 @@ class Repository{
         return $data;
     }
 
-    protected function getWhere(int $limit=0, array $where=[], array $orWhere=[],array $likeWhere=[]){
-        $query = $this->model->orderByDesc('id');
+    protected function getWhere(array $attributs,int $limit=0, array $where=[], array $orWhere=[],array $likeWhere=[]){
+        $query = $this->model->select($attributs)->orderByDesc('id');
         
         if($limit !== 0){
             $query->take($limit);
@@ -75,9 +75,12 @@ class Repository{
         return $query->get();
     }
 
-    protected function findById(string $id){
-        $data = $this->model->findOrFail($id);
-        return $data;
+    protected function findById(string $id, array $attributs=[]){
+        $data = $this->model;
+        if($attributs !== []){
+            return $data->select($attributs)->findOrFail($id);
+        }
+        return $data->findOrFail($id);
     }
 
     protected function getAllWithInnerJoin(array $table1, array $table2,int $limit=0, array $where=[], array $likeWhere=[]){

@@ -6,6 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class ServiceTrack extends Model{
     protected $fillable = [
-        'idService','status','title','date','time','idWarranty'
+        'idService','status','judul','tanggal','jam','idGaransi'
     ];
 }

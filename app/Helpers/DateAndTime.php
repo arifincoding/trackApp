@@ -7,10 +7,13 @@ use DateTimeZone;
 
 class DateAndTime{
     
-    public static function getDateNow(){
+    public static function getDateNow($isFormat=true){
         $now = new DateTime();
         $now->setTimezone(new DateTimeZone("Asia/Jakarta"));
-        return $now->format('d-m-Y');
+        if($isFormat===true){
+            return $now->format('d-m-Y');
+        }
+        return $now;
     }
 
     public static function getTimeNow(){

@@ -14,7 +14,7 @@ class CategoryRepository extends Repository{
 
     function saveData(array $inputs=[], string $id=null){
         $attributs = [
-            'title'=>$inputs['kategori']
+            'nama'=>$inputs['kategori']
         ];
         $data = $this->save($attributs,$id);
         return [
@@ -26,31 +26,18 @@ class CategoryRepository extends Repository{
         $likeWhere = [];
         if($search !== ''){
             $likeWhere = [
-                'title'=>$search
+                'nama'=>$search
             ];
         }
-        $data = $this->getWhere($limit,[],[],$likeWhere);
-        
-        $arrData = [];
-
-        foreach($data as $key=>$item){
-            $arrData[$key]=[
-                'idKategori'=>$item->id,
-                'kategori'=>$item->title
-            ];
-        }
-        if($arrData == []){
-            throw new ModelNotFoundException();
-        }
-        return $arrData;
+        $attributs = ['id as idKategori','nama'];
+        $data = $this->getWhere($attributs,$limit,[],[],$likeWhere);
+        return $data->toArray();
     }
 
     function getDataById(string $id){
-        $data = $this->findById($id);
-        return [
-            'idKategori'=>$data->id,
-            'kategori'=>$data->title
-        ];
+        $attributs = ['id as idKategori','nama'];
+        $data = $this->findById($id,$attributs);
+        return $data->toArray();
     }
 
     function deleteDataById(string $id){

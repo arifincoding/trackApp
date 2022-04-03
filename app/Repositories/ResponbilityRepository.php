@@ -13,9 +13,8 @@ class ResponbilityRepository extends Repository{
 
     function getListDataByUsername(string $username){
         $columns=[
-            'responbilities.id as idResponbility',
-            'categories.id as idCategory',
-            'title','username'
+            'responbilities.id as idTanggungJawab',
+            'nama as kategori'
         ];
         
         $checkData = $this->model->where('username',$username)->first();
@@ -24,24 +23,14 @@ class ResponbilityRepository extends Repository{
             return null;
         }
         
-        $table1 = ['table'=>'responbilities','key'=>'idCategory'];
+        $table1 = ['table'=>'responbilities','key'=>'idKategori'];
         $table2 = ['table'=>'categories', 'key'=>'id'];
         $where = ['username'=>$username];
-        
         $data = $this->getAllWithInnerJoin($table1,$table2,0,$where)->get($columns);
-        $arrData = [];
-        
-        foreach($data as $key=>$item){
-            $arrData[$key]=[
-                'idTanggungJawab'=>$item->idResponbility,
-                'kategori'=>$item->title
-            ];
-        }
-        
+        $arrData = $data->toArray();
         if($arrData == []){
             return null;
         }
-        
         return $arrData;
     }
 
@@ -53,12 +42,12 @@ class ResponbilityRepository extends Repository{
         if(is_array($inputs['idKategori']) == true){
             foreach($inputs['idKategori'] as $key=>$item){
                 $arrAtribut[$key]['username'] = $username;
-                $arrAtribut[$key]['idCategory'] = $item;
+                $arrAtribut[$key]['idKategori'] = $item;
             }
         }else{
             $arrAtribut = [
                 'username'=>auth()->payload()->get('username'),
-                'idCategory'=>$inputs['idKategori']
+                'idKategori'=>$inputs['idKategori']
             ];
         }
         $data = $this->model->insert($arrAtribut);

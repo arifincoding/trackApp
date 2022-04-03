@@ -5,5 +5,5 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 class Warranty extends Model{
-    protected $fillable = ['idService','completeness','complaint','productDefects','entryDate','entryTime','pickDate','pickTime','note','csName','technicianName'];
+    protected $fillable = ['idService','kelengkapan','keluhan','cacatProduk','tanggalMasuk','jamMasuk','tanggalAmbil','jamAmbil','catatan','usernameCS','usernameTeknisi'];
 }

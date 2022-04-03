@@ -17,9 +17,9 @@ class CreateTableProccessTracks extends Migration
             $table->id();
             $table->string('idDiagnosa',30);
             $table->string('status',40);
-            $table->string('title');
-            $table->string('date',50);
-            $table->string('time',20);
+            $table->string('judul');
+            $table->string('tanggal',50);
+            $table->string('jam',20);
             $table->timestamps();
         });
     }

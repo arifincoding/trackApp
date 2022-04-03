@@ -24,102 +24,56 @@ class userRepository extends Repository{
         $limit = $filters['limit'] ?? 0;
         $where=[
             'status'=> $filters['status'] ?? null,
-            'role'=> $filters['peran'] ?? null
+            'peran'=> $filters['peran'] ?? null
         ];
         $likeWhere=[];
         if(isset($filters['cari'])){
             $likeWhere=[
                 'username'=>$filters['cari'],
-                'firstName'=>$filters['cari'],
-                'lastName'=>$filters['cari']
+                'namaDepan'=>$filters['cari'],
+                'namaBelakang'=>$filters['cari']
             ];
         }
-        $data = $this->getWhere($limit,$where,[],$likeWhere);
-        
-        $arrayData = [];
-        foreach($data as $key => $item){
-            $arrayData[$key]['idPegawai'] = $item->id;
-            $arrayData[$key]['namaPengguna'] = $item->username;
-            $arrayData[$key]['nama'] = $item->firstName.' '.$item->lastName;
-            $arrayData[$key]['peran'] = $item->role;
-            $arrayData[$key]['status'] = $item->status;
-        }
-
-        if($arrayData===[]){
-            throw new ModelNotFoundException('not found');
-        }
-        return $arrayData;
+        $attributs = ['id as idPegawai','username','namaDepan','namaBelakang','noHp','peran','status'];
+        $data = $this->getWhere($attributs,$limit,$where,[],$likeWhere);
+        return $data->toArray();
     }
 
     function getDataById($id):array
     {
-        $data = $this->findById($id);
-        return [
-            'idPegawai' => $data->id,
-            'namaPengguna' => $data->username,
-            'nama' => $data->firstName.' '.$data->lastName,
-            'namaDepan' => $data->firstName,
-            'namaBelakang' => $data->lastName,
-            'namaPendek'=>$data->shortName,
-            'jenisKelamin'=>$data->gender,
-            'tanggalBergabung'=>$data->joiningDate,
-            'peran' => $data->role,
-            'status' => $data->status,
-            'email' => $data->email,
-            'noHp' => $data->phoneNumber,
-            'alamat'=> $data->address
-        ];
-    }
-
-    function getDataByUsername($username):array
-    {
-        $data = $this->model->where('username',$username)->firstOrFail();
-
-        return [
-            'namaPengguna'=>$data->username,
-            'nama'=>$data->firstName.' '.$data->lastName,
-            'namaPendek'=>$data->shortName,
-            'noHp'=>$data->phoneNumber,
-            'alamat'=>$data->address,
-            'peran'=>$data->role
-        ];
+        $attributs = ['id as idPegawai','username','namaDepan','namaBelakang','jenisKelamin','noHp','peran','status','email','alamat'];
+        $data = $this->findById($id,$attributs);
+        return $data->toArray();
     }
 
     function create(array $input):array
     {
         $attribut = [
-            'firstName'=>$input['namaDepan'],
-            'lastName'=>$input['namaBelakang'],
-            'shortName'=>$input['namaPendek'],
-            'gender'=>$input['jenisKelamin'],
-            'joiningDate'=>$input['tanggalBergabung'],
-            'phoneNumber'=>$input['noHp'],
-            'address'=>$input['alamat'],
-            'role'=>$input['peran'],
+            'namaDepan'=>$input['namaDepan'],
+            'namaBelakang'=>$input['namaBelakang'],
+            'jenisKelamin'=>$input['jenisKelamin'],
+            'noHp'=>$input['noHp'],
+            'alamat'=>$input['alamat'],
+            'peran'=>$input['peran'],
             'email'=>$input['email'],
             'status'=>'registered'
         ];
         $data = $this->save($attribut);
-        $register = $this->registerUser($data->joiningDate, $data->id);
+        $register = $this->registerUser($data->id);
         return [
-            'idPegawai'=>$data->id, 
-            'username'=>$register['username'],
-            'password'=>$register['password'],
-            'email'=>$data->email
+            'idPegawai'=>$data->id
         ];
     }
 
     function update(array $input, string $id):array
     {
         $attribut=[
-            'firstName'=>$input['namaDepan'],
-            'lastName'=>$input['namaBelakang'],
-            'shortName'=>$input['namaPendek'],
-            'gender'=>$input['jenisKelamin'],
-            'joiningDate'=>$input['tanggalBergabung'],
-            'phoneNumber'=>$input['noHp'],
-            'address'=>$input['alamat'],
-            'role'=>$input['peran'],
+            'namaDepan'=>$input['namaDepan'],
+            'namaBelakang'=>$input['namaBelakang'],
+            'jenisKelamin'=>$input['jenisKelamin'],
+            'noHp'=>$input['noHp'],
+            'alamat'=>$input['alamat'],
+            'peran'=>$input['peran'],
             'email'=>$input['email']
         ];
         $find = $this->findById($id);
@@ -163,8 +117,8 @@ class userRepository extends Repository{
         return ['sukses'=>true];
     }
 
-    private function registerUser(string $joiningDate, string $idUser){
-        $date = DateAndTime::setDateFromString($joiningDate);
+    private function registerUser(string $idUser){
+        $date = DateAndTime::getDateNow($isFormat=false);
         $password = Str::random(8);
         $attributs=[
             'username'=>$date->format('y').$date->format('m').sprintf("%03d",$idUser),

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Service extends Model{
     protected $fillable = [
-        'name','category','complaint','productDefects','completeness','note','downPayment','status','estimatePrice','idCustomer','needConfirm','confirmed','confirmCost','picked','entryDate','pickDate','pickTime','entryTime','csUserName','technicianUserName'
+        'nama','kategori','keluhan','cacatProduk','kelengkapan','catatan','uangMuka','status','estimasiBiaya','idCustomer','butuhKonfirmasi','dikonfirmasi','konfirmasiHarga','diambil','tanggalMasuk','tanggalAmbil','jamAmbil','jamMasuk','usernameCS','usernameTeknisi'
     ];
 }
 

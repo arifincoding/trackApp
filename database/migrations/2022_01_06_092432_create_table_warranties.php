@@ -16,16 +16,16 @@ class CreateTableWarranties extends Migration
         Schema::create('warranties', function (Blueprint $table) {
             $table->id();
             $table->string('idService',30);
-            $table->string('completeness',60)->nullable();
-            $table->string('complaint');
-            $table->string('productDefects')->nullable();
-            $table->string('entryDate',20);
-            $table->string('entryTime',10);
-            $table->string('pickDate',20)->nullable();
-            $table->string('pickTime',10)->nullable();
-            $table->string('note',100)->nullable();
-            $table->string('csName',70);
-            $table->string('technicianName',70)->nullable();
+            $table->string('kelengkapan',60)->nullable();
+            $table->string('keluhan');
+            $table->string('cacatProduk')->nullable();
+            $table->string('tanggalMasuk',20);
+            $table->string('jamMasuk',10);
+            $table->string('tanggalAmbil',20)->nullable();
+            $table->string('jamAmbil',10)->nullable();
+            $table->string('catatan',100)->nullable();
+            $table->string('usernameCS',70);
+            $table->string('usernameTeknisi',70)->nullable();
             $table->timestamps();
         });
     }

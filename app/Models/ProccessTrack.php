@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProccessTrack extends Model{
     protected $fillable = [
-        'idDiagnosa','status','title','date','time'
+        'idDiagnosa','status','judul','tanggal','jam'
     ];
 }
 

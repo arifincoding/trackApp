@@ -22,7 +22,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var array
      */
     protected $fillable = [
-        'username', 'password','firstName','lastName','shortName','phoneNumber','address','profilPic','role','gender','status','email','joiningDate'
+        'username', 'password','namaDepan','namaBelakang','noHp','alamat','profilPic','peran','jenisKelamin','status','email'
     ];
 
     public array $claims = [];
@@ -36,7 +36,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         return [
             'username'=>$this->username,
             'role'=>$this->role,
-            'shortName'=>$this->shortName
+            'name'=>$this->namaDepan
         ];   
     }
 

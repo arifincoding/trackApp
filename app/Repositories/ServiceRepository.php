@@ -19,17 +19,17 @@ class ServiceRepository extends Repository{
     public function getListDataJoinCustomer(int $limit=0, array $filters=[]){
         $columns = $this->setSelectColumn();
         $where = [
-            'services.category' => $filters['kategori'] ?? null,
+            'services.kategori' => $filters['kategori'] ?? null,
             'services.status' => $filters['status'] ?? null
         ];
         $likeWhere = [];
         $cari = $filters['cari'] ?? null;
         if($cari){
             $likeWhere = [
-                'services.name'=> $cari,
-                'customers.name'=> $cari,
-                'services.code'=> $cari,
-                'customers.phoneNumber'=> $cari
+                'services.nama'=> $cari,
+                'customers.nama'=> $cari,
+                'services.kode'=> $cari,
+                'customers.noHp'=> $cari
             ];
         }
         $table1= ['table'=>'services', 'key'=>'idCustomer'];
@@ -55,7 +55,7 @@ class ServiceRepository extends Repository{
         
         $where = [
             'status'=>'antri',
-            'category'=> $filter['kategori'] ?? null
+            'kategori'=> $filter['kategori'] ?? null
         ];
 
         foreach($responbility as $item){
@@ -64,64 +64,34 @@ class ServiceRepository extends Repository{
         
         if(isset($filter['cari'])){
             $likeWhere = [
-                'code' => $filter['cari'],
-                'name' => $filter['cari'],
+                'kode' => $filter['cari'],
+                'nama' => $filter['cari'],
             ];
         }
         
-        $orWhere = ['category'=>$resp];
-        
+        $orWhere = ['kategori'=>$resp];
+        $attributs=['id as idService','kode','nama','kategori','keluhan','status'];
         $data = $this->getWhere($limit,$where,$orWhere,$likeWhere);
-
-        $arrData = [];
-        foreach($data as $key=>$item){
-            $arrData[$key]=[
-                'idService'=>$item->id,
-                'kode'=>$item->code,
-                'nama'=>$item->name,
-                'kategori'=>$item->category,
-                'keluhan'=>$item->complaint,
-                'status'=>$item->status
-            ];
-        }
-        if($arrData === []){
-            throw new ModelNotFoundException();
-        }
-        return $arrData;
+        return $data->toArray();
     }
 
     public function getListDataMyProgress(string $username=null,int $limit=0,array $filter=[]){
         $likeWhere = [];
         $where = [
-            'technicianUserName'=>$username,
+            'usernameTeknisi'=>$username,
             'status'=> $filter['status'] ?? null,
-            'category'=> $filter['kategori'] ?? null
+            'kategori'=> $filter['kategori'] ?? null
         ];
         $limit = $limit;
         if(isset($filter['cari'])){
             $likeWhere = [
-                'name'=>$filter['cari'],
-                'code'=>$filter['cari']
+                'nama'=>$filter['cari'],
+                'kode'=>$filter['cari']
             ];
         }
-
-        $data = $this->getWhere($limit,$where,[],$likeWhere);
-        
-        $arrData = [];
-        foreach($data as $key=>$item){
-            $arrData[$key]=[
-                'idService'=>$item->id,
-                'kode'=>$item->code,
-                'nama'=>$item->name,
-                'kategori'=>$item->category,
-                'keluhan'=>$item->complaint,
-                'status'=>$item->status
-            ];
-        }
-        if($arrData === []){
-            throw new ModelNotFoundException();
-        }
-        return $arrData;
+        $attributs=['id as idService','kode','kategori','keluhan','status'];
+        $data = $this->getWhere($attributs,$limit,$where,[],$likeWhere);
+        return $data->toArray();
     }
 
     public function getDataJoinCustomerById($id){
@@ -153,9 +123,9 @@ class ServiceRepository extends Repository{
 
     public function updateTake(array $inputs, string $id){
         $attributs = [
-            'picked'=>filter_var($inputs['ambil'],FILTER_VALIDATE_BOOLEAN),
-            'pickDate'=>DateAndTime::getDateNow(),
-            'pickTime'=>DateAndTime::getTimeNow()
+            'diambil'=>filter_var($inputs['ambil'],FILTER_VALIDATE_BOOLEAN),
+            'tanggalAmbil'=>DateAndTime::getDateNow(),
+            'jamAmbil'=>DateAndTime::getTimeNow()
         ];
         $data = $this->save($attributs, $id);
         return [
@@ -165,7 +135,7 @@ class ServiceRepository extends Repository{
 
     public function updateConfirmCost(array $inputs, string $id){
         $attributs = [
-            'confirmCost'=>filter_var($inputs['konfirmasiBiaya'],FILTER_VALIDATE_BOOLEAN)
+            'konfirmasiHarga'=>filter_var($inputs['konfirmasiBiaya'],FILTER_VALIDATE_BOOLEAN)
         ];
         $data = $this->save($attributs,$id);
         return [
@@ -175,7 +145,7 @@ class ServiceRepository extends Repository{
 
     public function updateWarranty(array $inputs, string $id){
         $attributs = [
-            'warranty'=>$inputs['garansi']
+            'garansi'=>$inputs['garansi']
         ];
         $data = $this->save($attributs,$id);
         return [
@@ -185,7 +155,7 @@ class ServiceRepository extends Repository{
 
     public function updateConfirmation(array $inputs, string $id){
         $attributs = [
-            'confirmed'=>$inputs['konfirmasi']
+            'dikonfirmasi'=>$inputs['konfirmasi']
         ];
         $data = $this->save($attributs,$id);
         return [
@@ -194,13 +164,13 @@ class ServiceRepository extends Repository{
     }
 
     public function updateTotalPrice(string $id, int $totalPrice){
-        $attributs['totalPrice'] = $totalPrice;
+        $attributs['totalBiaya'] = $totalPrice;
         $data = $this->save($attributs,$id);
     }
 
     public function updateDataStatus(array $inputs, string $id){
         $attributs = [
-            'technicianUserName'=>auth()->payload()->get('username'),
+            'usernameTeknisi'=>auth()->payload()->get('username'),
             'status'=>$inputs['status']
         ];
         $data = $this->save($attributs,$id);
@@ -218,17 +188,17 @@ class ServiceRepository extends Repository{
     
     private function setSelectColumn($first=false){
         $columns = [
-            'customers.name as customerName',
-            'services.name as productName',
-            'phoneNumber',
-            'whatsapp','gender',
-            'code',
-            'category','complaint','status','totalPrice','picked',
+            'customers.nama as namaCustomer',
+            'services.nama as namaProduk',
+            'noHp',
+            'whatsapp',
+            'kode',
+            'kategori','keluhan','status','totalBiaya','diambil',
             'services.id as idService'
         ];
         if($first === true){
             $columns2 = [
-                'completeness','note','estimatePrice','price','downPayment','productDefects','entryDate','entryTime','pickDate','pickTime','warranty','csUserName','technicianUserName','needConfirm','confirmed','confirmCost'
+                'kelengkapan','catatan','estimasiBiaya','biaya','uangMuka','cacatProduk','tanggalMasuk','jamMasuk','tanggalAmbil','jamAmbil','garansi','usernameCS','usernameTeknisi','butuhKonfirmasi','dikonfirmasi','konfirmasiHarga'
             ];
             $columns = array_merge($columns,$columns2);
         }
@@ -239,41 +209,40 @@ class ServiceRepository extends Repository{
         $arrData = [];
 
         $arrData['customer'] = [
-            'nama' => $data->customerName,
-            'jenisKelamin'=>$data->gender,
-            'noHp' => $data->phoneNumber,
+            'nama' => $data->namaCustomer,
+            'noHp' => $data->noHp,
             'mendukungWhatsapp' => boolval($data->whatsapp)
         ];
 
         $arrData['product'] = [
             'id' => $data->idService
-            ,'nama' => $data->productName
-            ,'kategori' => $data->category
-            ,'kode' => $data->code
-            ,'keluhan' => $data->complaint
+            ,'nama' => $data->namaProduk
+            ,'kategori' => $data->kategori
+            ,'kode' => $data->kode
+            ,'keluhan' => $data->keluhan
             ,'status' => $data->status
-            ,'totalHarga' => $data->totalPrice
-            ,'diambil' => boolval($data->picked)
+            ,'totalHarga' => $data->totalBiaya
+            ,'diambil' => boolval($data->diambil)
         ];
 
         if($isById === true){
             $product = [
-                'kelengkapan'=>$data->completeness
-                ,'cacatProduk'=>$data->productDefects
-                ,'catatan'=>$data->note
-                ,'estimasiHarga'=>$data->estimatePrice
-                ,'harga'=>$data->price
-                ,'uangMuka'=>$data->downPayment
-                ,'tanggalMasuk'=>$data->entryDate
-                ,'jamMasuk'=>$data->entryTime
-                ,'tanggalAmbil'=>$data->pickDate
-                ,'jamAmbil'=>$data->pickTime
-                ,'lamaGaransi'=>$data->warranty
-                ,'customerService'=>$data->csUserName
-                ,'teknisi'=>$data->technicianUserName,
-                'membutuhkanKonfirmasi'=>boolval($data->needConfirm),
-                'sudahdikonfirmasi'=>boolval($data->confirmed),
-                'sudahKonfirmasiBiaya'=>boolval($data->confirmCost),
+                'kelengkapan'=>$data->kelengkapan
+                ,'cacatProduk'=>$data->cacatProduk
+                ,'catatan'=>$data->catatan
+                ,'estimasiHarga'=>$data->estimasiBiaya
+                ,'harga'=>$data->biaya
+                ,'uangMuka'=>$data->uangMuka
+                ,'tanggalMasuk'=>$data->tanggalMasuk
+                ,'jamMasuk'=>$data->jamMasuk
+                ,'tanggalAmbil'=>$data->tanggalAmbil
+                ,'jamAmbil'=>$data->jamAmbil
+                ,'lamaGaransi'=>$data->garansi
+                ,'customerService'=>$data->usernameCS
+                ,'teknisi'=>$data->usernameTeknisi,
+                'membutuhkanKonfirmasi'=>boolval($data->butuhKonfirmasi),
+                'sudahdikonfirmasi'=>boolval($data->dikonfirmasi),
+                'sudahKonfirmasiBiaya'=>boolval($data->konfirmasiHarga),
             ];
             $arrData['product'] = array_merge($arrData['product'],$product);
         }
@@ -283,31 +252,31 @@ class ServiceRepository extends Repository{
     private function setAttributs(array $inputs,string $idCustomer, bool $isUpdate = false){
         
         $attributs = [
-            'name'=>$inputs['namaBarang'],
-            'category'=>$inputs['kategori'],
-            'complaint'=>$inputs['keluhan'],
+            'nama'=>$inputs['namaBarang'],
+            'kategori'=>$inputs['kategori'],
+            'keluhan'=>$inputs['keluhan'],
             'idCustomer'=>$idCustomer,
-            'needConfirm'=>filter_var($inputs['membutuhkanKonfirmasi'],FILTER_VALIDATE_BOOLEAN),
-            'completeness'=> $inputs['kelengkapan'] ?? null,
-            'note'=> $inputs['catatan'] ?? null,
-            'downPayment'=> $inputs['uangMuka'] ?? null,
-            'estimatePrice'=> $inputs['estimasiHarga'] ?? null,
-            'productDefects'=> $inputs['cacatProduk'] ?? null
+            'butuhKonfirmasi'=>filter_var($inputs['membutuhkanKonfirmasi'],FILTER_VALIDATE_BOOLEAN),
+            'kelengkapan'=> $inputs['kelengkapan'] ?? null,
+            'catatan'=> $inputs['catatan'] ?? null,
+            'uangMuka'=> $inputs['uangMuka'] ?? null,
+            'estimasiBiaya'=> $inputs['estimasiHarga'] ?? null,
+            'cacatProduk'=> $inputs['cacatProduk'] ?? null
         ];
         if($isUpdate === false){
             $attributs['status']='antri';
-            $attributs['confirmCost']=false;
-            $attributs['picked']=false;
-            $attributs['entryDate']= DateAndTime::getDateNow();
-            $attributs['entryTime']= DateAndTime::getTimeNow();
-            $attributs['csUserName']=  auth()->payload()->get('username');
+            $attributs['konfirmasiHarga']=false;
+            $attributs['diambil']=false;
+            $attributs['tanggalMasuk']= DateAndTime::getDateNow();
+            $attributs['jamMasuk']= DateAndTime::getTimeNow();
+            $attributs['usernameCS']=  auth()->payload()->get('username');
         }
         return $attributs;
     }
 
     private function setCodeService(array $inputs){
-        $dataCtgr = DB::table('categories')->where('title',$inputs['category'])->first();
-        $date = DateAndTime::setDateFromString($inputs['entryDate']);
+        $dataCtgr = DB::table('categories')->where('nama',$inputs['kategori'])->first();
+        $date = DateAndTime::setDateFromString($inputs['tanggalMasuk']);
         $attributs = [
             'code'=>$date->format('y').$date->format('m').$date->format('d').$dataCtgr->id.sprintf("%03d",$inputs['id'])
         ];

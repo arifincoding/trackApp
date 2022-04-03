@@ -15,12 +15,12 @@ class CreateTableDiagnosas extends Migration
     {
         Schema::create('diagnosas', function (Blueprint $table) {
             $table->id();
-            $table->string('title',100);
+            $table->string('judul',100);
             $table->string('idService',30)->nullable();
-            $table->boolean('confirmed')->nullable();
+            $table->boolean('dikonfirmasi')->nullable();
             $table->string('status',30)->nullable();
-            $table->string('price',20)->nullable();
-            $table->string('idWarranty',30)->nullable();
+            $table->string('biaya',20)->nullable();
+            $table->string('idGaransi',30)->nullable();
             $table->timestamps();
         });
     }

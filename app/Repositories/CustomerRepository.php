@@ -21,11 +21,10 @@ class CustomerRepository extends Repository{
                 $wa = filter_var($inputs['mendukungWhatsapp'],FILTER_VALIDATE_BOOLEAN);
             }
             $attributs = [
-                'name'=>$inputs['namaCustomer'],
-                'gender'=>$inputs['jenisKelamin'],
-                'phoneNumber'=>$inputs['noHp'],
+                'nama'=>$inputs['namaCustomer'],
+                'noHp'=>$inputs['noHp'],
                 'whatsapp'=> $wa,
-                'count'=>1
+                'jumlahService'=>1
             ];
             $data = $this->save($attributs);
             return ['idCustomer'=>$data->id];
@@ -37,7 +36,7 @@ class CustomerRepository extends Repository{
     public function isCustomerExist(array $inputs)
     {
         if(!empty($inputs['noHp'])){
-            $findData = $this->model->where('name',$inputs['namaCustomer'])->where('phoneNumber',$inputs['noHp'])->first();
+            $findData = $this->model->where('nama',$inputs['namaCustomer'])->where('noHp',$inputs['noHp'])->first();
             if($findData){
                 return [
                     'exist'=>true,
@@ -54,12 +53,12 @@ class CustomerRepository extends Repository{
     }
 
     public function updateCount(string $id, string $operator){
-        $attributs['count'] = 0;
+        $attributs['jumlahService'] = 0;
         $findData = $this->findById($id);
         if($operator === 'plus'){
-            $attributs['count'] = $findData->count + 1;
+            $attributs['jumlahService'] = $findData->count + 1;
         }else if($operator === 'minus'){
-            $attributs['count'] = $findData->count - 1;
+            $attributs['jumlahService'] = $findData->count - 1;
         }
         $data = $this->save($attributs,$findData->id);
         return ['idCustomer'=>$data->id];
@@ -77,15 +76,14 @@ class CustomerRepository extends Repository{
 
         if($inputs['namaCustomer'] !== $findData->name || $inputs['noHp'] !== $findData->phoneNumber){
             if($findData->count > 1){
-                $this->save(['count' => $findData->count - 1],$idCustomer);
+                $this->save(['jumlahService' => $findData->count - 1],$idCustomer);
                 return $this->create($inputs);
             }
         }
         
         $attributs = [
-            'name'=>$inputs['namaCustomer'],
-            'gender'=>$inputs['jenisKelamin'],
-            'phoneNumber'=>$inputs['noHp'],
+            'nama'=>$inputs['namaCustomer'],
+            'noHp'=>$inputs['noHp'],
             'whatsapp'=> $wa,
         ];
         
