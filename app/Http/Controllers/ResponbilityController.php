@@ -25,15 +25,16 @@ class ResponbilityController extends Controller{
     }
 
     function newTechnicianResponbilities(Request $request, $id, ResponbilityValidation $validator){
-        $validator->post($id,$request->only(['idKategori']));
-        $validation = $validator->validate($request->all());
+        $input = $request->only(['idKategori']);
+        $validator->post($id,$input);
+        $validation = $validator->validate($input);
         $findUser = $this->userRepository->getDataById($id);
-        $data = $this->responbilityRepository->create($request->all(), $findUser['peran'],$findUser['namaPengguna']);
+        $data = $this->responbilityRepository->create($input, $findUser['peran'],$findUser['username']);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
     public function delete($id){
         $data = $this->responbilityRepository->deleteDataById($id);
-        return $this->jsonSuccess('sukses hapus tanggung jawab',200, $data);
+        return $this->jsonSuccess('sukses',200, $data);
     }
 }

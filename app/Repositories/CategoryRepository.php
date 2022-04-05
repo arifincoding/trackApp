@@ -12,13 +12,10 @@ class CategoryRepository extends Repository{
         parent::__construct($model);
     }
 
-    function saveData(array $inputs=[], string $id=null){
-        $attributs = [
-            'nama'=>$inputs['kategori']
-        ];
+    function saveData(array $attributs=[], string $id=null){
         $data = $this->save($attributs,$id);
         return [
-            'idKategori'=>$data->id ?? $id
+            'idKategori'=>$data->id
         ];
     }
 

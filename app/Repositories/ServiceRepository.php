@@ -193,7 +193,7 @@ class ServiceRepository extends Repository{
             'customers.nama as namaCustomer',
             'services.nama as namaProduk',
             'noHp',
-            'whatsapp',
+            'bisaWA',
             'kode',
             'kategori','keluhan','status','totalBiaya','diambil',
             'services.id as idService'
@@ -213,7 +213,7 @@ class ServiceRepository extends Repository{
         $arrData['customer'] = [
             'nama' => $data->namaCustomer,
             'noHp' => $data->noHp,
-            'mendukungWhatsapp' => boolval($data->whatsapp)
+            'mendukungWhatsapp' => boolval($data->bisaWA)
         ];
 
         $arrData['product'] = [

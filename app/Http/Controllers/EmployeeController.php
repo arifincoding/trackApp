@@ -34,20 +34,24 @@ class EmployeeController extends Controller{
 
     function createEmployee(Request $request, EmployeeValidation $validator): JsonResponse
     {
-
+        $inputs = $request->only(['namaDepan','namaBelakang','jenisKelamin','noHp','alamat','peran','email']);
         $validator->post();
-        $validation = $validator->validate($request->all());
-        $data = $this->userRepository->create($request->all());
+        $validation = $validator->validate($inputs);
+        $data = $this->userRepository->create($inputs);
         Mail::to($data['email'])->send(new EmployeeMail($data['username'],$data['password']));
         return $this->jsonSuccess('sukses',200,['idPegawai'=>$data['idPegawai']]);
     }
 
     function updateEmployee(Request $request, $id, EmployeeValidation $validator): JsonResponse
     {
+        $inputs = $request->only(['namaDepan','namaBelakang','jenisKelamin','noHp','alamat','peran','email']);
         $validator->post($id);
-        $validation = $validator->validate($request->all());
-        $data = $this->userRepository->update($request->all(), $id);
-        return $this->jsonSuccess('sukses',200,$data);
+        $validation = $validator->validate($inputs);
+        $data = $this->userRepository->update($inputs, $id);
+        if(isset($data['email'])){
+            Mail::to($data['email'])->send(new EmployeeMail($data['username'],$data['password']));
+        }
+        return $this->jsonSuccess('sukses',200,['idPegawai'=>$data['idPegawai']]);
     }
 
     function changeStatusEmployee(Request $request, $id, EmployeeValidation $validator): JsonResponse

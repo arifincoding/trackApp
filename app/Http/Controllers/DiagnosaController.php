@@ -22,11 +22,10 @@ class DiagnosaController extends Controller{
     }
 
     public function newDiagnosaByIdService(Request $request,$id,DiagnosaValidation $validator){
-        $validation = $validator->validate($request->only(['judul']));
-        
+        $inputs = $request->only('judul');
+        $validation = $validator->validate($inputs);
         $findService = $this->serviceRepository->findDataById($id);
-
-        $data = $this->diagnosaRepository->create($request->all(),$id, $findService['confirmed']);
+        $data = $this->diagnosaRepository->create($inputs,$id, $findService['butuhKonfirmasi']);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
@@ -36,36 +35,44 @@ class DiagnosaController extends Controller{
     }
 
     public function updateDiagnosa(Request $request, $id, DiagnosaValidation $validator){
-        $validation = $validator->validate($request->only(['judul']));
-        $data = $this->diagnosaRepository->update($request->all(),$id);
+        $inputs = $request->only('judul','status');
+        $validation = $validator->validate($inputs);
+        $data = $this->diagnosaRepository->update($inputs,$id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
     public function updateDiagnosaStatus(Request $request, $id){
-        $data = $this->diagnosaRepository->updateStatus($request->all(),$id);
+        $inputs = $request->only('status');
+        $data = $this->diagnosaRepository->update($inputs,$id);
         return $this->jsonSUccess('sukses',200,$data);
     }
 
     public function updateDiagnosaCost(Request $request, $id){
+        $inputs = $request->only('biaya');
         $findDiagnosa = $this->diagnosaRepository->findDataById($id);
         $findService = $this->serviceRepository->findDataById($findDiagnosa['idService']);
         $price = $request->input('biaya');
-        $totalPrice = 0;
-        if($findDiagnosa['harga'] !== null){
-            $totalPrice = $findService['totalPrice'] + ($price - $findDiagnosa['harga']);
-        }
-        else if($findService['totalPrice'] !== null){
-            $totalPrice = $findService['totalPrice'] + $price;
-        }else{
-            $totalPrice = $price;
-        }
-        $this->serviceRepository->updateTotalPrice($id,$totalPrice);
-        $data = $this->diagnosaRepository->updateCost($request->all(),$id);
+        $totalCost = $this->setTotalCost($inputs['biaya'],$findDiagnosa['biaya'],$findService['totalBiaya']);
+        $this->serviceRepository->updateTotalPrice($id,$totalCost);
+        $data = $this->diagnosaRepository->update($inputs,$id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
     public function deleteDiagnosa($id){
         $data = $this->diagnosaRepository->deleteById($id);
         return $this->jsonSuccess('sukses',200,$data);
+    }
+
+    private function setTotalCost($cost, $diagnosaCost, $totalCost){
+        $total = 0;
+        if($diagnosaCost !== null){
+            $total = $totalCost + ($cost - $diagnosaCost);
+        }
+        else if($totalCost !== null){
+            $total = $totalCost + $cost;
+        }else{
+            $total = $cost;
+        }
+        return $total;
     }
 }

@@ -17,7 +17,7 @@ class CreateTableCustomers extends Migration
             $table->id();
             $table->string('nama',50);
             $table->string('noHp',20)->nullable();
-            $table->boolean('whatsapp')->nullable();
+            $table->boolean('bisaWA')->nullable();
             $table->integer('jumlahService');
             $table->timestamps();
         });

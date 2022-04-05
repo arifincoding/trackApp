@@ -48,43 +48,36 @@ class userRepository extends Repository{
         return $data->toArray();
     }
 
-    function create(array $input):array
+    function create(array $attributs):array
     {
-        $attribut = [
-            'namaDepan'=>$input['namaDepan'],
-            'namaBelakang'=>$input['namaBelakang'],
-            'jenisKelamin'=>$input['jenisKelamin'],
-            'noHp'=>$input['noHp'],
-            'alamat'=>$input['alamat'],
-            'peran'=>$input['peran'],
-            'email'=>$input['email'],
+        $attributs += [
             'status'=>'registered'
         ];
-        $data = $this->save($attribut);
+        $data = $this->save($attributs);
         $register = $this->registerUser($data->id);
         return [
-            'idPegawai'=>$data->id
+            'idPegawai'=>$data->id,
+            'email'=>$data->email,
+            'username'=>$register['username'],
+            'password'=>$register['password']
         ];
     }
 
-    function update(array $input, string $id):array
+    function update(array $attributs, string $id):array
     {
-        $attribut=[
-            'namaDepan'=>$input['namaDepan'],
-            'namaBelakang'=>$input['namaBelakang'],
-            'jenisKelamin'=>$input['jenisKelamin'],
-            'noHp'=>$input['noHp'],
-            'alamat'=>$input['alamat'],
-            'peran'=>$input['peran'],
-            'email'=>$input['email']
-        ];
         $find = $this->findById($id);
-        if($find->email !== $input['email'] && $find->status === 'registered'){
+        $returnData = ['idPegawai'=>$find->id];
+        if($find->email !== $attributs['email'] && $find->status === 'registered'){
             $akun = Str::random(8);
-            $attribut['password'] = Hash::make($akun);
+            $attributs['password'] = Hash::make($akun);
+            $returnData += [
+                'email'=>$attributs['email'],
+                'username'=>$find->username,
+                'password'=>$akun
+            ];
         }
-        $data = $this->save($attribut, $id);
-        return ['idPegawai'=>$id];
+        $data = $this->save($attributs, $id);
+        return $returnData;
     }
 
     function deleteById(string $id){

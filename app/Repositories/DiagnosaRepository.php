@@ -12,21 +12,6 @@ class DiagnosaRepository extends Repository{
         parent::__construct($model);
     }
 
-    function create(array $inputs,string $idService, int $confirmed=0){
-        $confirm = null;
-        if($confirmed === 0){
-            $confirm = true;
-        }
-        $attributs = [
-            'judul'=>$inputs['judul'],
-            'idService'=>$idService,
-            'status'=>'antri',
-            'dikonfirmasi'=>$confirm,
-        ];
-        $data = $this->save($attributs);
-        return ['idDiagnosa'=>$data->id];
-    }
-
     function getListDataByIdService(string $idService){
         $attributs=['id as idDiagnosa','idService','judul','status','biaya','dikonfirmasi'];
         $filters = ['where'=>['idService'=>$idService]];
@@ -40,31 +25,22 @@ class DiagnosaRepository extends Repository{
         return $data->toArray();
     }
 
-    function update(array $inputs, string $id){
-        $attributs = [
-            'judul'=> $inputs['judul'],
-            'status'=> $inputs['status']
+    function create(array $attributs,string $idService, int $confirmed=0){
+        $confirm = null;
+        if($confirmed === 0){
+            $confirm = true;
+        }
+        $attributs += [
+            'idService'=>$idService,
+            'status'=>'antri',
+            'dikonfirmasi'=>$confirm,
         ];
+        $data = $this->save($attributs);
+        return ['idDiagnosa'=>$data->id];
+    }
 
+    function update(array $attributs, string $id){
         $data = $this->save($attributs,$id);
-        return [
-            'idDiagnosa'=>$data->id,
-            'idService'=>$data->idService
-        ];
-    }
-
-    function updateStatus(array $inputs, string $id){
-        $attributs = [
-            'status'=>$inputs['status']
-        ];
-        $data = $this->save($attributs, $id);
-        return [
-            'idDiagnosa'=>$data->id
-        ];
-    }
-
-    function updateCost(array $inputs, string $id){
-        $data = $this->save(['biaya'=>$inputs['biaya']],$id);
         return [
             'idDiagnosa'=>$data->id,
             'idService'=>$data->idService

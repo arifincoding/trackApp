@@ -26,16 +26,18 @@ class CategoryController extends Controller{
     }
 
     function newCategory(Request $request, CategoryValidation $validator){
+        $input = $request->only('nama');
         $validator->post();
-        $validation = $validator->validate($request->only(['kategori']));
-        $data = $this->repository->saveData($request->all());
+        $validation = $validator->validate($input);
+        $data = $this->repository->saveData($input);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
     function updateCategory(Request $request, $id, CategoryValidation $validator){
+        $input = $request->only('nama');
         $validator->post($id);
-        $validation = $validator->validate($request->only(['kategori']));
-        $data = $this->repository->saveData($request->all(),$id);
+        $validation = $validator->validate($input);
+        $data = $this->repository->saveData($input,$id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 

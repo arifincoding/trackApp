@@ -60,59 +60,66 @@ class ServiceController extends Controller{
 
     function newService(Request $request, ServiceValidation $validator):JsonResponse
     {
+        $input= $request->all();
         $validator->post();
-        $validation = $validator->validate($request->all());
+        $validation = $validator->validate($input);
         
-        $customerExist = $this->customerRepository->isCustomerExist($request->only(['namaCustomer','noHp']));
+        $customerExist = $this->customerRepository->isCustomerExist($input);
         
         if($customerExist['exist'] === false){
-            $dataCustomer = $this->customerRepository->create($request->all());
+            $dataCustomer = $this->customerRepository->create($input);
             $idCustomer = $dataCustomer['idCustomer'];
         }else{
             $dataCustomer = $this->customerRepository->updateCount($customerExist['idCustomer'],'plus');
             $idCustomer = $dataCustomer['idCustomer'];
         }
         
-        $dataService = $this->serviceRepository->create($request->all(),$idCustomer);
+        $dataService = $this->serviceRepository->create($input,$idCustomer);
         $this->addServiceTrack('antri',$dataService['idService']);
         return $this->jsonSuccess('sukses',200,$dataService);
     }
 
     public function updateService(Request $request, $id, ServiceValidation $validator){
+        $input = $request->all();
         $validator->post();
-        $validation = $validator->validate($request->all());
+        $validation = $validator->validate($input);
         $dataService = $this->serviceRepository->getDataById($id);
         if($dataService){
-            $dataCustomer = $this->customerRepository->update($request->all(),$dataService['idCustomer']);
-            $data = $this->serviceRepository->update($request->all(),$dataCustomer['idCustomer'],$id);
+            $dataCustomer = $this->customerRepository->update($input,$dataService['idCustomer']);
+            $data = $this->serviceRepository->update($input,$dataCustomer['idCustomer'],$id);
             return $this->jsonSuccess('sukses',200,$data);
         }
     }
 
     public function updateServiceStatus(Request $request,$id){
-        $data = $this->serviceRepository->updateDataStatus($request->all(),$id);
+        $input = $request->only('status');
+        $data = $this->serviceRepository->updateDataStatus($input,$id);
         $this->addServiceTrack($request->input('status'),$id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
     public function updateServiceTake(Request $request, $id){
-        $data = $this->serviceRepository->updateTake($request->all(),$id);
+        $input=$request->only('diambil');
+        $data = $this->serviceRepository->updateTake($input,$id);
         $this->addServiceTrack('diambil',$id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
     public function updateServiceConfirmCost(Request $request, $id){
-        $data = $this->serviceRepository->updateConfirmCost($request->all(),$id);
+        $input = $request->only('konfirmasiHarga');
+        $data = $this->serviceRepository->updateConfirmCost($input,$id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
     public function updateServiceWarranty(Request $request, $id){
-        $data = $this->serviceRepository->updateWarranty($request->all(),$id);
+        $input = $request->only('garansi');
+        $data = $this->serviceRepository->updateWarranty($input,$id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
     public function updateServiceConfirmation(Request $request, $id){
-        $data = $this->serviceRepository->updateConfirmation($request->all(),$id);
+        $input = $request->only('dikonfirmasi');
+        $data = $this->serviceRepository->updateConfirmation($input,$id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
@@ -120,7 +127,7 @@ class ServiceController extends Controller{
         $dataService = $this->serviceRepository->getDataById($id);
         if($dataService){
             $dataCustomer = $this->customerRepository->findDataById($dataService['idCustomer']);
-            if($dataCustomer['count'] > 1){
+            if($dataCustomer['jumlahService'] > 1){
                 $this->customerRepository->updateCount($dataCustomer['id'],'minus');
             }else{
                 $this->customerRepository->deleteById($dataService['idCustomer']);
@@ -136,19 +143,19 @@ class ServiceController extends Controller{
         if($status=='antri'){
             $message = 'barang service masuk dan menunggu untuk di diagnosa';
         }else if($status === 'diagnosa'){
-            $message = $service['category'].' anda sedang dalam proses diagnosa';
+            $message = $service['kategori'].' anda sedang dalam proses diagnosa';
         }else if($status ==  'selesai diagnosa'){
-            $message = $service['category'].' anda selesai di diagnosa';
+            $message = $service['kategori'].' anda selesai di diagnosa';
         }else if($status ==  'proses'){
-            $message = $service['category'].' anda sedang dalam proses perbaikan';
+            $message = $service['kategori'].' anda sedang dalam proses perbaikan';
         }else if($status == 'selesai'){
-            $message = $service['category'].' anda telah selesai diperbaiki';
+            $message = $service['kategori'].' anda telah selesai diperbaiki';
         }else if($status == 'diambil'){
-            $message = $service['category'].' anda telah diambil';
+            $message = $service['kategori'].' anda telah diambil';
         }
         $attributs = [
             'idService'=>$id,
-            'title'=>$message,
+            'judul'=>$message,
             'status'=>$status
         ];
         $this->serviceTrackRepository->create($attributs);

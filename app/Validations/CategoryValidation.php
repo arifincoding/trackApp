@@ -14,9 +14,9 @@ class CategoryValidation extends Validation{
     }
     function post(string $id = null){
         $this->rules= [
-            'kategori'=>'required|unique:categories,nama'];
+            'nama'=>'required|unique:categories,nama'];
         if($id !== null){
-            $this->rules = ['kategori'=>'required|unique:categories,nama,'.$id];
+            $this->rules = ['nama'=>'required|unique:categories,nama,'.$id];
         }
     }
 }
