@@ -66,5 +66,4 @@ class EmployeeController extends Controller{
         $data = $this->userRepository->deleteById($id);
         return $this->jsonSuccess('sukses',200,$data);
     }
-
 }

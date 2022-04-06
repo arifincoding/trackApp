@@ -109,6 +109,11 @@ class ServiceRepository extends Repository{
         return $this->setReturnData($data,true);
     }
 
+    public function saveData(array $attributs, string $id=null){
+        $data = $this->save($attributs,$id);
+        return ['idService'=>$data->id];
+    }
+
     public function create(array $inputs,string $idCustomer):array
     {
         $attributs = $this->setAttributs($inputs, $idCustomer);
@@ -123,53 +128,6 @@ class ServiceRepository extends Repository{
         return ['idService'=>$data->id];
     }
 
-    public function updateTake(array $inputs, string $id){
-        $attributs = [
-            'diambil'=>filter_var($inputs['ambil'],FILTER_VALIDATE_BOOLEAN),
-            'tanggalAmbil'=>DateAndTime::getDateNow(),
-            'jamAmbil'=>DateAndTime::getTimeNow()
-        ];
-        $data = $this->save($attributs, $id);
-        return [
-            'idService'=>$data->id
-        ];
-    }
-
-    public function updateConfirmCost(array $inputs, string $id){
-        $attributs = [
-            'konfirmasiHarga'=>filter_var($inputs['konfirmasiBiaya'],FILTER_VALIDATE_BOOLEAN)
-        ];
-        $data = $this->save($attributs,$id);
-        return [
-            'idService'=>$data->id
-        ];
-    }
-
-    public function updateWarranty(array $inputs, string $id){
-        $attributs = [
-            'garansi'=>$inputs['garansi']
-        ];
-        $data = $this->save($attributs,$id);
-        return [
-            'idService'=>$data->id
-        ];
-    }
-
-    public function updateConfirmation(array $inputs, string $id){
-        $attributs = [
-            'dikonfirmasi'=>$inputs['konfirmasi']
-        ];
-        $data = $this->save($attributs,$id);
-        return [
-            'idService'=>$data->id
-        ];
-    }
-
-    public function updateTotalPrice(string $id, int $totalPrice){
-        $attributs['totalBiaya'] = $totalPrice;
-        $data = $this->save($attributs,$id);
-    }
-
     public function updateDataStatus(array $inputs, string $id){
         $attributs = [
             'usernameTeknisi'=>auth()->payload()->get('username'),
@@ -179,6 +137,23 @@ class ServiceRepository extends Repository{
         return [
             'idService'=>$data->id
         ];
+    }
+
+    public function updateTake(array $inputs, string $id){
+        $attributs = [
+            'diambil'=>filter_var($inputs['diambil'],FILTER_VALIDATE_BOOLEAN),
+            'tanggalAmbil'=>DateAndTime::getDateNow(),
+            'jamAmbil'=>DateAndTime::getTimeNow()
+        ];
+        $data = $this->save($attributs, $id);
+        return [
+            'idService'=>$data->id
+        ];
+    }
+
+    public function updateTotalPrice(string $id, int $totalCost){
+        $attributs['totalBiaya'] = $totalCost;
+        $data = $this->save($attributs,$id);
     }
 
     public function deleteById(string $id){

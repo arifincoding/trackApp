@@ -18,12 +18,12 @@ class CustomerRepository extends Repository{
             $noHp = $inputs['noHp'] ?? null;
             $wa = false;
             if($noHp !== null){
-                $wa = filter_var($inputs['mendukungWhatsapp'],FILTER_VALIDATE_BOOLEAN);
+                $wa = filter_var($inputs['bisaWhatsapp'],FILTER_VALIDATE_BOOLEAN);
             }
             $attributs = [
                 'nama'=>$inputs['namaCustomer'],
                 'noHp'=>$inputs['noHp'],
-                'whatsapp'=> $wa,
+                'bisaWhatsapp'=> $wa,
                 'jumlahService'=>1
             ];
             $data = $this->save($attributs);
@@ -56,9 +56,9 @@ class CustomerRepository extends Repository{
         $attributs['jumlahService'] = 0;
         $findData = $this->findById($id);
         if($operator === 'plus'){
-            $attributs['jumlahService'] = $findData->count + 1;
+            $attributs['jumlahService'] = $findData->jumlahService + 1;
         }else if($operator === 'minus'){
-            $attributs['jumlahService'] = $findData->count - 1;
+            $attributs['jumlahService'] = $findData->jumlahService - 1;
         }
         $data = $this->save($attributs,$findData->id);
         return ['idCustomer'=>$data->id];
@@ -71,12 +71,12 @@ class CustomerRepository extends Repository{
         $noHp = $inputs['noHp'] ?? null;
         $wa = false;
         if($noHp !== null){
-            $wa = filter_var($inputs['mendukungWhatsapp'],FILTER_VALIDATE_BOOLEAN);
+            $wa = filter_var($inputs['bisaWhatsapp'],FILTER_VALIDATE_BOOLEAN);
         }
 
-        if($inputs['namaCustomer'] !== $findData->name || $inputs['noHp'] !== $findData->phoneNumber){
-            if($findData->count > 1){
-                $this->save(['jumlahService' => $findData->count - 1],$idCustomer);
+        if($inputs['namaCustomer'] !== $findData->nama || $inputs['noHp'] !== $findData->noHp){
+            if($findData->jumlahService > 1){
+                $this->save(['jumlahService' => $findData->jumlahService - 1],$idCustomer);
                 return $this->create($inputs);
             }
         }
@@ -84,7 +84,7 @@ class CustomerRepository extends Repository{
         $attributs = [
             'nama'=>$inputs['namaCustomer'],
             'noHp'=>$inputs['noHp'],
-            'whatsapp'=> $wa,
+            'bisaWhatsapp'=> $wa,
         ];
         
         $data = $this->save($attributs, $idCustomer);
