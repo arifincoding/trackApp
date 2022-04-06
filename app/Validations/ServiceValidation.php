@@ -26,27 +26,9 @@ class ServiceValidation extends Validation{
         ];
     }
 
-    function serviceTake(){
-        $this->rules = [
-            'diambil'=>'required|in:true,false'
-        ];
-    }
-
-    function confirmCost(){
-        $this->rules = [
-            'konfirmasiHarga'=>'required|in:true,false'
-        ];
-    }
-
     function serviceWarranty(){
         $this->rules = [
             'garansi'=>'required'
-        ];
-    }
-
-    function serviceConfirmation(){
-        $this->rules = [
-            'dikonfirmasi'=>'required|in:true,false'
         ];
     }
 }

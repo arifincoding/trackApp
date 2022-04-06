@@ -109,11 +109,6 @@ class ServiceRepository extends Repository{
         return $this->setReturnData($data,true);
     }
 
-    public function saveData(array $attributs, string $id=null){
-        $data = $this->save($attributs,$id);
-        return ['idService'=>$data->id];
-    }
-
     public function create(array $inputs,string $idCustomer):array
     {
         $attributs = $this->setAttributs($inputs, $idCustomer);
@@ -139,13 +134,38 @@ class ServiceRepository extends Repository{
         ];
     }
 
-    public function updateTake(array $inputs, string $id){
+    public function updateWarranty(array $attributs, string $id=null){
+        $data = $this->save($attributs,$id);
+        return ['idService'=>$data->id];
+    }
+
+    public function setDataTake(string $id){
         $attributs = [
-            'diambil'=>filter_var($inputs['diambil'],FILTER_VALIDATE_BOOLEAN),
+            'diambil'=>true,
             'tanggalAmbil'=>DateAndTime::getDateNow(),
             'jamAmbil'=>DateAndTime::getTimeNow()
         ];
         $data = $this->save($attributs, $id);
+        return [
+            'idService'=>$data->id
+        ];
+    }
+
+    public function setDataConfirmCost(string $id){
+        $attributs = [
+            'konfirmasiHarga'=>true
+        ];
+        $data = $this->save($attributs,$id);
+        return [
+            'idService'=>$data->id
+        ];
+    }
+
+    public function setDataConfirmation(string $id){
+        $attributs = [
+            'dikonfirmasi'=>true
+        ];
+        $data = $this->save($attributs,$id);
         return [
             'idService'=>$data->id
         ];

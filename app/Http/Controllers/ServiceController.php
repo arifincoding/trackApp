@@ -100,20 +100,14 @@ class ServiceController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function updateServiceTake(Request $request, $id,ServiceValidation $validator){
-        $input=$request->only('diambil');
-        $validator->serviceTake();
-        $validator->validate($request);
-        $data = $this->serviceRepository->updateTake($input,$id);
+    public function setServiceTake(string $id){
+        $data = $this->serviceRepository->setDataTake($id);
         $this->addServiceTrack('diambil',$id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function updateServiceConfirmCost(Request $request, $id,ServiceValidation $validator){
-        $input = $request->only('konfirmasiHarga');
-        $validator->confirmCost();
-        $validator->validate($input);
-        $data = $this->serviceRepository->saveData($input,$id);
+    public function setServiceConfirmCost(string $id){
+        $data = $this->serviceRepository->setDataConfirmCost($id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
@@ -121,15 +115,12 @@ class ServiceController extends Controller{
         $input = $request->only('garansi');
         $validator->serviceWarranty();
         $validator->validate($input);
-        $data = $this->serviceRepository->saveData($input,$id);
+        $data = $this->serviceRepository->updateWarranty($input,$id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function updateServiceConfirmation(Request $request, $id,ServiceValidation $validator){
-        $input = $request->only('dikonfirmasi');
-        $validator->serviceConfirmation();
-        $validator->validate($input);
-        $data = $this->serviceRepository->saveData($input,$id);
+    public function setServiceConfirmation(string $id){
+        $data = $this->serviceRepository->setDataConfirmation($id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
