@@ -16,7 +16,7 @@ class ResponbilityValidation extends Validation{
         $this->rules['idKategori.'.$key] = [
             'filled',
             'exists:categories,id',
-            Rule::unique('responbilities','idCategory')->where(function ($q) use($data){
+            Rule::unique('responbilities','idKategori')->where(function ($q) use($data){
                 return $q->where('username',$data->username);
             }),
             function($attribute,$value,$fail) use($input,$key){

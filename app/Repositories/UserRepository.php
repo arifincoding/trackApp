@@ -113,7 +113,7 @@ class userRepository extends Repository{
     }
 
     private function registerUser(string $idUser){
-        $date = DateAndTime::getDateNow($isFormat=false);
+        $date = DateAndTime::getDateNow(false);
         $password = Str::random(8);
         $attributs=[
             'username'=>$date->format('y').$date->format('m').sprintf("%03d",$idUser),

@@ -24,6 +24,7 @@ $router->delete('/services/warranty/{id}','WarrantyController@deleteWarranty');
 
 $router->post('/user/login','AuthController@login');
 
+
 $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik']],function () use ($router){
 
     // employee
@@ -55,6 +56,7 @@ $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik']],function () 
 
 $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik,customer service']],function () use ($router){
 
+    // category
     $router->get('/categories','CategoryController@getListCategory');
 
     // service
@@ -66,10 +68,16 @@ $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik,customer servic
 });
 
 $router->group(['prefix'=>'','middleware'=>['auth']],function () use ($router){
+
+    // service
     $router->get('/services/{id}/detail','ServiceController@getServiceById');
-    $router->put('user/change-password','UserController@changeMyPassword');
     $router->get('/services/{id}/diagnosas','DiagnosaController@getListDiagnosaByIdService');
     $router->get('/services/diagnosas/{id}','DiagnosaController@getDiagnosaById');
+
+    // user
+    $router->post('/user/logout','AuthController@logout');
+    $router->post('/user/refresh','AuthController@getRefreshToken');
+    $router->put('user/change-password','UserController@changeMyPassword');
 });
 
 $router->group(['prefix'=>'','middleware'=>['auth','role:teknisi']],function() use ($router){

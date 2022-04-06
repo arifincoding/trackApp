@@ -17,12 +17,19 @@ class Controller extends BaseController
         ],$status);
     }
 
-    function jsonToken(string $message,string $token){
+    function jsonToken(string $token){
+        return response()->json([
+            'token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => null
+        ], 200);
+    }
+
+    function jsonMessageOnly(string $massage){
         return response()->json([
             'status'=>200,
-            'message'=>$message,
-            'token'=>$token
-        ],200);
+            'message'=>$massage
+        ]);
     }
 
     function jsonValidationError($errors){

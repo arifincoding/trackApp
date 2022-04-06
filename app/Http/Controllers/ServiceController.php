@@ -114,7 +114,7 @@ class ServiceController extends Controller{
         $validator->confirmCost();
         $validator->validate($input);
         $data = $this->serviceRepository->saveData($input,$id);
-        return $this->jsonSuccess('sukses',200,['idService'=>$data->id]);
+        return $this->jsonSuccess('sukses',200,$data);
     }
 
     public function updateServiceWarranty(Request $request, $id,ServiceValidation $validator){
@@ -122,7 +122,7 @@ class ServiceController extends Controller{
         $validator->serviceWarranty();
         $validator->validate($input);
         $data = $this->serviceRepository->saveData($input,$id);
-        return $this->jsonSuccess('sukses',200,['idService'=>$data->id]);
+        return $this->jsonSuccess('sukses',200,$data);
     }
 
     public function updateServiceConfirmation(Request $request, $id,ServiceValidation $validator){
@@ -130,7 +130,7 @@ class ServiceController extends Controller{
         $validator->serviceConfirmation();
         $validator->validate($input);
         $data = $this->serviceRepository->saveData($input,$id);
-        return $this->jsonSuccess('sukses',200,['idService'=>$data->id]);
+        return $this->jsonSuccess('sukses',200,$data);
     }
 
     public function deleteService($id){

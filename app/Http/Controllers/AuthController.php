@@ -21,15 +21,16 @@ class AuthController extends Controller{
                 'message'=>'login failed'
             ],401);
         }
-        return $this->respondWithToken($token);
+        return $this->jsonToken($token);
     }
 
-    public function respondWithToken($token)
-    {
-        return response()->json([
-            'token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => null
-        ], 200);
+    public function getRefreshToken(){
+        $newToken = auth()->refresh();
+        return $this->jsonToken($newToken);
+    }
+
+    public function logout(){
+        auth()->logout();
+        return $this->jsonMessageOnly('sukses logout');
     }
 }

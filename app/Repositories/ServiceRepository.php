@@ -233,7 +233,7 @@ class ServiceRepository extends Repository{
             'kategori'=>$inputs['kategori'],
             'keluhan'=>$inputs['keluhan'],
             'idCustomer'=>$idCustomer,
-            'butuhKonfirmasi'=>filter_var($inputs['membutuhkanKonfirmasi'],FILTER_VALIDATE_BOOLEAN),
+            'butuhKonfirmasi'=>filter_var($inputs['butuhKonfirmasi'],FILTER_VALIDATE_BOOLEAN),
             'kelengkapan'=> $inputs['kelengkapan'] ?? null,
             'catatan'=> $inputs['catatan'] ?? null,
             'uangMuka'=> $inputs['uangMuka'] ?? null,
