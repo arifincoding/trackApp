@@ -18,12 +18,12 @@ class CustomerRepository extends Repository{
             $noHp = $inputs['noHp'] ?? null;
             $wa = false;
             if($noHp !== null){
-                $wa = filter_var($inputs['bisaWhatsapp'],FILTER_VALIDATE_BOOLEAN);
+                $wa = filter_var($inputs['bisaWA'],FILTER_VALIDATE_BOOLEAN);
             }
             $attributs = [
                 'nama'=>$inputs['namaCustomer'],
                 'noHp'=>$inputs['noHp'],
-                'bisaWhatsapp'=> $wa,
+                'bisaWA'=> $wa,
                 'jumlahService'=>1
             ];
             $data = $this->save($attributs);
@@ -71,7 +71,7 @@ class CustomerRepository extends Repository{
         $noHp = $inputs['noHp'] ?? null;
         $wa = false;
         if($noHp !== null){
-            $wa = filter_var($inputs['bisaWhatsapp'],FILTER_VALIDATE_BOOLEAN);
+            $wa = filter_var($inputs['bisaWA'],FILTER_VALIDATE_BOOLEAN);
         }
 
         if($inputs['namaCustomer'] !== $findData->nama || $inputs['noHp'] !== $findData->noHp){
@@ -84,7 +84,7 @@ class CustomerRepository extends Repository{
         $attributs = [
             'nama'=>$inputs['namaCustomer'],
             'noHp'=>$inputs['noHp'],
-            'bisaWhatsapp'=> $wa,
+            'bisaWA'=> $wa,
         ];
         
         $data = $this->save($attributs, $idCustomer);

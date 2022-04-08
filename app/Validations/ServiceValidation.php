@@ -12,7 +12,7 @@ class ServiceValidation extends Validation{
         $this->rules = [
             'namaCustomer'=>'required|regex:/^[\pL\s\-]+$/u',
             'noHp'=>'numeric',
-            'bisaWhatsapp'=>'in:true,false',
+            'bisaWA'=>'in:true,false',
             'namaBarang'=>'required',
             'kategori'=>'required|exists:categories,title',
             'keluhan'=>'required',

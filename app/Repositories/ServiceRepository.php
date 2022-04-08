@@ -208,7 +208,7 @@ class ServiceRepository extends Repository{
         $arrData['customer'] = [
             'nama' => $data->namaCustomer,
             'noHp' => $data->noHp,
-            'mendukungWhatsapp' => boolval($data->bisaWA)
+            'bisaWA' => boolval($data->bisaWA)
         ];
 
         $arrData['product'] = [
@@ -227,7 +227,7 @@ class ServiceRepository extends Repository{
                 'kelengkapan'=>$data->kelengkapan
                 ,'cacatProduk'=>$data->cacatProduk
                 ,'catatan'=>$data->catatan
-                ,'estimasiHarga'=>$data->estimasiBiaya
+                ,'estimasiBiaya'=>$data->estimasiBiaya
                 ,'harga'=>$data->biaya
                 ,'uangMuka'=>$data->uangMuka
                 ,'tanggalMasuk'=>$data->tanggalMasuk
@@ -235,9 +235,9 @@ class ServiceRepository extends Repository{
                 ,'tanggalAmbil'=>$data->tanggalAmbil
                 ,'jamAmbil'=>$data->jamAmbil
                 ,'lamaGaransi'=>$data->garansi
-                ,'customerService'=>$data->usernameCS
-                ,'teknisi'=>$data->usernameTeknisi,
-                'membutuhkanKonfirmasi'=>boolval($data->butuhKonfirmasi),
+                ,'usernameCS'=>$data->usernameCS
+                ,'usernameTeknisi'=>$data->usernameTeknisi,
+                'butuhKonfirmasi'=>boolval($data->butuhKonfirmasi),
                 'sudahdikonfirmasi'=>boolval($data->dikonfirmasi),
                 'sudahKonfirmasiBiaya'=>boolval($data->konfirmasiHarga),
             ];
@@ -257,7 +257,7 @@ class ServiceRepository extends Repository{
             'kelengkapan'=> $inputs['kelengkapan'] ?? null,
             'catatan'=> $inputs['catatan'] ?? null,
             'uangMuka'=> $inputs['uangMuka'] ?? null,
-            'estimasiBiaya'=> $inputs['estimasiHarga'] ?? null,
+            'estimasiBiaya'=> $inputs['estimasiBiaya'] ?? null,
             'cacatProduk'=> $inputs['cacatProduk'] ?? null
         ];
         if($isUpdate === false){

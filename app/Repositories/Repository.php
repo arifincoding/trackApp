@@ -26,7 +26,7 @@ class Repository{
         return $data;
     }
 
-    protected function getWhere(array $attributs=['*'],array $filters=[]){
+    protected function getWhere(array $attributs=['*'],array $filters=[],bool $withGet=true){
         $query = $this->model->select($attributs)->orderByDesc('id');
         if($filters !== []){
             if(isset($filters['limit'])){
@@ -68,7 +68,10 @@ class Repository{
                 });
             }
         }
-        return $query->get();
+        if($withGet === true){
+            return $query->get();
+        }
+        return $query;
     }
 
     protected function findById(string $id, array $attributs=[]){

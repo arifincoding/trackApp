@@ -45,9 +45,9 @@ $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik']],function () 
     $router->put('/services/diagnosas/{id}/cost','DiagnosaController@updateDiagnosaCost');
 
     // services
-    $router->put('/services/{id}/confirm-cost','ServiceController@updateServiceConfirmCost');
+    $router->put('/services/{id}/confirm-cost','ServiceController@setServiceConfirmCost');
     $router->put('/services/{id}/warranty','ServiceController@updateServiceWarranty');
-    $router->put('/services/{id}/confirmation','ServiceController@updateServiceConfirmation');
+    $router->put('/services/{id}/confirmation','ServiceController@setServiceConfirmation');
 
     // responbility
     $router->post('/employes/{id}/technician/responbility','ResponbilityController@newTechnicianResponbilities');
@@ -64,7 +64,7 @@ $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik,customer servic
     $router->post('/services','ServiceController@newService');
     $router->put('/services/{id}','ServiceController@updateService');
     $router->delete('/services/{id}','ServiceController@deleteService');
-    $router->put('/services/{id}/take','ServiceController@updateServiceTake');
+    $router->put('/services/{id}/take','ServiceController@setServiceTake');
 });
 
 $router->group(['prefix'=>'','middleware'=>['auth']],function () use ($router){

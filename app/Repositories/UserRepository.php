@@ -11,6 +11,7 @@ use Exception;
 use App\Exceptions\Handler;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Helpers\DateAndTime;
+use Illuminate\Support\Facades\DB;
 
 class userRepository extends Repository{
 
@@ -30,15 +31,24 @@ class userRepository extends Repository{
         ];
         $cari = $inputs['cari'] ?? null;
         if($cari){
+            if(count(explode(' ',$cari)) < 2){
             $filters['likeWhere']=[
                 'username'=>$cari,
                 'namaDepan'=>$cari,
                 'namaBelakang'=>$cari
             ];
+            }
         }
-        $attributs = ['id as idPegawai','username','namaDepan','namaBelakang','noHp','peran','status'];
-        $data = $this->getWhere($attributs,$filters);
-        return $data->toArray();
+        
+        $attributs = ['id as idPegawai','username',DB::raw("CONCAT(namaDepan,' ',namaBelakang) AS namaLengkap"),'noHp','peran','status'];
+        
+        $data = $this->getWhere($attributs,$filters,false);
+        
+        if(count(explode(' ',$cari)) > 1){
+            $data->where(DB::raw('CONCAT_WS(" ",namaDepan,namaBelakang)'),'LIKE','%'.$cari.'%');
+        }
+        
+        return $data->get()->toArray();
     }
 
     function getDataById($id):array
