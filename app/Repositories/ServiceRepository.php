@@ -153,7 +153,7 @@ class ServiceRepository extends Repository{
 
     public function setDataConfirmCost(string $id){
         $attributs = [
-            'konfirmasiHarga'=>true
+            'konfirmasibiaya'=>true
         ];
         $data = $this->save($attributs,$id);
         return [
@@ -161,10 +161,7 @@ class ServiceRepository extends Repository{
         ];
     }
 
-    public function setDataConfirmation(string $id){
-        $attributs = [
-            'dikonfirmasi'=>true
-        ];
+    public function setDataConfirmation(string $id,array $attributs){
         $data = $this->save($attributs,$id);
         return [
             'idService'=>$data->id
@@ -195,7 +192,7 @@ class ServiceRepository extends Repository{
         ];
         if($first === true){
             $columns2 = [
-                'kelengkapan','catatan','estimasiBiaya','biaya','uangMuka','cacatProduk','tanggalMasuk','jamMasuk','tanggalAmbil','jamAmbil','garansi','usernameCS','usernameTeknisi','butuhKonfirmasi','dikonfirmasi','konfirmasiHarga'
+                'kelengkapan','catatan','estimasiBiaya','biaya','uangMuka','cacatProduk','tanggalMasuk','jamMasuk','tanggalAmbil','jamAmbil','garansi','usernameCS','usernameTeknisi','butuhKonfirmasi','dikonfirmasi','konfirmasiBiaya'
             ];
             $columns = array_merge($columns,$columns2);
         }
@@ -218,7 +215,7 @@ class ServiceRepository extends Repository{
             ,'kode' => $data->kode
             ,'keluhan' => $data->keluhan
             ,'status' => $data->status
-            ,'totalHarga' => $data->totalBiaya
+            ,'totalBiaya' => $data->totalBiaya
             ,'diambil' => boolval($data->diambil)
         ];
 
@@ -228,18 +225,18 @@ class ServiceRepository extends Repository{
                 ,'cacatProduk'=>$data->cacatProduk
                 ,'catatan'=>$data->catatan
                 ,'estimasiBiaya'=>$data->estimasiBiaya
-                ,'harga'=>$data->biaya
+                ,'biaya'=>$data->biaya
                 ,'uangMuka'=>$data->uangMuka
                 ,'tanggalMasuk'=>$data->tanggalMasuk
                 ,'jamMasuk'=>$data->jamMasuk
                 ,'tanggalAmbil'=>$data->tanggalAmbil
                 ,'jamAmbil'=>$data->jamAmbil
-                ,'lamaGaransi'=>$data->garansi
+                ,'garansi'=>$data->garansi
                 ,'usernameCS'=>$data->usernameCS
                 ,'usernameTeknisi'=>$data->usernameTeknisi,
                 'butuhKonfirmasi'=>boolval($data->butuhKonfirmasi),
                 'sudahdikonfirmasi'=>boolval($data->dikonfirmasi),
-                'sudahKonfirmasiBiaya'=>boolval($data->konfirmasiHarga),
+                'sudahKonfirmasiBiaya'=>boolval($data->konfirmasiBiaya),
             ];
             $arrData['product'] = array_merge($arrData['product'],$product);
         }
@@ -262,7 +259,7 @@ class ServiceRepository extends Repository{
         ];
         if($isUpdate === false){
             $attributs['status']='antri';
-            $attributs['konfirmasiHarga']=false;
+            $attributs['konfirmasiBiaya']=false;
             $attributs['diambil']=false;
             $attributs['tanggalMasuk']= DateAndTime::getDateNow();
             $attributs['jamMasuk']= DateAndTime::getTimeNow();
@@ -275,7 +272,7 @@ class ServiceRepository extends Repository{
         $dataCtgr = DB::table('categories')->where('nama',$inputs['kategori'])->first();
         $date = DateAndTime::setDateFromString($inputs['tanggalMasuk']);
         $attributs = [
-            'code'=>$date->format('y').$date->format('m').$date->format('d').$dataCtgr->id.sprintf("%03d",$inputs['id'])
+            'kode'=>$date->format('y').$date->format('m').$date->format('d').$dataCtgr->id.sprintf("%03d",$inputs['id'])
         ];
         $data = $this->save($attributs, $inputs['id']);
     }

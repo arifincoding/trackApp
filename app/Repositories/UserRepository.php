@@ -40,7 +40,7 @@ class userRepository extends Repository{
             }
         }
         
-        $attributs = ['id as idPegawai','username',DB::raw("CONCAT(namaDepan,' ',namaBelakang) AS namaLengkap"),'noHp','peran','status'];
+        $attributs = ['id as idPegawai','username',DB::raw("CONCAT(namaDepan,' ',namaBelakang) AS nama"),'noHp','peran','status'];
         
         $data = $this->getWhere($attributs,$filters,false);
         

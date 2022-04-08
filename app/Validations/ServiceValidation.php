@@ -14,7 +14,7 @@ class ServiceValidation extends Validation{
             'noHp'=>'numeric',
             'bisaWA'=>'in:true,false',
             'namaBarang'=>'required',
-            'kategori'=>'required|exists:categories,title',
+            'kategori'=>'required|exists:categories,nama',
             'keluhan'=>'required',
             'butuhKonfirmasi'=>'required|in:true,false'
         ];
@@ -29,6 +29,12 @@ class ServiceValidation extends Validation{
     function serviceWarranty(){
         $this->rules = [
             'garansi'=>'required'
+        ];
+    }
+
+    function confirmation(){
+        $this->rules = [
+            'dikonfirmasi'=>'required|in:true,false'
         ];
     }
 }

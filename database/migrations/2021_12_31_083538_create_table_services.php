@@ -30,8 +30,8 @@ class CreateTableServices extends Migration
             $table->string('garansi',20)->nullable();
             $table->string('idCustomer',20);
             $table->boolean('butuhKonfirmasi');
-            $table->boolean('konfirmasi')->nullable();
-            $table->boolean('konfirmasiHarga');
+            $table->boolean('dikonfirmasi')->nullable();
+            $table->boolean('konfirmasiBiaya');
             $table->boolean('diambil');
             $table->string('tanggalMasuk',20);
             $table->string('tanggalAmbil',20)->nullable();

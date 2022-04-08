@@ -119,8 +119,11 @@ class ServiceController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function setServiceConfirmation(string $id){
-        $data = $this->serviceRepository->setDataConfirmation($id);
+    public function setServiceConfirmation(Request $request,string $id,ServiceValidation $validator){
+        $input =  $request->only('dikonfirmasi');
+        $validator->confirmation($input);
+        $validator->validate($input);
+        $data = $this->serviceRepository->setDataConfirmation($id,$input);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
