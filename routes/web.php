@@ -81,7 +81,6 @@ $router->group(['prefix'=>'','middleware'=>['auth']],function () use ($router){
 });
 
 $router->group(['prefix'=>'','middleware'=>['auth','role:teknisi']],function() use ($router){
-    
     // diagnosa
     $router->post('/services/{id}/diagnosas','DiagnosaController@newDiagnosaByIdService');
     $router->put('/services/diagnosas/{id}','DiagnosaController@updateDiagnosa');
@@ -92,9 +91,10 @@ $router->group(['prefix'=>'','middleware'=>['auth','role:teknisi']],function() u
     $router->get('/services/queue','ServiceController@getServiceQueue');
     $router->get('/services/progress','ServiceController@getMyProgressService');
     $router->put('/services/{id}/status','ServiceController@updateServiceStatus');
+});
 
+$router->group(['prefix'=>'','middleware'=>['auth','role:pemilik,teknisi']],function() use ($router){
     // responbility
-    $router->get('/employes/technician/responbility','ResponbilityController@getTechnicianResponbilities');
-
+    $router->get('/employes/technicians/{id}/responbilities','ResponbilityController@getTechnicianResponbilities');
 });
 ?>

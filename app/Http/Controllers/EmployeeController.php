@@ -27,8 +27,6 @@ class EmployeeController extends Controller{
     function getEmployeeById($id): JsonResponse
     {
         $dataUser = $this->userRepository->getDataById($id);
-        $dataResponbility = $this->responbilityRepository->getListDataByUsername($dataUser['username']);
-        $dataUser['tanggungJawab'] = $dataResponbility;
         return $this->jsonSuccess('sukses',200,$dataUser);
     }
 

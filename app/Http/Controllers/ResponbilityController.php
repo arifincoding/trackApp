@@ -16,8 +16,8 @@ class ResponbilityController extends Controller{
         $this->userRepository = $user;
     }
 
-    function getTechnicianResponbilities(){
-        $data = $this->responbilityRepository->getListDataByUsername(auth()->payload()->get('username'));
+    function getTechnicianResponbilities(string $id){
+        $data = $this->responbilityRepository->getListDataByUsername($id);
         if($data){
             return $this->jsonSuccess('sukses',200,$data);
         }
