@@ -137,7 +137,7 @@ class ServiceController extends Controller{
                 $this->customerRepository->deleteById($dataService['idCustomer']);
             }
             $data = $this->serviceRepository->deleteById($id);
-            return $this->jsonSUccess('sukses',200,$data);
+            return $this->jsonMessageOnly('sukses hapus data service');
         }
     }
 

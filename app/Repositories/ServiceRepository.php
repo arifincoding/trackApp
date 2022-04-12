@@ -53,7 +53,7 @@ class ServiceRepository extends Repository{
 
         $resp = [];
         foreach($responbility as $item){
-            array_push($resp,$item['kategori']);
+            array_push($resp,$item->kategori);
         }
         $filters=[
             'limit'=>$limit,
@@ -91,7 +91,7 @@ class ServiceRepository extends Repository{
                 'kode'=>$cari
             ];
         }
-        $attributs=['id as idService','kode','kategori','keluhan','status'];
+        $attributs=['id as idService','kode','nama','kategori','keluhan','status','dikonfirmasi'];
         $data = $this->getWhere($attributs,$filters);
         return $data->toArray();
     }

@@ -35,6 +35,6 @@ class ResponbilityController extends Controller{
 
     public function delete($id){
         $data = $this->responbilityRepository->deleteDataById($id);
-        return $this->jsonSuccess('sukses',200, $data);
+        return $this->jsonMessageOnly('sukses hapus data tanggung jawab');
     }
 }

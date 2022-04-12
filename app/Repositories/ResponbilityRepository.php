@@ -27,11 +27,10 @@ class ResponbilityRepository extends Repository{
         $table2 = ['table'=>'categories', 'key'=>'id'];
         $filters = ['where'=>['username'=>$username]];
         $data = $this->getAllWithInnerJoin($table1,$table2,$filters)->get($columns);
-        $arrData = $data->toArray();
-        if($arrData == []){
+        if($data->toArray() == []){
             return null;
         }
-        return $arrData;
+        return $data->toArray();
     }
 
     function create(array $inputs, string $role, string $username){

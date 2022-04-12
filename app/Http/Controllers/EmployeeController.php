@@ -62,6 +62,6 @@ class EmployeeController extends Controller{
 
     function deleteEmployee($id){
         $data = $this->userRepository->deleteById($id);
-        return $this->jsonSuccess('sukses',200,$data);
+        return $this->jsonMessageOnly('sukses hapus data pegawai');
     }
 }

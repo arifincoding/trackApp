@@ -50,8 +50,8 @@ $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik']],function () 
     $router->put('/services/{id}/confirmation','ServiceController@setServiceConfirmation');
 
     // responbility
-    $router->post('/employes/{id}/technician/responbility','ResponbilityController@newTechnicianResponbilities');
-    $router->delete('/employes/technician/responbility/{id}','ResponbilityController@delete');
+    $router->post('/employes/{id}/technician/responbilities','ResponbilityController@newTechnicianResponbilities');
+    $router->delete('/employes/technician/responbilities/{id}','ResponbilityController@delete');
 });
 
 $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik,customer service']],function () use ($router){
@@ -76,7 +76,7 @@ $router->group(['prefix'=>'','middleware'=>['auth']],function () use ($router){
 
     // user
     $router->post('/user/logout','AuthController@logout');
-    $router->post('/user/refresh','AuthController@getRefreshToken');
+    $router->post('/user/refresh','AuthController@createRefreshToken');
     $router->put('user/change-password','UserController@changeMyPassword');
 });
 
@@ -95,6 +95,6 @@ $router->group(['prefix'=>'','middleware'=>['auth','role:teknisi']],function() u
 
 $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik,teknisi']],function() use ($router){
     // responbility
-    $router->get('/employes/technicians/{id}/responbilities','ResponbilityController@getTechnicianResponbilities');
+    $router->get('/employes/{id}/technician/responbilities','ResponbilityController@getTechnicianResponbilities');
 });
 ?>

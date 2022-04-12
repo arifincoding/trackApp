@@ -20,7 +20,7 @@ class DiagnosaRepository extends Repository{
     }
 
     function getDataById(string $id){
-        $attributs = ['id as idDiagnosa','judul','status','biaya','dikonfirmasi'];
+        $attributs = ['id as idDiagnosa','idService','judul','status','biaya','dikonfirmasi'];
         $data = $this->findById($id,$attributs);
         return $data->toArray();
     }
@@ -42,8 +42,7 @@ class DiagnosaRepository extends Repository{
     function update(array $attributs, string $id){
         $data = $this->save($attributs,$id);
         return [
-            'idDiagnosa'=>$data->id,
-            'idService'=>$data->idService
+            'idDiagnosa'=>$data->id
         ];
     }
 

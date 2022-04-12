@@ -24,7 +24,7 @@ class AuthController extends Controller{
         return $this->jsonToken($token);
     }
 
-    public function getRefreshToken(){
+    public function createRefreshToken(){
         $newToken = auth()->refresh();
         return $this->jsonToken($newToken);
     }

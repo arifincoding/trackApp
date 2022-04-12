@@ -35,7 +35,7 @@ class DiagnosaController extends Controller{
     }
 
     public function updateDiagnosa(Request $request, $id, DiagnosaValidation $validator){
-        $inputs = $request->only('judul','status');
+        $inputs = $request->only('judul');
         $validation = $validator->validate($inputs);
         $data = $this->diagnosaRepository->update($inputs,$id);
         return $this->jsonSuccess('sukses',200,$data);
@@ -60,7 +60,7 @@ class DiagnosaController extends Controller{
 
     public function deleteDiagnosa($id){
         $data = $this->diagnosaRepository->deleteById($id);
-        return $this->jsonSuccess('sukses',200,$data);
+        return $this->jsonMessageOnly('sukses hapus data diagnosa');
     }
 
     private function setTotalCost($cost, $diagnosaCost, $totalCost){

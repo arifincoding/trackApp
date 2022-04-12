@@ -43,6 +43,6 @@ class CategoryController extends Controller{
 
     function deleteCategory($id){
         $data = $this->repository->deleteDataById($id);
-        return $this->jsonSuccess('sukses',200,$data);
+        return $this->jsonMessageOnly('sukses hapus data kategori');
     }
 }
