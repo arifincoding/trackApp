@@ -17,4 +17,9 @@ class ServiceTrackRepository extends Repository{
         $attributs['jam'] = DateAndTime::getTimeNow();
         $data = $this->save($attributs);
     }
+
+    function deleteByIdService(string $id){
+        $data = $this->delete($id,'idService');
+        return ['sukses'=>$data];
+    }
 }

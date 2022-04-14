@@ -30,7 +30,6 @@ $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik']],function () 
     // employee
     $router->post('/employes','EmployeeController@createEmployee');
     $router->put('/employes/{id}','EmployeeController@updateEmployee');
-    $router->put('/employes/{id}/status','EmployeeController@changeStatusEmployee');
     $router->get('/employes','EmployeeController@getListEmployee');
     $router->get('/employes/{id}','EmployeeController@getEmployeeById');
     $router->delete('/employes/{id}','EmployeeController@deleteEmployee');
@@ -41,8 +40,9 @@ $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik']],function () 
     $router->put('/categories/{id}','CategoryController@updateCategory');
     $router->delete('/categories/{id}','CategoryController@deleteCategory');
 
-    // diagnosas
-    $router->put('/services/diagnosas/{id}/cost','DiagnosaController@updateDiagnosaCost');
+    // brokens
+    $router->put('/services/brokens/{id}/cost','BrokenController@updateBrokenCost');
+    $router->put('/services/brokens/{id}/confirm','BrokenController@updateBrokenCofirmation');
 
     // services
     $router->put('/services/{id}/confirm-cost','ServiceController@setServiceConfirmCost');
@@ -71,8 +71,8 @@ $router->group(['prefix'=>'','middleware'=>['auth']],function () use ($router){
 
     // service
     $router->get('/services/{id}/detail','ServiceController@getServiceById');
-    $router->get('/services/{id}/diagnosas','DiagnosaController@getListDiagnosaByIdService');
-    $router->get('/services/diagnosas/{id}','DiagnosaController@getDiagnosaById');
+    $router->get('/services/{id}/brokens','BrokenController@getListBrokenByIdService');
+    $router->get('/services/brokens/{id}','BrokenController@getBrokenById');
 
     // user
     $router->post('/user/logout','AuthController@logout');
@@ -81,11 +81,10 @@ $router->group(['prefix'=>'','middleware'=>['auth']],function () use ($router){
 });
 
 $router->group(['prefix'=>'','middleware'=>['auth','role:teknisi']],function() use ($router){
-    // diagnosa
-    $router->post('/services/{id}/diagnosas','DiagnosaController@newDiagnosaByIdService');
-    $router->put('/services/diagnosas/{id}','DiagnosaController@updateDiagnosa');
-    $router->put('/services/diagnosas/{id}/status','DiagnosaController@updateDiagnosaStatus');
-    $router->delete('/services/diagnosas/{id}','DiagnosaController@deleteDiagnosa');
+    // brokens
+    $router->post('/services/{id}/brokens','BrokenController@newBrokenByIdService');
+    $router->put('/services/brokens/{id}','BrokenController@updateBroken');
+    $router->delete('/services/brokens/{id}','BrokenController@deleteBroken');
 
     // service
     $router->get('/services/queue','ServiceController@getServiceQueue');

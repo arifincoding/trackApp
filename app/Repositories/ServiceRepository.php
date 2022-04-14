@@ -36,7 +36,7 @@ class ServiceRepository extends Repository{
         }
         $table1= ['table'=>'services', 'key'=>'idCustomer'];
         $table2= ['table'=>'customers', 'key'=>'id'];
-        $data = $this->getAllWithInnerJoin($table1,$table2,$filters)->get($columns);
+        $data = $this->getAllWithInnerJoin($table1,$table2,$filters)->orderByDesc('services.id')->get($columns);
         $arrData = [];
         foreach($data as $key=>$item){
             $arrData[$key] = $this->setReturnData($item);
@@ -244,7 +244,10 @@ class ServiceRepository extends Repository{
     }
 
     private function setAttributs(array $inputs,string $idCustomer, bool $isUpdate = false){
-        
+        $confirmed=false;
+        if($inputs['butuhKonfirmasi'] === false){
+            $confirmed=true;
+        }
         $attributs = [
             'nama'=>$inputs['namaBarang'],
             'kategori'=>$inputs['kategori'],
@@ -261,6 +264,7 @@ class ServiceRepository extends Repository{
             $attributs['status']='antri';
             $attributs['konfirmasiBiaya']=false;
             $attributs['diambil']=false;
+            $attributs['dikonfirmasi']=$confirmed;
             $attributs['tanggalMasuk']= DateAndTime::getDateNow();
             $attributs['jamMasuk']= DateAndTime::getTimeNow();
             $attributs['usernameCS']=  auth()->payload()->get('username');

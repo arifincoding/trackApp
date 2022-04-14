@@ -25,7 +25,6 @@ class userRepository extends Repository{
         $filters = [
             'limit'=>$inputs['limit'] ?? 0,
             'where'=>[
-                'status'=> $inputs['status'] ?? null,
                 'peran'=> $inputs['peran'] ?? null
             ]
         ];
@@ -40,7 +39,7 @@ class userRepository extends Repository{
             }
         }
         
-        $attributs = ['id as idPegawai','username',DB::raw("CONCAT(namaDepan,' ',namaBelakang) AS nama"),'noHp','peran','status'];
+        $attributs = ['id as idPegawai','username',DB::raw("CONCAT(namaDepan,' ',namaBelakang) AS nama"),'noHp','peran'];
         
         $data = $this->getWhere($attributs,$filters,false);
         
@@ -53,16 +52,13 @@ class userRepository extends Repository{
 
     function getDataById($id):array
     {
-        $attributs = ['id as idPegawai','username','namaDepan','namaBelakang','jenisKelamin','noHp','peran','status','email','alamat'];
+        $attributs = ['id as idPegawai','username','namaDepan','namaBelakang','jenisKelamin','noHp','peran','email','alamat'];
         $data = $this->findById($id,$attributs);
         return $data->toArray();
     }
 
     function create(array $attributs):array
     {
-        $attributs += [
-            'status'=>'registered'
-        ];
         $data = $this->save($attributs);
         $register = $this->registerUser($data->id);
         return [
@@ -77,7 +73,7 @@ class userRepository extends Repository{
     {
         $find = $this->findById($id);
         $returnData = ['idPegawai'=>$find->id];
-        if($find->email !== $attributs['email'] && $find->status === 'registered'){
+        if($find->email !== $attributs['email']){
             $akun = Str::random(8);
             $attributs['password'] = Hash::make($akun);
             $returnData += [
@@ -95,28 +91,12 @@ class userRepository extends Repository{
         return ['sukses'=>$data];
     }
 
-    function changeStatus(string $status, $id):array
-    {
-        $check = $this->findById($id);
-        if($check->status !== 'registered'){
-            $attribut = [
-                'status'=>$status
-            ];
-            $data = $this->save($attribut,$id);
-            return ['idPegawai'=>$id];
-        }
-        throw new Exception('tidak bisa update status pegawai karena pegawai belum mengganti password akunnya');
-    }
-
     function changePassword(array $inputs, string $username){
         $check = $this->model->where('username',$username)->firstOrFail();
         if(Hash::check($inputs['sandiLama'],$check->password)){
             $attributs = [
                 'password'=>Hash::make($inputs['sandiBaru']),
             ];
-            if($check->status === 'registered'){
-                $attributs['status'] = 'active';
-            }
             $data = $this->save($attributs,$check->id);
         }
         return ['sukses'=>true];

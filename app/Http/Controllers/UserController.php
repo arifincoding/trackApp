@@ -12,7 +12,7 @@ class UserController extends Controller{
 
     function changeMyPassword(Request $request){
         $data = $this->repository->changePassword($request->all(),auth()->payload()->get('username'));
-        return $this->jsonSuccess('sukses merubah sandi akun',200, $data);
+        return $this->jsonMessageOnly('sukses merubah sandi akun');
     }
 }
 

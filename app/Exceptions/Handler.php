@@ -36,9 +36,9 @@ class Handler extends ExceptionHandler
             'error'=>'permintaan gagal, data tidak ditemukan'
         ],
         ValidationException::class => [
-            'status'=>400,
+            'status'=>422,
             'message'=>'permintaan gagal, kesalahan validasi',
-            'error'=>'kesalahan dalam input'
+            'errors'=>'kesalahan dalam input'
         ]
     ];
 
@@ -74,8 +74,8 @@ class Handler extends ExceptionHandler
             'message'=>'internal server error',
             'error'=> 'something went wrong'
         ];
-        if($defidation['status']==400){
-            $defidation['error'] = $exception->errors();
+        if($defidation['status']==422){
+            $defidation['errors'] = $exception->errors();
         }
         if(env("APP_DEBUG") === true){
             if($defidation['status']==500){

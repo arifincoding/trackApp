@@ -24,7 +24,6 @@ class CreateTableUsers extends Migration
             $table->string('jenisKelamin',15);
             $table->string('alamat')->nullable();
             $table->string('profilPic')->nullable();
-            $table->string('status');
             $table->string('email')->unique();
             $table->timestamps();
         });

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTableDiagnosas extends Migration
+class CreateTableBrokens extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateTableDiagnosas extends Migration
      */
     public function up()
     {
-        Schema::create('diagnosas', function (Blueprint $table) {
+        Schema::create('brokens', function (Blueprint $table) {
             $table->id();
             $table->string('judul',100);
+            $table->text('deskripsi');
             $table->string('idService',30)->nullable();
             $table->boolean('dikonfirmasi')->nullable();
-            $table->string('status',30)->nullable();
             $table->string('biaya',20)->nullable();
             $table->string('idGaransi',30)->nullable();
             $table->timestamps();
@@ -32,6 +32,6 @@ class CreateTableDiagnosas extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('diagnosas');
+        Schema::dropIfExists('brokens');
     }
 }

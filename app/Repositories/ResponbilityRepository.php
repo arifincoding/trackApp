@@ -26,7 +26,7 @@ class ResponbilityRepository extends Repository{
         $table1 = ['table'=>'responbilities','key'=>'idKategori'];
         $table2 = ['table'=>'categories', 'key'=>'id'];
         $filters = ['where'=>['username'=>$username]];
-        $data = $this->getAllWithInnerJoin($table1,$table2,$filters)->get($columns);
+        $data = $this->getAllWithInnerJoin($table1,$table2,$filters)->orderByDesc('responbilities.id')->get($columns);
         if($data->toArray() == []){
             return null;
         }
@@ -60,6 +60,14 @@ class ResponbilityRepository extends Repository{
         return [
             'sukses' => $data
         ];
+    }
+
+    function deleteByUsername(string $username){
+        $find= $this->model->where('username',$username)->first();
+        if($find){
+            $data = $this->model->where('username',$username)->delete();
+        }
+        return ['sukses'=>true];
     }
 }
 

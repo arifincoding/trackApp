@@ -14,16 +14,18 @@ use App\Repositories\ServiceRepository;
 use App\Repositories\ResponbilityRepository;
 use App\Repositories\ServiceTrackRepository;
 use App\Repositories\CustomerRepository;
+use App\Repositories\BrokenRepository;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ServiceController extends Controller{
     
-    function __construct(ServiceRepository $service, ServiceTrackRepository $serviceTrack, ResponbilityRepository $responbility, CustomerRepository $customer){
+    function __construct(ServiceRepository $service, ServiceTrackRepository $serviceTrack, ResponbilityRepository $responbility, CustomerRepository $customer, BrokenRepository $broken){
         $this->serviceRepository = $service;
         $this->serviceTrackRepository = $serviceTrack;
         $this->responbilityRepository = $responbility;
         $this->customerRepository = $customer;
+        $this->brokenRepository = $broken;
     }
 
     function getListService(Request $request){
@@ -96,7 +98,11 @@ class ServiceController extends Controller{
         $validator->statusService();
         $validator->validate($input);
         $data = $this->serviceRepository->updateDataStatus($input,$id);
-        $this->addServiceTrack($request->input('status'),$id);
+        $this->addServiceTrack($input,$id);
+        $find = $this->serviceRepository->getDataById($id);
+        if($input['status'] === 'selesai diagnosa' && $find['butuhKonfirmasi']===true){
+            $this->addServiceTrack('tunggu',$id);
+        }
         return $this->jsonSuccess('sukses',200,$data);
     }
 
@@ -124,6 +130,11 @@ class ServiceController extends Controller{
         $validator->confirmation($input);
         $validator->validate($input);
         $data = $this->serviceRepository->setDataConfirmation($id,$input);
+        if($input['dikonfirmasi'] === true){
+            $this->addServiceTrack('setuju',$id);
+        }else{
+            $this->addServiceTrack('batal',$id);
+        }
         return $this->jsonSuccess('sukses',200,$data);
     }
 
@@ -137,25 +148,23 @@ class ServiceController extends Controller{
                 $this->customerRepository->deleteById($dataService['idCustomer']);
             }
             $data = $this->serviceRepository->deleteById($id);
+            if($data['sukses']===true){
+                $this->serviceTrackRepository->deleteByIdService($id);
+                $this->brokenRepository->deleteByIdService($id);
+            }
             return $this->jsonMessageOnly('sukses hapus data service');
         }
     }
 
     private function addServiceTrack(string $status, string $id){
-        $message = '';
         $service = $this->serviceRepository->getDataById($id);
-        if($status=='antri'){
-            $message = 'barang service masuk dan menunggu untuk di diagnosa';
-        }else if($status === 'diagnosa'){
-            $message = $service['kategori'].' anda sedang dalam proses diagnosa';
-        }else if($status ==  'selesai diagnosa'){
-            $message = $service['kategori'].' anda selesai di diagnosa';
-        }else if($status ==  'proses'){
-            $message = $service['kategori'].' anda sedang dalam proses perbaikan';
-        }else if($status == 'selesai'){
-            $message = $service['kategori'].' anda telah selesai diperbaiki';
-        }else if($status == 'diambil'){
-            $message = $service['kategori'].' anda telah diambil';
+        $messages = $this->getTrackMessage($service['kategori']);
+        $message = '';
+        foreach($messages as $key=>$item){
+            if($status === $key){
+                $message = $item;
+                break;
+            }
         }
         $attributs = [
             'idService'=>$id,
@@ -163,6 +172,20 @@ class ServiceController extends Controller{
             'status'=>$status
         ];
         $this->serviceTrackRepository->create($attributs);
+    }
+
+    private function getTrackMessage(string $kategori){
+        return [
+            'antri'=> $kategori.' anda telah di terima oleh '.auth()->payload()->get('name').' dan sedang menunggu untuk di diagnosa',
+            'mulai diagnosa'=> $kategori.' anda sedang dalam proses diagnosa',
+            'selesai diagnosa'=> $kategori.' anda telah selesai di diagnosa',
+            'tunggu'=> $kategori.' anda sedang menunggu persetujuan dari anda',
+            'proses'=> $kategori.' anda sedang dalam proses perbaikan',
+            'selesai'=> $kategori.' anda telah selesai diperbaiki',
+            'diambil'=> $kategori.' anda telah diambil',
+            'batal'=> 'anda telah membatalkan perbaikan',
+            'setuju'=> 'anda telah menyetujui perbaikan'
+        ];
     }
 }
 ?>

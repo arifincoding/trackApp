@@ -18,7 +18,7 @@ class EmployeeController extends Controller{
 
     function getListEmployee(Request $request, EmployeeValidation $validator): JsonResponse
     {
-        $filters = $request->only(['limit','status','peran','cari']);
+        $filters = $request->only(['limit','peran','cari']);
         $validation = $validator->validate($filters);
         $data = $this->userRepository->getListData($filters);
         return $this->jsonSuccess('sukses',200,$data);
@@ -52,16 +52,12 @@ class EmployeeController extends Controller{
         return $this->jsonSuccess('sukses',200,['idPegawai'=>$data['idPegawai']]);
     }
 
-    function changeStatusEmployee(Request $request, $id, EmployeeValidation $validator): JsonResponse
-    {
-        $validator->status();
-        $validation = $validator->validate($request->only(['status']));
-        $data = $this->userRepository->changeStatus($request->input('status'),$id);
-        return $this->jsonSuccess('sukses',200,$data);
-    }
-
     function deleteEmployee($id){
+        $find = $this->userRepository->getDataById($id);
         $data = $this->userRepository->deleteById($id);
+        if($data['sukses'] === true){
+            $this->respobilityRepository->deleteByUsername($find['username']);
+        }
         return $this->jsonMessageOnly('sukses hapus data pegawai');
     }
 }
