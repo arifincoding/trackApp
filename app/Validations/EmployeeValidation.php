@@ -24,11 +24,6 @@ class EmployeeValidation extends Validation{
             $this->rules['email'] = 'required|email|unique:users,email,'.$id;
         }
     }
-    function status(){
-        $this->rules = [
-            'status'=>'required'
-        ];
-    }
 }
 
 ?>

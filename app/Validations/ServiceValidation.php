@@ -12,11 +12,11 @@ class ServiceValidation extends Validation{
         $this->rules = [
             'namaCustomer'=>'required|regex:/^[\pL\s\-]+$/u',
             'noHp'=>'numeric',
-            'bisaWA'=>'in:true,false',
+            'bisaWA'=>'boolean',
             'namaBarang'=>'required',
             'kategori'=>'required|exists:categories,nama',
             'keluhan'=>'required',
-            'butuhKonfirmasi'=>'required|in:true,false'
+            'butuhKonfirmasi'=>'required|boolean'
         ];
     }
 
@@ -34,7 +34,7 @@ class ServiceValidation extends Validation{
 
     function confirmation(){
         $this->rules = [
-            'dikonfirmasi'=>'required|in:true,false'
+            'dikonfirmasi'=>'required|boolean'
         ];
     }
 }
