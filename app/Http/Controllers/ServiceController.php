@@ -98,10 +98,11 @@ class ServiceController extends Controller{
         $validator->statusService();
         $validator->validate($input);
         $data = $this->serviceRepository->updateDataStatus($input,$id);
-        $this->addServiceTrack($input,$id);
+        $this->addServiceTrack($input['status'],$id);
         $find = $this->serviceRepository->getDataById($id);
-        if($input['status'] === 'selesai diagnosa' && $find['butuhKonfirmasi']===true){
+        if($input['status'] === 'selesai diagnosa' && boolval($find['butuhKonfirmasi'])===true){
             $this->addServiceTrack('tunggu',$id);
+            $this->serviceRepository->updateDataStatus(['status'=>'tunggu'],$id);
         }
         return $this->jsonSuccess('sukses',200,$data);
     }

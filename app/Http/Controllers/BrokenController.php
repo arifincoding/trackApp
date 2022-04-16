@@ -24,7 +24,7 @@ class BrokenController extends Controller{
     public function newBrokenByIdService(Request $request,$id,BrokenValidation $validator){
         $inputs = $request->only('judul','deskripsi');
         $validation = $validator->validate($inputs);
-        $findService = $this->serviceRepository->findDataById($id);
+        $findService = $this->serviceRepository->getDataById($id);
         $data = $this->brokenRepository->create($inputs,$id, $findService['butuhKonfirmasi']);
         return $this->jsonSuccess('sukses',200,$data);
     }
@@ -44,12 +44,11 @@ class BrokenController extends Controller{
     public function updateBrokenCost(Request $request, $id, BrokenValidation $validator){
         $inputs = $request->only('biaya');
         $validator->cost();
-        $validator->validate();
-        $findBroken = $this->brokenRepository->findDataById($id);
-        $findService = $this->serviceRepository->findDataById($findBroken['idService']);
-        $price = $request->input('biaya');
+        $validator->validate($inputs);
+        $findBroken = $this->brokenRepository->getDataById($id);
+        $findService = $this->serviceRepository->getDataById($findBroken['idService']);
         $totalCost = $this->setTotalCost($inputs['biaya'],$findBroken['biaya'],$findService['totalBiaya']);
-        $this->serviceRepository->updateTotalPrice($id,$totalCost);
+        $this->serviceRepository->updateTotalPrice($findBroken['idService'],$totalCost);
         $data = $this->brokenRepository->update($inputs,$id);
         return $this->jsonSuccess('sukses',200,$data);
     }

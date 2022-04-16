@@ -234,9 +234,9 @@ class ServiceRepository extends Repository{
                 ,'garansi'=>$data->garansi
                 ,'usernameCS'=>$data->usernameCS
                 ,'usernameTeknisi'=>$data->usernameTeknisi,
-                'butuhKonfirmasi'=>boolval($data->butuhKonfirmasi),
-                'sudahdikonfirmasi'=>boolval($data->dikonfirmasi),
-                'sudahKonfirmasiBiaya'=>boolval($data->konfirmasiBiaya),
+                'butuhKonfirmasi'=> boolval($data->butuhKonfirmasi),
+                'sudahdikonfirmasi'=> is_null($data->dikonfirmasi) ? null : boolval($data->dikonfirmasi),
+                'sudahKonfirmasiBiaya'=> boolval($data->konfirmasiBiaya),
             ];
             $arrData['product'] = array_merge($arrData['product'],$product);
         }
@@ -244,7 +244,7 @@ class ServiceRepository extends Repository{
     }
 
     private function setAttributs(array $inputs,string $idCustomer, bool $isUpdate = false){
-        $confirmed=false;
+        $confirmed=null;
         if($inputs['butuhKonfirmasi'] === false){
             $confirmed=true;
         }

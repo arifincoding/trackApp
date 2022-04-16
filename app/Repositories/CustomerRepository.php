@@ -18,7 +18,7 @@ class CustomerRepository extends Repository{
             $noHp = $inputs['noHp'] ?? null;
             $wa = false;
             if($noHp !== null){
-                $wa = filter_var($inputs['bisaWA'],FILTER_VALIDATE_BOOLEAN);
+                $wa = $inputs['bisaWA'];
             }
             $attributs = [
                 'nama'=>$inputs['namaCustomer'],
@@ -71,7 +71,7 @@ class CustomerRepository extends Repository{
         $noHp = $inputs['noHp'] ?? null;
         $wa = false;
         if($noHp !== null){
-            $wa = filter_var($inputs['bisaWA'],FILTER_VALIDATE_BOOLEAN);
+            $wa = $inputs['bisaWA'];
         }
 
         if($inputs['namaCustomer'] !== $findData->nama || $inputs['noHp'] !== $findData->noHp){

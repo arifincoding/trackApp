@@ -16,12 +16,16 @@ class BrokenRepository extends Repository{
         $attributs=['id as idKerusakan','idService','judul','deskripsi','biaya','dikonfirmasi'];
         $filters = ['where'=>['idService'=>$idService]];
         $data = $this->getWhere($attributs,$filters);
+        foreach($data as $item){
+            $item->dikonfirmasi = is_null($item->dikonfirmasi) ? null : boolval($item->dikonfirmasi);
+        }
         return $data->toArray();
     }
 
     function getDataById(string $id){
         $attributs = ['id as idKerusakan','idService','judul','deskripsi','biaya','dikonfirmasi'];
         $data = $this->findById($id,$attributs);
+        $data->dikonfirmasi = is_null($data->dikonfirmasi) ? null : boolval($item->dikonfirmasi);
         return $data->toArray();
     }
 
@@ -41,7 +45,8 @@ class BrokenRepository extends Repository{
     function update(array $attributs, string $id){
         $data = $this->save($attributs,$id);
         return [
-            'idKerusakan'=>$data->id
+            'idKerusakan'=>$data->id,
+            'idService'=>$data->idService
         ];
     }
 

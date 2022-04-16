@@ -21,7 +21,7 @@ class ResponbilityController extends Controller{
         if($data){
             return $this->jsonSuccess('sukses',200,$data);
         }
-        throw new ModelNotFoundException('data tidak ditemukan');
+        return $this->jsonSuccess('sukses',200,[]);
     }
 
     function newTechnicianResponbilities(Request $request, $id, ResponbilityValidation $validator){
