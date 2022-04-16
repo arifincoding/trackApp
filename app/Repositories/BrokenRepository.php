@@ -25,7 +25,7 @@ class BrokenRepository extends Repository{
     function getDataById(string $id){
         $attributs = ['id as idKerusakan','idService','judul','deskripsi','biaya','dikonfirmasi'];
         $data = $this->findById($id,$attributs);
-        $data->dikonfirmasi = is_null($data->dikonfirmasi) ? null : boolval($item->dikonfirmasi);
+        $data->dikonfirmasi = is_null($data->dikonfirmasi) ? null : boolval($data->dikonfirmasi);
         return $data->toArray();
     }
 
