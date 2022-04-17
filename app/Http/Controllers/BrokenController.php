@@ -11,6 +11,9 @@ use Illuminate\Http\JsonResponse;
 
 class BrokenController extends Controller{
 
+    private $brokenRepository;
+    private $serviceRepository;
+
     public function __construct(BrokenRepository $broken, ServiceRepository $service){
         $this->brokenRepository = $broken;
         $this->serviceRepository = $service;

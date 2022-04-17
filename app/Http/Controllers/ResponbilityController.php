@@ -11,6 +11,9 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ResponbilityController extends Controller{
     
+    private $responbilityRepository;
+    private $userRepository;
+
     public function __construct(ResponbilityRepository $responbility, UserRepository $user){
         $this->responbilityRepository = $responbility;
         $this->userRepository = $user;

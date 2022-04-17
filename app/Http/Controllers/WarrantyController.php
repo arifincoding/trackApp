@@ -10,6 +10,9 @@ use App\Validations\WarrantyValidation;
 
 class WarrantyController extends Controller{
 
+    private $warrantyRepository;
+    private $serviceRepository;
+    
     public function __construct(WarrantyRepository $warranty, ServiceRepository $service){
         $this->warrantyRepository = $warranty;
         $this->serviceRepository = $service;

@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class Repository{
+
+    protected $model;
+    
     function __construct(Model $model){
         $this->model = $model;
     }

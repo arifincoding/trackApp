@@ -20,6 +20,12 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ServiceController extends Controller{
     
+    private $serviceRepository;
+    private $serviceTrackRepository;
+    private $responbilityRepository;
+    private $customerRepository;
+    private $brokenRepository;
+
     function __construct(ServiceRepository $service, ServiceTrackRepository $serviceTrack, ResponbilityRepository $responbility, CustomerRepository $customer, BrokenRepository $broken){
         $this->serviceRepository = $service;
         $this->serviceTrackRepository = $serviceTrack;

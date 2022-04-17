@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller{
     
+    private $repository;
+
     function __construct(UserRepository $repository){
         $this->repository = $repository;
     }

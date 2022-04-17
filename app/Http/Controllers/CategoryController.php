@@ -7,6 +7,9 @@ use App\Repositories\CategoryRepository;
 use App\Validations\CategoryValidation;
 
 class CategoryController extends Controller{
+
+    private $repository;
+    
     function __construct(CategoryRepository $repository){
         $this->repository = $repository;
     }

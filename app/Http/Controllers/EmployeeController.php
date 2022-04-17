@@ -11,6 +11,10 @@ use App\Mails\EmployeeMail;
 use Illuminate\Support\Facades\Mail;
 
 class EmployeeController extends Controller{
+
+    private $userRepository;
+    private $responbilityRepository;
+
     function __construct(UserRepository $user, ResponbilityRepository $responbility){
         $this->userRepository = $user;
         $this->responbilityRepository = $responbility;

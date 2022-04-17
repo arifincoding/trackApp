@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Repositories\UserRepository;
 
 class UserController extends Controller{
+
+    private $repository;
+    
     function __construct(UserRepository $repository){
         $this->repository = $repository;
     }
