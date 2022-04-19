@@ -25,7 +25,6 @@ class CreateTableServices extends Migration
             $table->string('uangMuka',20)->nullable();
             $table->string('status',30);
             $table->string('estimasiBiaya',20)->nullable();
-            $table->string('biaya',20)->nullable();
             $table->string('totalBiaya',30)->nullable();
             $table->string('garansi',20)->nullable();
             $table->string('idCustomer',20);

@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Models\User;
 use App\Repositories\Repository;
-use App\Repositories\ResponbilityRepository;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Exception;
@@ -15,9 +14,8 @@ use Illuminate\Support\Facades\DB;
 
 class userRepository extends Repository{
 
-    function __construct(User $model, ResponbilityRepository $responbility){
+    function __construct(User $model){
         parent::__construct($model);
-        $this->responbility = $responbility;
     }
 
     function getlistData(array $inputs):array

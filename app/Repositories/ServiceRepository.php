@@ -192,7 +192,7 @@ class ServiceRepository extends Repository{
         ];
         if($first === true){
             $columns2 = [
-                'kelengkapan','catatan','estimasiBiaya','biaya','uangMuka','cacatProduk','tanggalMasuk','jamMasuk','tanggalAmbil','jamAmbil','garansi','usernameCS','usernameTeknisi','butuhKonfirmasi','dikonfirmasi','konfirmasiBiaya'
+                'kelengkapan','catatan','estimasiBiaya','uangMuka','cacatProduk','tanggalMasuk','jamMasuk','tanggalAmbil','jamAmbil','garansi','usernameCS','usernameTeknisi','butuhKonfirmasi','dikonfirmasi','konfirmasiBiaya'
             ];
             $columns = array_merge($columns,$columns2);
         }
@@ -225,7 +225,6 @@ class ServiceRepository extends Repository{
                 ,'cacatProduk'=>$data->cacatProduk
                 ,'catatan'=>$data->catatan
                 ,'estimasiBiaya'=>$data->estimasiBiaya
-                ,'biaya'=>$data->biaya
                 ,'uangMuka'=>$data->uangMuka
                 ,'tanggalMasuk'=>$data->tanggalMasuk
                 ,'jamMasuk'=>$data->jamMasuk
@@ -253,7 +252,7 @@ class ServiceRepository extends Repository{
             'kategori'=>$inputs['kategori'],
             'keluhan'=>$inputs['keluhan'],
             'idCustomer'=>$idCustomer,
-            'butuhKonfirmasi'=>filter_var($inputs['butuhKonfirmasi'],FILTER_VALIDATE_BOOLEAN),
+            'butuhKonfirmasi'=>$inputs['butuhKonfirmasi'],
             'kelengkapan'=> $inputs['kelengkapan'] ?? null,
             'catatan'=> $inputs['catatan'] ?? null,
             'uangMuka'=> $inputs['uangMuka'] ?? null,
