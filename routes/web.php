@@ -32,6 +32,7 @@ $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik']],function () 
     $router->get('/employes','EmployeeController@getListEmployee');
     $router->get('/employes/{id}','EmployeeController@getEmployeeById');
     $router->delete('/employes/{id}','EmployeeController@deleteEmployee');
+    $router->get('/employes/{id}/categories-not-in-responbility','CategoryController@getCategoryNotInResponbility');
 
     // categories
     $router->post('/categories','CategoryController@newCategory');

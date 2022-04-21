@@ -28,6 +28,11 @@ class CategoryController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
+    function getCategoryNotInResponbility(string $id){
+        $data = $this->repository->getDataNotInResponbility($id);
+        return $this->jsonSuccess('sukses',200,$data);
+    }
+
     function newCategory(Request $request, CategoryValidation $validator){
         $input = $request->only('nama');
         $validator->post();
