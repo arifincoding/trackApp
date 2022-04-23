@@ -13,7 +13,7 @@ class ServiceValidation extends Validation{
             'namaCustomer'=>'required|regex:/^[\pL\s\-]+$/u',
             'noHp'=>'numeric',
             'bisaWA'=>'boolean',
-            'namaBarang'=>'required',
+            'namaProduk'=>'required',
             'kategori'=>'required|exists:categories,nama',
             'keluhan'=>'required',
             'butuhKonfirmasi'=>'required|boolean'

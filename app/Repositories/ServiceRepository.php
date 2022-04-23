@@ -248,7 +248,7 @@ class ServiceRepository extends Repository{
             $confirmed=true;
         }
         $attributs = [
-            'nama'=>$inputs['namaBarang'],
+            'nama'=>$inputs['namaProduk'],
             'kategori'=>$inputs['kategori'],
             'keluhan'=>$inputs['keluhan'],
             'idCustomer'=>$idCustomer,

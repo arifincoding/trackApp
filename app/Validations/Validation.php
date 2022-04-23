@@ -11,14 +11,15 @@ class Validation {
     protected array $messages = [
         'required'=> ':attribute tidak boleh kosong',
         'unique'=> ':attribute ini sudah digunakan',
-        'numeric'=>'nilai dari :attribute harus berupa angka',
+        'numeric'=>':attribute harus berupa angka',
         'filled'=> ':attribute tidak boleh kosong',
         'alpha'=> ':attribute harus berupa karakter alfabet',
         'in'=> 'nilai dari :attribute tidak diizinkan',
         'regex'=> ':attribute hanya mengizinkan karakter alfabet dan spasi',
         'between'=> 'jumlah karakter :attribute minimal :min , maksimal :max',
         'exists'=> ':attribute tidak tersedia',
-        'array'=> ':Attribute harus berupa array'
+        'array'=> ':Attribute harus berupa array',
+        'email'=> 'alamat email tidak valid'
     ];
 
     protected array $attributes = [];
