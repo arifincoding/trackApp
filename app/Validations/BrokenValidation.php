@@ -17,7 +17,7 @@ class BrokenValidation extends Validation{
     }
     function cost(){
         $this->rules = [
-            'biaya'=>'required'
+            'biaya'=>'required|numeric'
         ];
     }
 }

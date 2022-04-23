@@ -15,7 +15,7 @@ class Validation {
         'filled'=> ':attribute tidak boleh kosong',
         'alpha'=> ':attribute harus berupa karakter alfabet',
         'in'=> 'nilai dari :attribute tidak diizinkan',
-        'regex'=> ':attribute hanya mengizinkan karakter alfabet dan spasi',
+        'regex'=> ':attribute tidak benar',
         'between'=> 'jumlah karakter :attribute minimal :min , maksimal :max',
         'exists'=> ':attribute tidak tersedia',
         'array'=> ':Attribute harus berupa array',

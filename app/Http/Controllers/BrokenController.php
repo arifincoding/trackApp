@@ -39,7 +39,7 @@ class BrokenController extends Controller{
 
     public function updateBroken(Request $request, $id, BrokenValidation $validator){
         $inputs = $request->only('judul','deskripsi');
-        $validation = $validator->validate($inputs);
+        $validator->validate($inputs);
         $data = $this->brokenRepository->update($inputs,$id);
         return $this->jsonSuccess('sukses',200,$data);
     }
