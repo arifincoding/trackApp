@@ -24,6 +24,8 @@ $router->delete('/services/warranty/{id}','WarrantyController@deleteWarranty');
 
 $router->post('/user/login','AuthController@login');
 
+$router->get('/services/{id}/track','ServiceController@getServiceTrackByCode');
+
 $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik']],function () use ($router){
 
     // employee

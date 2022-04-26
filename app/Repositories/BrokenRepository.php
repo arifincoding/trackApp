@@ -22,6 +22,12 @@ class BrokenRepository extends Repository{
         return $data->toArray();
     }
 
+    function getAllByIdService(int $idService){
+        $attributs = ['judul','deskripsi','biaya','dikonfirmasi'];
+        $data = $this->model->select($attributs)->where('idService',$idService)->orderByDesc('id')->get();
+        return $data->toArray();
+    }
+
     function getDataById(string $id){
         $attributs = ['id as idKerusakan','idService','judul','deskripsi','biaya','dikonfirmasi'];
         $data = $this->findById($id,$attributs);

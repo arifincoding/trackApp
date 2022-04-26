@@ -66,6 +66,13 @@ class ServiceController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
+    public function getServiceTrackByCode(string $id){
+        $data = $this->serviceRepository->getDataByCode($id);
+        $data['kerusakan'] = $this->brokenRepository->getAllByIdService($data['idService']);
+        $data['riwayat'] = $this->serviceTrackRepository->getAllByIdService($data['idService']);
+        return $this->jsonSuccess('sukses',200,$data);
+    }
+
     function newService(Request $request, ServiceValidation $validator):JsonResponse
     {
         $input= $request->all();

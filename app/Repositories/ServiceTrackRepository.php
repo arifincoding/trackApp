@@ -12,6 +12,12 @@ class ServiceTrackRepository extends Repository{
         parent::__construct($model);
     }
 
+    public function getAllByIdService(int $idService){
+        $attributs = ['status','judul','tanggal','jam'];
+        $data = $this->model->select($attributs)->where('idService',$idService)->orderByDesc('id')->get();
+        return $data->toArray();
+    }
+
     function create(array $attributs):void{
         $attributs['tanggal'] = DateAndTime::getDateNow();
         $attributs['jam'] = DateAndTime::getTimeNow();

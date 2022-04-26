@@ -109,6 +109,12 @@ class ServiceRepository extends Repository{
         return $this->setReturnData($data,true);
     }
 
+    public function getDataByCode(string $code){
+        $attributs = ['id as idService','kode','nama','kategori','status','dikonfirmasi','totalBiaya'];
+        $data = $this->model->select($attributs)->where('kode',$code)->firstOrFail();
+        return $data->toArray();
+    }
+
     public function create(array $inputs,string $idCustomer):array
     {
         $attributs = $this->setAttributs($inputs, $idCustomer);
