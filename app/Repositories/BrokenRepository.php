@@ -6,6 +6,7 @@ use App\Repositories\Repository;
 use App\Models\Broken;
 use App\Exceptions\Handler;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Helpers\Formatter;
 
 class BrokenRepository extends Repository{
     function __construct(Broken $model){
@@ -17,7 +18,8 @@ class BrokenRepository extends Repository{
         $filters = ['where'=>['idService'=>$idService]];
         $data = $this->getWhere($attributs,$filters);
         foreach($data as $item){
-            $item->dikonfirmasi = is_null($item->dikonfirmasi) ? null : boolval($item->dikonfirmasi);
+            $item->dikonfirmasi = Formatter::boolval($item->dikonfirmasi);
+            $item->biaya = Formatter::currency($item->biaya);
         }
         return $data->toArray();
     }
@@ -25,13 +27,18 @@ class BrokenRepository extends Repository{
     function getAllByIdService(int $idService){
         $attributs = ['judul','deskripsi','biaya','dikonfirmasi'];
         $data = $this->model->select($attributs)->where('idService',$idService)->orderByDesc('id')->get();
+        foreach($data as $item){
+            $item->dikonfirmasi = Formatter::boolval($item->dikonfirmasi);
+            $item->biaya = Formatter::currency($item->biaya);
+        }
         return $data->toArray();
     }
 
     function getDataById(string $id){
         $attributs = ['id as idKerusakan','idService','judul','deskripsi','biaya','dikonfirmasi'];
         $data = $this->findById($id,$attributs);
-        $data->dikonfirmasi = is_null($data->dikonfirmasi) ? null : boolval($data->dikonfirmasi);
+        $data->dikonfirmasi = Formatter::boolval($data->dikonfirmasi);
+        $data->biayaString = Formatter::currency($data->biaya);
         return $data->toArray();
     }
 

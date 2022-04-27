@@ -61,6 +61,16 @@ class BrokenController extends Controller{
         $validator->confirm();
         $validator->validate($inputs);
         $data = $this->brokenRepository->update($inputs,$id);
+        $dataService = $this->serviceRepository->getDataById($data['idService']);
+        $dataBroken = $this->brokenRepository->getDataById($id);
+        $total = $dataService['totalBiaya'];
+        if($inputs['dikonfirmasi'] === true && $dataBroken['dikonfirmasi'] !== null){
+            $total = $total + $dataBroken['biaya'];
+        }
+        else if($inputs['dikonfirmasi'] === false && $dataBroken['dikonfirmasi'] !== null){
+            $total = $total - $dataBroken['biaya'];
+        }
+        $this->serviceRepository->updateTotalPrice($data['idService'],$total);
         return $this->jsonSuccess('sukses',200,$data);
     }
 

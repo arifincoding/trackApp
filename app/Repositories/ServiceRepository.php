@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Helpers\DateAndTime;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\Formatter;
 
 class ServiceRepository extends Repository{
     public function __construct(Service $model)
@@ -112,6 +113,9 @@ class ServiceRepository extends Repository{
     public function getDataByCode(string $code){
         $attributs = ['id as idService','kode','nama','kategori','status','dikonfirmasi','totalBiaya'];
         $data = $this->model->select($attributs)->where('kode',$code)->firstOrFail();
+        $data->dikonfirmasi = Formatter::boolval($data->dikonfirmasi);
+        $data->totalBiaya = Formatter::currency($data->totalBiaya);
+        $data->uangMuka = Formatter::currency($data->uangMuka);
         return $data->toArray();
     }
 
@@ -211,7 +215,7 @@ class ServiceRepository extends Repository{
         $arrData['customer'] = [
             'nama' => $data->namaCustomer,
             'noHp' => $data->noHp,
-            'bisaWA' => boolval($data->bisaWA)
+            'bisaWA' => Formatter::boolval($data->bisaWA)
         ];
 
         $arrData['product'] = [
@@ -222,16 +226,20 @@ class ServiceRepository extends Repository{
             ,'keluhan' => $data->keluhan
             ,'status' => $data->status
             ,'totalBiaya' => $data->totalBiaya
-            ,'diambil' => boolval($data->diambil)
+            ,'diambil' => Formatter::boolval($data->diambil)
         ];
 
         if($isById === true){
+            $yangHarusDibayar = $data->totalBiaya - $data->uangMuka;
             $product = [
                 'kelengkapan'=>$data->kelengkapan
+                ,'totalBiayaString'=>Formatter::currency($data->totalBiaya)
                 ,'cacatProduk'=>$data->cacatProduk
                 ,'catatan'=>$data->catatan
-                ,'estimasiBiaya'=>$data->estimasiBiaya
+                ,'estimasiBiaya'=>Formatter::currency($data->estimasiBiaya)
                 ,'uangMuka'=>$data->uangMuka
+                ,'uangMukaString'=>Formatter::currency($data->uangMuka)
+                ,'yangHarusDiBayar'=> Formatter::currency($yangHarusDibayar)
                 ,'tanggalMasuk'=>$data->tanggalMasuk
                 ,'jamMasuk'=>$data->jamMasuk
                 ,'tanggalAmbil'=>$data->tanggalAmbil
@@ -239,9 +247,9 @@ class ServiceRepository extends Repository{
                 ,'garansi'=>$data->garansi
                 ,'usernameCS'=>$data->usernameCS
                 ,'usernameTeknisi'=>$data->usernameTeknisi,
-                'butuhKonfirmasi'=> boolval($data->butuhKonfirmasi),
-                'sudahdikonfirmasi'=> is_null($data->dikonfirmasi) ? null : boolval($data->dikonfirmasi),
-                'sudahKonfirmasiBiaya'=> boolval($data->konfirmasiBiaya),
+                'butuhKonfirmasi'=> Formatter::boolval($data->butuhKonfirmasi),
+                'sudahdikonfirmasi'=> Formatter::boolval($data->dikonfirmasi),
+                'sudahKonfirmasiBiaya'=> Formatter::boolval($data->konfirmasiBiaya),
             ];
             $arrData['product'] = array_merge($arrData['product'],$product);
         }
