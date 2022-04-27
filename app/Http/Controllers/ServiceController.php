@@ -68,6 +68,9 @@ class ServiceController extends Controller{
 
     public function getServiceTrackByCode(string $id){
         $data = $this->serviceRepository->getDataByCode($id);
+        if($data === []){
+            return $this->jsonSuccess('data tidak ditemukan',200,[]);
+        }
         $data['kerusakan'] = $this->brokenRepository->getAllByIdService($data['idService']);
         $data['riwayat'] = $this->serviceTrackRepository->getAllByIdService($data['idService']);
         return $this->jsonSuccess('sukses',200,$data);
@@ -174,11 +177,15 @@ class ServiceController extends Controller{
         $service = $this->serviceRepository->getDataById($id);
         $messages = $this->getTrackMessage($service['kategori']);
         $message = '';
-        foreach($messages as $key=>$item){
-            if($status === $key){
-                $message = $item;
-                break;
-            }
+        if($service['dikonfirmasi'] === 0 && $status === 'selesai'){
+            $message = 'proses pembatalan selesai, '.$service['kategori'].' sudah bisa untuk diambil.';
+        }else{
+            foreach($messages as $key=>$item){
+                if($status === $key){
+                    $message = $item;
+                    break;
+                }
+        }
         }
         $attributs = [
             'idService'=>$id,
@@ -194,11 +201,12 @@ class ServiceController extends Controller{
             'mulai diagnosa'=> $kategori.' anda sedang dalam proses diagnosa',
             'selesai diagnosa'=> $kategori.' anda telah selesai di diagnosa',
             'tunggu'=> $kategori.' anda sedang menunggu persetujuan dari anda',
-            'proses'=> $kategori.' anda sedang dalam proses perbaikan',
-            'selesai'=> $kategori.' anda telah selesai diperbaiki',
+            'proses perbaikan'=> $kategori.' anda sedang dalam proses perbaikan',
+            'proses pembatalan'=> $kategori.' anda sedang dalam proses pembatalan',
+            'selesai'=> 'proses perbaikan selesai, '.$kategori.' anda sudah bisa untuk diambil',
             'diambil'=> $kategori.' anda telah diambil',
-            'batal'=> 'anda telah membatalkan perbaikan',
-            'setuju'=> 'anda telah menyetujui perbaikan'
+            'batal'=> 'anda mengajukan pembatalan proses perbaikan',
+            'setuju'=> 'anda telah menyetujui proses perbaikan'
         ];
     }
 }

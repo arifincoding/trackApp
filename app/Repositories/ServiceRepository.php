@@ -71,8 +71,11 @@ class ServiceRepository extends Repository{
                 'nama' => $cari,
             ];
         }
-        $attributs=['id as idService','kode','nama','kategori','keluhan','status'];
+        $attributs=['id as idService','kode','nama','kategori','keluhan','status','dikonfirmasi'];
         $data = $this->getWhere($attributs,$filters);
+        foreach($data as $item){
+            $item->dikonfirmasi = Formatter::boolval($item->dikonfirmasi);
+        }
         return $data->toArray();
     }
 
@@ -94,6 +97,9 @@ class ServiceRepository extends Repository{
         }
         $attributs=['id as idService','kode','nama','kategori','keluhan','status','dikonfirmasi'];
         $data = $this->getWhere($attributs,$filters);
+        foreach($data as $item){
+            $item->dikonfirmasi = Formatter::boolval($item->dikonfirmasi);
+        }
         return $data->toArray();
     }
 
@@ -112,7 +118,10 @@ class ServiceRepository extends Repository{
 
     public function getDataByCode(string $code){
         $attributs = ['id as idService','kode','nama','kategori','status','dikonfirmasi','totalBiaya'];
-        $data = $this->model->select($attributs)->where('kode',$code)->firstOrFail();
+        $data = $this->model->select($attributs)->where('kode',$code)->first();
+        if(!$data){
+            return [];
+        }
         $data->dikonfirmasi = Formatter::boolval($data->dikonfirmasi);
         $data->totalBiaya = Formatter::currency($data->totalBiaya);
         $data->uangMuka = Formatter::currency($data->uangMuka);
@@ -198,11 +207,11 @@ class ServiceRepository extends Repository{
             'bisaWA',
             'kode',
             'kategori','keluhan','status','totalBiaya','diambil',
-            'services.id as idService'
+            'services.id as idService','dikonfirmasi'
         ];
         if($first === true){
             $columns2 = [
-                'kelengkapan','catatan','estimasiBiaya','uangMuka','cacatProduk','tanggalMasuk','jamMasuk','tanggalAmbil','jamAmbil','garansi','usernameCS','usernameTeknisi','butuhKonfirmasi','dikonfirmasi','konfirmasiBiaya'
+                'kelengkapan','catatan','estimasiBiaya','uangMuka','cacatProduk','tanggalMasuk','jamMasuk','tanggalAmbil','jamAmbil','garansi','usernameCS','usernameTeknisi','butuhKonfirmasi','konfirmasiBiaya'
             ];
             $columns = array_merge($columns,$columns2);
         }
@@ -226,14 +235,15 @@ class ServiceRepository extends Repository{
             ,'keluhan' => $data->keluhan
             ,'status' => $data->status
             ,'totalBiaya' => $data->totalBiaya
+            ,'totalBiayaString'=>Formatter::currency($data->totalBiaya)
             ,'diambil' => Formatter::boolval($data->diambil)
+            ,'sudahdikonfirmasi'=> Formatter::boolval($data->dikonfirmasi)
         ];
 
         if($isById === true){
             $yangHarusDibayar = $data->totalBiaya - $data->uangMuka;
             $product = [
                 'kelengkapan'=>$data->kelengkapan
-                ,'totalBiayaString'=>Formatter::currency($data->totalBiaya)
                 ,'cacatProduk'=>$data->cacatProduk
                 ,'catatan'=>$data->catatan
                 ,'estimasiBiaya'=>Formatter::currency($data->estimasiBiaya)
@@ -248,7 +258,6 @@ class ServiceRepository extends Repository{
                 ,'usernameCS'=>$data->usernameCS
                 ,'usernameTeknisi'=>$data->usernameTeknisi,
                 'butuhKonfirmasi'=> Formatter::boolval($data->butuhKonfirmasi),
-                'sudahdikonfirmasi'=> Formatter::boolval($data->dikonfirmasi),
                 'sudahKonfirmasiBiaya'=> Formatter::boolval($data->konfirmasiBiaya),
             ];
             $arrData['product'] = array_merge($arrData['product'],$product);
