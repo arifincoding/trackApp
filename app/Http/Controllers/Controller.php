@@ -34,9 +34,9 @@ class Controller extends BaseController
 
     function jsonValidationError($errors){
         return response()->json([
-            'status'=>400,
+            'status'=>422,
             'message'=>'kesalahan validasi',
             'errors'=>$errors
-        ],400);
+        ],422);
     }
 }

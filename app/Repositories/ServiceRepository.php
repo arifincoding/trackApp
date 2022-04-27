@@ -239,7 +239,7 @@ class ServiceRepository extends Repository{
                 ,'estimasiBiaya'=>Formatter::currency($data->estimasiBiaya)
                 ,'uangMuka'=>$data->uangMuka
                 ,'uangMukaString'=>Formatter::currency($data->uangMuka)
-                ,'yangHarusDiBayar'=> Formatter::currency($yangHarusDibayar)
+                ,'yangHarusDibayar'=> Formatter::currency($yangHarusDibayar)
                 ,'tanggalMasuk'=>$data->tanggalMasuk
                 ,'jamMasuk'=>$data->jamMasuk
                 ,'tanggalAmbil'=>$data->tanggalAmbil

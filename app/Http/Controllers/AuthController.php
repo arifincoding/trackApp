@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Auth;
+use App\Validations\AuthValidation;
 
 class AuthController extends Controller{
     
@@ -14,14 +15,15 @@ class AuthController extends Controller{
         $this->repository = $repository;
     }
 
-    function login(Request $request){
+    function login(Request $request, AuthValidation $validator){
         $credentials = $request->only('username','password');
-
+        $validator->validate($credentials);
         if (!$token = auth()->attempt($credentials)){
-            return response()->json([
-                'status'=>401,
-                'message'=>'login failed'
-            ],401);
+            return $this->jsonValidationError([
+                'password'=>[
+                    'password salah'
+                ]
+                ]);
         }
         return $this->jsonToken($token);
     }
