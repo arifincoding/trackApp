@@ -48,11 +48,9 @@ class BrokenController extends Controller{
         $inputs = $request->only('biaya');
         $validator->cost();
         $validator->validate($inputs);
-        $findBroken = $this->brokenRepository->getDataById($id);
-        $findService = $this->serviceRepository->getDataById($findBroken['idService']);
-        $totalCost = $this->setTotalCost($inputs['biaya'],$findBroken['biaya'],$findService['totalBiaya']);
-        $this->serviceRepository->updateTotalPrice($findBroken['idService'],$totalCost);
+        $totalCost = $this->setTotalCost($id,$inputs['biaya']);
         $data = $this->brokenRepository->update($inputs,$id);
+        $this->serviceRepository->updateTotalPrice($data['idService'],$totalCost);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
@@ -60,17 +58,11 @@ class BrokenController extends Controller{
         $inputs = $request->only('dikonfirmasi');
         $validator->confirm();
         $validator->validate($inputs);
+        $total = $this->setTotalCostBrokenAgree($id,$inputs['dikonfirmasi']);
         $data = $this->brokenRepository->update($inputs,$id);
-        $dataService = $this->serviceRepository->getDataById($data['idService']);
-        $dataBroken = $this->brokenRepository->getDataById($id);
-        $total = $dataService['totalBiaya'];
-        if($inputs['dikonfirmasi'] === true && $dataBroken['dikonfirmasi'] !== null){
-            $total = $total + $dataBroken['biaya'];
+        if($total !== null){
+            $this->serviceRepository->updateTotalPrice($data['idService'],$total);
         }
-        else if($inputs['dikonfirmasi'] === false && $dataBroken['dikonfirmasi'] !== null){
-            $total = $total - $dataBroken['biaya'];
-        }
-        $this->serviceRepository->updateTotalPrice($data['idService'],$total);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
@@ -79,16 +71,30 @@ class BrokenController extends Controller{
         return $this->jsonMessageOnly('sukses hapus data kerusakan');
     }
 
-    private function setTotalCost($cost, $brokenCost, $totalCost){
-        $total = 0;
-        if($brokenCost !== null){
-            $total = $totalCost + ($cost - $brokenCost);
+    private function setTotalCost(int $id, int $cost){
+        $findBroken = $this->brokenRepository->getDataById($id);
+        $findService = $this->serviceRepository->getDataById($findBroken['idService']);
+        if($findBroken['biaya'] !== null){
+            return $findService['totalBiaya'] + ($cost - $findBroken['biaya']);
         }
-        else if($totalCost !== null){
-            $total = $totalCost + $cost;
+        else if($findService['totalBiaya'] !== null){
+            return $findService['totalBiaya'] + $cost;
         }else{
-            $total = $cost;
+            return $cost;
         }
-        return $total;
+    }
+
+    private function setTotalCostBrokenAgree(int $id,bool $isAgree){
+        $dataBroken = $this->brokenRepository->getDataById($id);
+        if($dataBroken['dikonfirmasi'] !== $isAgree){
+            $dataService = $this->serviceRepository->getDataById($dataBroken['idService']);
+            if($isAgree === true && $dataBroken['dikonfirmasi'] !== null){
+                return $dataService['totalBiaya'] + $dataBroken['biaya'];
+            }
+            else if($isAgree === false){
+                return $dataService['totalBiaya'] - $dataBroken['biaya'];
+            }
+        }
+        return null;
     }
 }

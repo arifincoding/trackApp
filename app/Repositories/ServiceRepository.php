@@ -241,7 +241,10 @@ class ServiceRepository extends Repository{
         ];
 
         if($isById === true){
-            $yangHarusDibayar = $data->totalBiaya - $data->uangMuka;
+            $yangHarusDibayar = $data->totalBiaya;
+            if($data->uangMuka !== null){
+                $yangHarusDibayar = $data->totalBiaya - $data->uangMuka;
+            }
             $product = [
                 'kelengkapan'=>$data->kelengkapan
                 ,'cacatProduk'=>$data->cacatProduk
