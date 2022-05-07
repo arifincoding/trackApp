@@ -15,8 +15,10 @@ use App\Repositories\ResponbilityRepository;
 use App\Repositories\ServiceTrackRepository;
 use App\Repositories\CustomerRepository;
 use App\Repositories\BrokenRepository;
+use Illuminate\Support\Facades\Http;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Helpers\Formatter;
 
 class ServiceController extends Controller{
     
@@ -94,6 +96,13 @@ class ServiceController extends Controller{
         
         $dataService = $this->serviceRepository->create($input,$idCustomer);
         $this->addServiceTrack('antri',$dataService['idService']);
+        
+        $findCustomer = $this->customerRepository->findDataById($dataCustomer['idCustomer']);
+        if($findCustomer['bisaWA'] === 1){
+            $findService = $this->serviceRepository->getDataById($dataService['idService']);
+            $message = 'terima kasih telah melakukan perbaikan '.$findService['kategori'].' anda di trackApp untuk memantau perkembangan proses perbaikan '.$findService['kategori'].' anda, dapat dilihat melalui link berikut http://127.0.0.1:3000/track?kode='.$findService['kode'];
+            $this->sendChat($findCustomer['noHp'],$message);
+        }
         return $this->jsonSuccess('sukses',200,$dataService);
     }
 
@@ -116,9 +125,21 @@ class ServiceController extends Controller{
         $data = $this->serviceRepository->updateDataStatus($input,$id);
         $this->addServiceTrack($input['status'],$id);
         $find = $this->serviceRepository->getDataById($id);
+        // add tunggu in status selesai diagnosa and butuh konfirmasi is true
         if($input['status'] === 'selesai diagnosa' && boolval($find['butuhKonfirmasi'])===true){
             $this->addServiceTrack('tunggu',$id);
             $this->serviceRepository->updateDataStatus(['status'=>'tunggu'],$id);
+        }
+        // send chat if status done
+        if($input['status'] === 'selesai'){
+            $message = '*perbaikan selesai* '.$find['kategori'].' anda sudah *dapat diambil*';
+            if($find['dikonfirmasi'] === 0){
+                $message = '*pembatalan selesai* '.$find['kategori'].' anda sudah *dapat diambil*';
+            }
+            $dataCustomer = $this->customerRepository->findDataById($find['idCustomer']);
+            if($dataCustomer['bisaWA'] === 1){
+                $this->sendChat($dataCustomer['noHp'],$message);
+            }
         }
         return $this->jsonSuccess('sukses',200,$data);
     }
@@ -131,6 +152,20 @@ class ServiceController extends Controller{
 
     public function setServiceConfirmCost(string $id){
         $data = $this->serviceRepository->setDataConfirmCost($id);
+        $findService = $this->serviceRepository->getDataById($data['idService']);
+        $findCustomer = $this->customerRepository->findDataById($findService['idCustomer']);
+        if($findCustomer['bisaWA'] === 1){
+            $listBroken = $this->brokenRepository->getAllByIdService($data['idService']);
+            $message = '*PEMBERITAHUAN*%0aBerikut rincian biaya perbaikan:';
+            foreach($listBroken as $item){
+                $message = $message.'%0a -'.$item['judul'].' : '.$item['biaya'];
+            }
+            $message = $message.'%0a%0a*Total Biaya : '.Formatter::currency($findService['totalBiaya']).'*';
+            if($findService['butuhKonfirmasi'] === 1){
+                $message = $message.'%0a%0aApakah anda setuju untuk melakukan perbaikan?';
+            }
+            $this->sendChat($findCustomer['noHp'],urldecode($message));
+        }
         return $this->jsonSuccess('sukses',200,$data);
     }
 

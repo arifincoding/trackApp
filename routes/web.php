@@ -26,6 +26,10 @@ $router->post('/user/login','AuthController@login');
 
 $router->get('/services/{id}/track','ServiceController@getServiceTrackByCode');
 
+$router->get('/scan','WhatsappController@scan');
+
+$router->get('/chat','WhatsappController@chat');
+
 $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik']],function () use ($router){
 
     // employee
