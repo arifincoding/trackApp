@@ -3,8 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Request;
+use App\Repositories\CustomerRepository;
+use App\Repositories\ServiceRepository;
 
 class WhatsappController extends Controller{
+
+
+    private $customerRepository;
+    private $serviceRepository;
+
+    public function __construct(CustomerRepository $customer, ServiceRepository $service){
+        $this->customerRepository = $customer;
+        $this->serviceRepository = $service;
+    }
 
     public function scan(){
         if($this->check() === true){
@@ -30,12 +42,20 @@ class WhatsappController extends Controller{
         return $response->object()->success;
     }
 
-    public function chat(){
-        $response = Http::post('http://127.0.0.1:4000/chats/send',[
-                'id'=>'owner',
-                'receiver'=>'6285715463861',
-                'message'=>'woe'
-        ]);
-        return $this->jsonSuccess('sukses',200,$response->object());
+    public function chat(Request $request,$id){
+        $findService = $this->serviceRepository->getDataById($id);
+        $findCustomer = $this->customerRepository->findDataById($findService['idCustomer']);
+        if($findCustomer['bisaWA'] === 1){
+            if($this->check() === true){
+                $response = Http::post('http://127.0.0.1:4000/chats/send',[
+                    'id'=>'owner',
+                    'receiver'=>$findCustomer['noHp'],
+                    'message'=>urldecode($request->input('pesan'))
+                ]);
+                return $this->jsonSuccess('sukses mengirim pesan',200,$response->object());
+            }
+            return $this->jsonMessageOnly('session kedaluarsa harap scan ulang kode qr'); 
+        }
+        return $this->jsonMessageOnly('customer tidak memiliki whatsapp');
     }
 }

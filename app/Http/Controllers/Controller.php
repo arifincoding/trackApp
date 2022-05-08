@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Laravel\Lumen\Routing\Controller as BaseController;
-use Illuminate\Support\Facades\Http;
 
 class Controller extends BaseController
 {
@@ -39,13 +38,5 @@ class Controller extends BaseController
             'message'=>'kesalahan validasi',
             'errors'=>$errors
         ],422);
-    }
-
-    protected function sendChat(string $receiver, string $message){
-        $response = Http::post('http://127.0.0.1:4000/chats/send',[
-            'id'=>'owner',
-            'receiver'=>$receiver,
-            'message'=>$message
-    ]);
     }
 }

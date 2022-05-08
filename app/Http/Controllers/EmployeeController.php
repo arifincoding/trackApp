@@ -50,9 +50,6 @@ class EmployeeController extends Controller{
         $validator->post($id);
         $validation = $validator->validate($inputs);
         $data = $this->userRepository->update($inputs, $id);
-        if(isset($data['email'])){
-            Mail::to($data['email'])->send(new EmployeeMail($data['username'],$data['password']));
-        }
         return $this->jsonSuccess('sukses',200,['idPegawai'=>$data['idPegawai']]);
     }
 

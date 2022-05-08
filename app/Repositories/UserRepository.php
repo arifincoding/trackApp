@@ -55,6 +55,12 @@ class userRepository extends Repository{
         return $data->toArray();
     }
 
+    function findByUsername(string $username){
+        $attributs = ['id','username','namaDepan','namaBelakang','jenisKelamin','noHp','peran','email','alamat'];
+        $data = $this->model->select($attributs)->where('username',$username)->first();
+        return $data->toArray();
+    }
+
     function create(array $attributs):array
     {
         $data = $this->save($attributs);
@@ -69,19 +75,8 @@ class userRepository extends Repository{
 
     function update(array $attributs, string $id):array
     {
-        $find = $this->findById($id);
-        $returnData = ['idPegawai'=>$find->id];
-        if($find->email !== $attributs['email']){
-            $akun = Str::random(8);
-            $attributs['password'] = Hash::make($akun);
-            $returnData += [
-                'email'=>$attributs['email'],
-                'username'=>$find->username,
-                'password'=>$akun
-            ];
-        }
         $data = $this->save($attributs, $id);
-        return $returnData;
+        return ['idPegawai'=>$data->id];
     }
 
     function deleteById(string $id){

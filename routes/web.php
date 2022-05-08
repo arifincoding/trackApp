@@ -26,9 +26,7 @@ $router->post('/user/login','AuthController@login');
 
 $router->get('/services/{id}/track','ServiceController@getServiceTrackByCode');
 
-$router->get('/scan','WhatsappController@scan');
-
-$router->get('/chat','WhatsappController@chat');
+$router->get('/chat/scan','WhatsappController@scan');
 
 $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik']],function () use ($router){
 
@@ -83,7 +81,11 @@ $router->group(['prefix'=>'','middleware'=>['auth']],function () use ($router){
     // user
     $router->post('/user/logout','AuthController@logout');
     $router->post('/user/refresh','AuthController@createRefreshToken');
-    $router->put('user/change-password','UserController@changeMyPassword');
+    $router->put('/user/change-password','UserController@changeMyPassword');
+    $router->get('/user/account','UserController@getMyAccount');
+    $router->put('/user/account','UserController@updateMyAccount');
+
+    $router->post('/services/{id}/chat','WhatsappController@chat');
 });
 
 $router->group(['prefix'=>'','middleware'=>['auth','role:teknisi']],function() use ($router){
