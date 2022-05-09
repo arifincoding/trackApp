@@ -86,12 +86,10 @@ class userRepository extends Repository{
 
     function changePassword(array $inputs, string $username){
         $check = $this->model->where('username',$username)->firstOrFail();
-        if(Hash::check($inputs['sandiLama'],$check->password)){
-            $attributs = [
-                'password'=>Hash::make($inputs['sandiBaru']),
-            ];
-            $data = $this->save($attributs,$check->id);
-        }
+        $attributs = [
+            'password'=>Hash::make($inputs['sandiBaru']),
+        ];
+        $data = $this->save($attributs,$check->id);
         return ['sukses'=>true];
     }
 
