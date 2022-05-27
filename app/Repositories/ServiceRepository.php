@@ -128,18 +128,25 @@ class ServiceRepository extends Repository{
         return $data->toArray();
     }
 
-    public function create(array $inputs,string $idCustomer):array
+    public function create(array $attributs):array
     {
-        $attributs = $this->setAttributs($inputs, $idCustomer);
+        $attributs['status']='antri';
+        $attributs['konfirmasiBiaya']=false;
+        $attributs['diambil']=false;
+        $attributs['dikonfirmasi']= $attributs['butuhKonfirmasi'] ? null : true;
+        $attributs['tanggalMasuk']= DateAndTime::getDateNow();
+        $attributs['jamMasuk']= DateAndTime::getTimeNow();
+        $attributs['usernameCS']=  auth()->payload()->get('username');
         $data = $this->save($attributs);
         $this->setCodeService($data->toArray());
         return ['idService'=>$data->id];
     }
 
-    public function update(array $inputs, string $idCustomer,$id):array{
-        $attributs = $this->setAttributs($inputs,$idCustomer,true);
+    public function update(array $attributs,$id):array{
         $data = $this->save($attributs,$id);
-        return ['idService'=>$data->id];
+        return [
+            'idService'=>$data->id
+        ];
     }
 
     public function updateDataStatus(array $inputs, string $id){
@@ -249,7 +256,8 @@ class ServiceRepository extends Repository{
                 'kelengkapan'=>$data->kelengkapan
                 ,'cacatProduk'=>$data->cacatProduk
                 ,'catatan'=>$data->catatan
-                ,'estimasiBiaya'=>Formatter::currency($data->estimasiBiaya)
+                ,'estimasiBiaya'=> $data->estimasiBiaya
+                ,'estimasiBiayaString'=>Formatter::currency($data->estimasiBiaya)
                 ,'uangMuka'=>$data->uangMuka
                 ,'uangMukaString'=>Formatter::currency($data->uangMuka)
                 ,'yangHarusDibayar'=> Formatter::currency($yangHarusDibayar)
@@ -266,35 +274,6 @@ class ServiceRepository extends Repository{
             $arrData['product'] = array_merge($arrData['product'],$product);
         }
         return $arrData;
-    }
-
-    private function setAttributs(array $inputs,string $idCustomer, bool $isUpdate = false){
-        $confirmed=null;
-        if($inputs['butuhKonfirmasi'] === false){
-            $confirmed=true;
-        }
-        $attributs = [
-            'nama'=>$inputs['namaProduk'],
-            'kategori'=>$inputs['kategori'],
-            'keluhan'=>$inputs['keluhan'],
-            'idCustomer'=>$idCustomer,
-            'butuhKonfirmasi'=>$inputs['butuhKonfirmasi'],
-            'kelengkapan'=> $inputs['kelengkapan'] ?? null,
-            'catatan'=> $inputs['catatan'] ?? null,
-            'uangMuka'=> $inputs['uangMuka'] ?? null,
-            'estimasiBiaya'=> $inputs['estimasiBiaya'] ?? null,
-            'cacatProduk'=> $inputs['cacatProduk'] ?? null
-        ];
-        if($isUpdate === false){
-            $attributs['status']='antri';
-            $attributs['konfirmasiBiaya']=false;
-            $attributs['diambil']=false;
-            $attributs['dikonfirmasi']=$confirmed;
-            $attributs['tanggalMasuk']= DateAndTime::getDateNow();
-            $attributs['jamMasuk']= DateAndTime::getTimeNow();
-            $attributs['usernameCS']=  auth()->payload()->get('username');
-        }
-        return $attributs;
     }
 
     private function setCodeService(array $inputs){

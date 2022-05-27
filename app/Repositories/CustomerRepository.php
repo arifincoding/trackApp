@@ -14,29 +14,25 @@ class CustomerRepository extends Repository{
 
     public function create(array $inputs):array
     {
-        try{
-            $noHp = $inputs['noHp'] ?? null;
-            $wa = false;
-            if($noHp !== null){
-                $wa = $inputs['bisaWA'];
-            }
-            $attributs = [
-                'nama'=>$inputs['namaCustomer'],
-                'noHp'=>$inputs['noHp'],
-                'bisaWA'=> $wa,
-                'jumlahService'=>1
-            ];
-            $data = $this->save($attributs);
-            return ['idCustomer'=>$data->id];
-        }catch(Handler $e){
-            return [];
+        $noHp = $inputs['noHp'] ?? null;
+        $wa = false;
+        if($noHp !== null){
+            $wa = $inputs['bisaWA'];
         }
+        $attributs = [
+            'nama'=>$inputs['nama'],
+            'noHp'=>$inputs['noHp'],
+            'bisaWA'=> $wa,
+            'jumlahService'=>1
+        ];
+        $data = $this->save($attributs);
+        return ['idCustomer'=>$data->id];
     }
 
     public function isCustomerExist(array $inputs)
     {
         if(!empty($inputs['noHp'])){
-            $findData = $this->model->where('nama',$inputs['namaCustomer'])->where('noHp',$inputs['noHp'])->first();
+            $findData = $this->model->where('nama',$inputs['nama'])->where('noHp',$inputs['noHp'])->first();
             if($findData){
                 return [
                     'exist'=>true,
@@ -64,30 +60,20 @@ class CustomerRepository extends Repository{
         return ['idCustomer'=>$data->id];
     }
 
-    public function update(array $inputs, string $idCustomer){
-
-        $findData = $this->findById($idCustomer);
-        
+    public function update(array $inputs, string $id){
         $noHp = $inputs['noHp'] ?? null;
-        $wa = false;
-        if($noHp !== null){
-            $wa = $inputs['bisaWA'];
-        }
-
-        if($inputs['namaCustomer'] !== $findData->nama || $inputs['noHp'] !== $findData->noHp){
-            if($findData->jumlahService > 1){
-                $this->save(['jumlahService' => $findData->jumlahService - 1],$idCustomer);
-                return $this->create($inputs);
-            }
+        $wa = $inputs['bisaWA'];
+        if($noHp === null){
+            $wa = false;
         }
         
         $attributs = [
-            'nama'=>$inputs['namaCustomer'],
+            'nama'=>$inputs['nama'],
             'noHp'=>$inputs['noHp'],
             'bisaWA'=> $wa,
         ];
         
-        $data = $this->save($attributs, $idCustomer);
+        $data = $this->save($attributs, $id);
         return ['idCustomer'=>$data->id];
     }
 

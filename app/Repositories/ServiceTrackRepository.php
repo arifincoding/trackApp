@@ -18,10 +18,17 @@ class ServiceTrackRepository extends Repository{
         return $data->toArray();
     }
 
-    function create(array $attributs):void{
-        $attributs['tanggal'] = DateAndTime::getDateNow();
-        $attributs['jam'] = DateAndTime::getTimeNow();
+    function create(array $input, int $id){
+        $attributs = [
+            'judul'=> $input['pesan'],
+            'status'=> $input['status'],
+            'idService'=>$id,
+            'tanggal'=>DateAndTime::getDateNow(),
+            'jam'=>DateAndTime::getTimeNow()
+        ];
+        
         $data = $this->save($attributs);
+        return ['idHistory'=>$data->id];
     }
 
     function deleteByIdService(string $id){

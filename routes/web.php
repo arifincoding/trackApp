@@ -85,7 +85,11 @@ $router->group(['prefix'=>'','middleware'=>['auth']],function () use ($router){
     $router->get('/user/account','UserController@getMyAccount');
     $router->put('/user/account','UserController@updateMyAccount');
 
+    // chat
     $router->post('/services/{id}/chat','WhatsappController@chat');
+
+    // history
+    $router->post('/services/{id}/history','HistoryController@create');
 });
 
 $router->group(['prefix'=>'','middleware'=>['auth','role:teknisi']],function() use ($router){
