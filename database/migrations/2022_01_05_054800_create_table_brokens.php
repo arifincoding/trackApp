@@ -20,7 +20,6 @@ class CreateTableBrokens extends Migration
             $table->string('idService',30)->nullable();
             $table->boolean('dikonfirmasi')->nullable();
             $table->string('biaya',20)->nullable();
-            $table->string('idGaransi',30)->nullable();
             $table->timestamps();
         });
     }

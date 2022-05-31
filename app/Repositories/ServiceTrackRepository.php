@@ -13,14 +13,14 @@ class ServiceTrackRepository extends Repository{
     }
 
     public function getAllByIdService(int $idService){
-        $attributs = ['status','judul','tanggal','jam'];
+        $attributs = ['status','pesan','tanggal','jam'];
         $data = $this->model->select($attributs)->where('idService',$idService)->orderByDesc('id')->get();
         return $data->toArray();
     }
 
     function create(array $input, int $id){
         $attributs = [
-            'judul'=> $input['pesan'],
+            'pesan'=> $input['pesan'],
             'status'=> $input['status'],
             'idService'=>$id,
             'tanggal'=>DateAndTime::getDateNow(),

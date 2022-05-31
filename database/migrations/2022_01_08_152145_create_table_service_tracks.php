@@ -17,10 +17,9 @@ class CreateTableServiceTracks extends Migration
             $table->id();
             $table->string('idService',30);
             $table->string('status',40);
-            $table->string('judul');
+            $table->string('pesan');
             $table->string('tanggal',50);
             $table->string('jam',20);
-            $table->string('idGaransi',30)->nullable();
             $table->timestamps();
         });
     }
