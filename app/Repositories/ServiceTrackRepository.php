@@ -28,7 +28,7 @@ class ServiceTrackRepository extends Repository{
         ];
         
         $data = $this->save($attributs);
-        return ['idHistory'=>$data->id];
+        return ['idRiwayat'=>$data->id];
     }
 
     function deleteByIdService(string $id){

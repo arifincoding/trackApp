@@ -14,7 +14,7 @@ class BrokenRepository extends Repository{
     }
 
     function getListDataByIdService(string $idService){
-        $attributs=['id as idKerusakan','idService','judul','deskripsi','biaya','dikonfirmasi'];
+        $attributs=['id as idKerusakan','judul','biaya','dikonfirmasi'];
         $filters = ['where'=>['idService'=>$idService]];
         $data = $this->getWhere($attributs,$filters);
         foreach($data as $item){

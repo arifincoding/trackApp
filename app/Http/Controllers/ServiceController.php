@@ -60,11 +60,10 @@ class ServiceController extends Controller{
         throw new ModelNotFoundException();
     }
 
-    function getMyProgressService(Request $request){
-        $username = auth()->payload()->get('username');
+    function getProgressService(Request $request,$id){
         $filter = $request->only('status','cari','kategori');
         $limit = $request->query('limit',0);
-        $data = $this->serviceRepository->getListDataMyProgress($username,$limit,$filter);
+        $data = $this->serviceRepository->getListDataMyProgress($id,$limit,$filter);
         return $this->jsonSuccess('sukses',200,$data);
     }
 

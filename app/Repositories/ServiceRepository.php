@@ -241,7 +241,6 @@ class ServiceRepository extends Repository{
             ,'kode' => $data->kode
             ,'keluhan' => $data->keluhan
             ,'status' => $data->status
-            ,'totalBiaya' => $data->totalBiaya
             ,'totalBiayaString'=>Formatter::currency($data->totalBiaya)
             ,'diambil' => Formatter::boolval($data->diambil)
             ,'sudahdikonfirmasi'=> Formatter::boolval($data->dikonfirmasi)
@@ -253,7 +252,8 @@ class ServiceRepository extends Repository{
                 $yangHarusDibayar = $data->totalBiaya - $data->uangMuka;
             }
             $product = [
-                'kelengkapan'=>$data->kelengkapan
+                'totalBiaya' => $data->totalBiaya
+                ,'kelengkapan'=>$data->kelengkapan
                 ,'cacatProduk'=>$data->cacatProduk
                 ,'catatan'=>$data->catatan
                 ,'estimasiBiaya'=> $data->estimasiBiaya

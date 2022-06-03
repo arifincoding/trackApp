@@ -100,7 +100,7 @@ $router->group(['prefix'=>'','middleware'=>['auth','role:teknisi']],function() u
 
     // service
     $router->get('/services/queue','ServiceController@getServiceQueue');
-    $router->get('/services/progress','ServiceController@getMyProgressService');
+    $router->get('/services/{id}/progress','ServiceController@getMyProgressService');
     $router->put('/services/{id}/status','ServiceController@updateServiceStatus');
 });
 
