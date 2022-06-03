@@ -52,7 +52,7 @@ class WhatsappController extends Controller{
                     'receiver'=>$findCustomer['noHp'],
                     'message'=>urldecode($request->input('pesan'))
                 ]);
-                return $this->jsonSuccess('sukses mengirim pesan',200,$response->object());
+                return $this->jsonMessageOnly('sukses mengirim pesan whatsapp');
             }
             return $this->jsonMessageOnly('session kedaluarsa harap scan ulang kode qr'); 
         }
