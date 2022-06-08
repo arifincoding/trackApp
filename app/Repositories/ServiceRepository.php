@@ -50,6 +50,44 @@ class ServiceRepository extends Repository{
         return $data->toArray();
     }
 
+    public function findDataById(int $id){
+        $data = $this->findById($id);
+        $yangHarusDibayar = $data->totalBiaya;
+        if($data->uangMuka !== null){
+            $yangHarusDibayar = $data->totalBiaya - $data->uangMuka;
+        }
+        return [
+            'idService' => $data->id
+            ,'idCustomer'=>$data->idCustomer
+            ,'nama' => $data->namaProduk
+            ,'kategori' => $data->kategori
+            ,'kode' => $data->kode
+            ,'keluhan' => $data->keluhan
+            ,'status' => $data->status
+            ,'totalBiaya' => $data->totalBiaya
+            ,'totalBiayaString'=>Formatter::currency($data->totalBiaya)
+            ,'diambil' => Formatter::boolval($data->diambil)
+            ,'sudahdikonfirmasi'=> Formatter::boolval($data->dikonfirmasi)
+            ,'kelengkapan'=>$data->kelengkapan
+            ,'cacatProduk'=>$data->cacatProduk
+            ,'catatan'=>$data->catatan
+            ,'estimasiBiaya'=> $data->estimasiBiaya
+            ,'estimasiBiayaString'=>Formatter::currency($data->estimasiBiaya)
+            ,'uangMuka'=>$data->uangMuka
+            ,'uangMukaString'=>Formatter::currency($data->uangMuka)
+            ,'yangHarusDibayar'=> Formatter::currency($yangHarusDibayar)
+            ,'tanggalMasuk'=>$data->tanggalMasuk
+            ,'jamMasuk'=>$data->jamMasuk
+            ,'tanggalAmbil'=>$data->tanggalAmbil
+            ,'jamAmbil'=>$data->jamAmbil
+            ,'garansi'=>$data->garansi
+            ,'usernameCS'=>$data->usernameCS
+            ,'usernameTeknisi'=>$data->usernameTeknisi,
+            'butuhKonfirmasi'=> Formatter::boolval($data->butuhKonfirmasi),
+            'sudahKonfirmasiBiaya'=> Formatter::boolval($data->konfirmasiBiaya),
+        ];
+    }
+
     public function getListDataQueue(array $responbility, int $limit=0, array $inputs=[]){
 
         $resp = [];
@@ -226,54 +264,24 @@ class ServiceRepository extends Repository{
     }
 
     private function setReturnData($data,$isById=false){
-        $arrData = [];
-
-        $arrData['customer'] = [
-            'nama' => $data->namaCustomer,
-            'noHp' => $data->noHp,
-            'bisaWA' => Formatter::boolval($data->bisaWA)
+        return [
+            'customer' => [
+                'nama' => $data->namaCustomer,
+                'noHp' => $data->noHp,
+                'bisaWA' => Formatter::boolval($data->bisaWA)
+            ],
+            'product' => [
+                'id' => $data->idService
+                ,'nama' => $data->namaProduk
+                ,'kategori' => $data->kategori
+                ,'kode' => $data->kode
+                ,'keluhan' => $data->keluhan
+                ,'status' => $data->status
+                ,'totalBiaya'=>Formatter::currency($data->totalBiaya)
+                ,'diambil' => Formatter::boolval($data->diambil)
+                ,'sudahdikonfirmasi'=> Formatter::boolval($data->dikonfirmasi)
+            ]
         ];
-
-        $arrData['product'] = [
-            'id' => $data->idService
-            ,'nama' => $data->namaProduk
-            ,'kategori' => $data->kategori
-            ,'kode' => $data->kode
-            ,'keluhan' => $data->keluhan
-            ,'status' => $data->status
-            ,'totalBiayaString'=>Formatter::currency($data->totalBiaya)
-            ,'diambil' => Formatter::boolval($data->diambil)
-            ,'sudahdikonfirmasi'=> Formatter::boolval($data->dikonfirmasi)
-        ];
-
-        if($isById === true){
-            $yangHarusDibayar = $data->totalBiaya;
-            if($data->uangMuka !== null){
-                $yangHarusDibayar = $data->totalBiaya - $data->uangMuka;
-            }
-            $product = [
-                'totalBiaya' => $data->totalBiaya
-                ,'kelengkapan'=>$data->kelengkapan
-                ,'cacatProduk'=>$data->cacatProduk
-                ,'catatan'=>$data->catatan
-                ,'estimasiBiaya'=> $data->estimasiBiaya
-                ,'estimasiBiayaString'=>Formatter::currency($data->estimasiBiaya)
-                ,'uangMuka'=>$data->uangMuka
-                ,'uangMukaString'=>Formatter::currency($data->uangMuka)
-                ,'yangHarusDibayar'=> Formatter::currency($yangHarusDibayar)
-                ,'tanggalMasuk'=>$data->tanggalMasuk
-                ,'jamMasuk'=>$data->jamMasuk
-                ,'tanggalAmbil'=>$data->tanggalAmbil
-                ,'jamAmbil'=>$data->jamAmbil
-                ,'garansi'=>$data->garansi
-                ,'usernameCS'=>$data->usernameCS
-                ,'usernameTeknisi'=>$data->usernameTeknisi,
-                'butuhKonfirmasi'=> Formatter::boolval($data->butuhKonfirmasi),
-                'sudahKonfirmasiBiaya'=> Formatter::boolval($data->konfirmasiBiaya),
-            ];
-            $arrData['product'] = array_merge($arrData['product'],$product);
-        }
-        return $arrData;
     }
 
     private function setCodeService(array $inputs){

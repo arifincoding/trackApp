@@ -6,6 +6,7 @@ use App\Models\Customer;
 use App\Repositories\Repository;
 use App\Exceptions\Handler;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Helpers\Formatter;
 
 class CustomerRepository extends Repository{
     function __construct(Customer $model){
@@ -41,6 +42,13 @@ class CustomerRepository extends Repository{
             }
         }
         return ['exist'=>false];
+    }
+
+    public function getDataById(int $id){
+        $attributs = ['id as idCustomer','nama','noHp','bisaWA'];
+        $data = $this->findById($id, $attributs);
+        $data->bisaWA = Formatter::boolval($data->bisaWA);
+        return $data->toArray();
     }
 
     public function findDataById(string $id){

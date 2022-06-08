@@ -44,7 +44,7 @@ class ServiceController extends Controller{
     }
 
     function getServiceById($id){
-        $data = $this->serviceRepository->getDataJoinCustomerById($id);
+        $data = $this->serviceRepository->findDataById($id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
