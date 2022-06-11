@@ -18,7 +18,7 @@ class CreateTableBrokens extends Migration
             $table->string('judul',100);
             $table->text('deskripsi');
             $table->bigInteger('idService')->unsigned();
-            $table->boolean('dikonfirmasi')->nullable();
+            $table->boolean('disetujui')->nullable();
             $table->string('biaya',20)->nullable();
         });
     }

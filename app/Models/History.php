@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ServiceTrack extends Model{
+class History extends Model{
     protected $fillable = [
-        'idService','status','pesan','tanggal','jam'
+        'idService','status','pesan','waktu'
     ];
 }
