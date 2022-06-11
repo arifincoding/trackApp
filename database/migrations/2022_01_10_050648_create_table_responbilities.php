@@ -17,7 +17,6 @@ class CreateTableResponbilities extends Migration
             $table->id();
             $table->string('username',50);
             $table->string('idKategori',30);
-            $table->timestamps();
         });
     }
 

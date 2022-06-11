@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTableServiceTracks extends Migration
+class CreateTableHistory extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,13 @@ class CreateTableServiceTracks extends Migration
      */
     public function up()
     {
-        Schema::create('service_tracks', function (Blueprint $table) {
+        Schema::create('history', function (Blueprint $table) {
             $table->id();
-            $table->string('idService',30);
+            $table->bigInteger('idService')->unsigned();
             $table->string('status',40);
             $table->string('pesan');
             $table->string('tanggal',50);
             $table->string('jam',20);
-            $table->timestamps();
         });
     }
 
@@ -31,6 +30,6 @@ class CreateTableServiceTracks extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('service_tracks');
+        Schema::dropIfExists('history');
     }
 }

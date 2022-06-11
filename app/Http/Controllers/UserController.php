@@ -25,7 +25,7 @@ class UserController extends Controller{
         $validator->update($find['id']);
         $validator->validate($input);
         $data = $this->repository->update($input,$find['id']);
-        return $this->jsonSuccess('sukses update akun',200,$data);
+        return $this->jsonMessageOnly('sukses update akun');
     }
 
     function changeMyPassword(Request $request, UserValidation $validator){
