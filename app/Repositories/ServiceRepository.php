@@ -4,9 +4,6 @@ namespace App\Repositories;
 
 use App\Models\Service;
 use App\Repositories\Repository;
-use App\Exceptions\Handler;
-use Exception;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\Formatter;
@@ -137,19 +134,6 @@ class ServiceRepository extends Repository{
         return $data->toArray();
     }
 
-    public function getDataJoinCustomerById($id){
-        $columns = $this->setSelectColumn(true);
-        $table1= ['table'=>'services', 'key'=>'idCustomer'];
-        $table2= ['table'=>'customers', 'key'=>'id'];
-        $filters = ['where'=>['services.id'=>$id]];
-        $data = $this->getAllWithInnerJoin($table1,$table2,$filters)->first($columns);
-
-        if(!$data){
-            throw new ModelNotFoundException('data tidak ditemukan');
-        }
-        return $this->setReturnData($data,true);
-    }
-
     public function getDataByCode(string $code){
         $attributs = ['id as idService','kode','nama','kategori','status','disetujui','totalBiaya'];
         $data = $this->model->select($attributs)->where('kode',$code)->first();
@@ -171,8 +155,15 @@ class ServiceRepository extends Repository{
         $attributs['waktuMasuk']= Carbon::now('GMT+7');
         $attributs['usernameCS']=  auth()->payload()->get('username');
         $data = $this->save($attributs);
-        $this->setCodeService($data->toArray());
         return ['idService'=>$data->id];
+    }
+
+    public function setCodeService(int $idService){
+        $date = Carbon::now('GMT+7');
+        $attributs = [
+            'kode'=>$date->format('y').$date->format('m').$date->format('d').sprintf("%03d",$idService)
+        ];
+        $data = $this->save($attributs, $idService);
     }
 
     public function update(array $attributs,$id):array{
@@ -276,14 +267,5 @@ class ServiceRepository extends Repository{
                 ,'disetujui'=> Formatter::boolval($data->disetujui)
             ]
         ];
-    }
-
-    public function setCodeService(array $inputs){
-        $dataCtgr = DB::table('categories')->where('nama',$inputs['kategori'])->first();
-        $date = DateAndTime::setDateFromString($inputs['tanggalMasuk']);
-        $attributs = [
-            'kode'=>$date->format('y').$date->format('m').$date->format('d').$dataCtgr->id.sprintf("%03d",$inputs['id'])
-        ];
-        $data = $this->save($attributs, $inputs['id']);
     }
 }

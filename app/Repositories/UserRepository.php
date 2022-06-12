@@ -8,8 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Exception;
 use App\Exceptions\Handler;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\Helpers\DateAndTime;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class userRepository extends Repository{
@@ -55,7 +54,8 @@ class userRepository extends Repository{
         return $data->toArray();
     }
 
-    function findByUsername(string $username){
+    function findByUsername(string $username):array
+    {
         $attributs = ['id','username','namaDepan','namaBelakang','jenisKelamin','noHp','peran','email','alamat'];
         $data = $this->model->select($attributs)->where('username',$username)->first();
         return $data->toArray();
@@ -75,22 +75,25 @@ class userRepository extends Repository{
         return ['idPegawai'=>$data->id];
     }
 
-    function deleteById(string $id){
+    function deleteById(string $id):bool
+    {
         $data = $this->delete($id);
-        return ['sukses'=>$data];
+        return $data;
     }
 
-    function changePassword(array $inputs, string $username){
+    function changePassword(array $inputs, string $username):bool
+    {
         $check = $this->model->where('username',$username)->firstOrFail();
         $attributs = [
             'password'=>Hash::make($inputs['sandiBaru']),
         ];
         $data = $this->save($attributs,$check->id);
-        return ['sukses'=>true];
+        return true;
     }
 
-    public function registerUser(int $idUser){
-        $date = DateAndTime::getDateNow(false);
+    public function registerUser(int $idUser):array
+    {
+        $date = Carbon::now('GMT+7');
         $password = Str::random(8);
         $attributs=[
             'username'=>$date->format('y').$date->format('m').sprintf("%03d",$idUser),

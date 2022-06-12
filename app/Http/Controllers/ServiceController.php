@@ -29,12 +29,13 @@ class ServiceController extends Controller{
     private $customerRepository;
     private $brokenRepository;
 
-    function __construct(ServiceRepository $service, HistoryRepository $history, ResponbilityRepository $responbility, CustomerRepository $customer, BrokenRepository $broken){
+    function __construct(ServiceRepository $service, HistoryRepository $history, ResponbilityRepository $responbility, CustomerRepository $customer, BrokenRepository $broken, ProductRepository $product){
         $this->serviceRepository = $service;
         $this->historyRepository = $history;
         $this->responbilityRepository = $responbility;
         $this->customerRepository = $customer;
         $this->brokenRepository = $broken;
+        $this->productRepository = $product;
     }
 
     function getListService(Request $request){
@@ -94,6 +95,7 @@ class ServiceController extends Controller{
         $inputService['idCustomer'] = $saveCustomer['idCustomer'];
         $inputService['idProduct'] = $saveProduct['idProduk'];
         $saveService = $this->serviceRepository->create($inputService);
+        $this->serviceRepository->setCodeService($saveService['idService']);
         return $this->jsonSuccess('sukses',200,$saveService);
     }
 

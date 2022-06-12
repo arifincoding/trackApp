@@ -56,8 +56,8 @@ class EmployeeController extends Controller{
 
     function deleteEmployee($id){
         $find = $this->userRepository->getDataById($id);
-        $data = $this->userRepository->deleteById($id);
-        if($data['sukses'] === true){
+        $delete = $this->userRepository->deleteById($id);
+        if($delete === true){
             $this->responbilityRepository->deleteByUsername($find['username']);
         }
         return $this->jsonMessageOnly('sukses hapus data pegawai');
