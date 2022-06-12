@@ -40,8 +40,9 @@ class EmployeeController extends Controller{
         $validator->post();
         $validation = $validator->validate($inputs);
         $data = $this->userRepository->create($inputs);
-        Mail::to($data['email'])->send(new EmployeeMail($data['username'],$data['password']));
-        return $this->jsonSuccess('sukses',200,['idPegawai'=>$data['idPegawai']]);
+        $register = $this->userRepository->registerUser($data['idPegawai']);
+        Mail::to($register['email'])->send(new EmployeeMail($register['username'],$register['password']));
+        return $this->jsonSuccess('sukses',200,$data);
     }
 
     function updateEmployee(Request $request, $id, EmployeeValidation $validator): JsonResponse
@@ -50,7 +51,7 @@ class EmployeeController extends Controller{
         $validator->post($id);
         $validation = $validator->validate($inputs);
         $data = $this->userRepository->update($inputs, $id);
-        return $this->jsonSuccess('sukses',200,['idPegawai'=>$data['idPegawai']]);
+        return $this->jsonSuccess('sukses',200,$data);
     }
 
     function deleteEmployee($id){

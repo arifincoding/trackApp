@@ -17,8 +17,6 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->post('/coba/{id}','HistoryController@create');
-
 $router->post('/user/login','AuthController@login');
 
 $router->get('/services/{id}/track','ServiceController@getServiceTrackByCode');

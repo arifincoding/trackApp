@@ -64,12 +64,8 @@ class userRepository extends Repository{
     function create(array $attributs):array
     {
         $data = $this->save($attributs);
-        $register = $this->registerUser($data->id);
         return [
-            'idPegawai'=>$data->id,
-            'email'=>$data->email,
-            'username'=>$register['username'],
-            'password'=>$register['password']
+            'idPegawai'=>$data->id
         ];
     }
 
@@ -93,7 +89,7 @@ class userRepository extends Repository{
         return ['sukses'=>true];
     }
 
-    private function registerUser(int $idUser){
+    public function registerUser(int $idUser){
         $date = DateAndTime::getDateNow(false);
         $password = Str::random(8);
         $attributs=[
@@ -102,6 +98,7 @@ class userRepository extends Repository{
         ];
         $data = $this->save($attributs,$idUser);
         return [
+            'email'=> $data->email,
             'username'=> $data->username,
             'password'=>$password
         ];
