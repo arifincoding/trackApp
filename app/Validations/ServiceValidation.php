@@ -13,7 +13,7 @@ class ServiceValidation extends Validation{
             'namaProduk'=>'required',
             'kategori'=>'required|exists:categories,nama',
             'keluhan'=>'required',
-            'butuhKonfirmasi'=>'required|boolean'
+            'butuhPersetujuan'=>'required|boolean'
         ];
     }
 
@@ -31,7 +31,7 @@ class ServiceValidation extends Validation{
 
     function confirmation(){
         $this->rules = [
-            'dikonfirmasi'=>'required|boolean'
+            'disetujui'=>'required|boolean'
         ];
     }
 }

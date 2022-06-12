@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Repositories\ServiceTrackRepository;
+use App\Repositories\HistoryRepository;
 use App\Validations\HistoryValidation;
 
 class HistoryController extends Controller{
 
     private $historyRepository;
 
-    public function __construct(ServiceTrackRepository $history){
+    public function __construct(HistoryRepository $history){
         $this->historyRepository = $history;
     }
 

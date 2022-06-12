@@ -24,6 +24,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     protected $fillable = [
         'username', 'password','namaDepan','namaBelakang','noHp','alamat','peran','jenisKelamin','email'
     ];
+    public $timestamps = false;
 
     public array $claims = [];
 

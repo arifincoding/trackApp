@@ -12,7 +12,7 @@ class BrokenValidation extends Validation{
     }
     function confirm(){
         $this->rules = [
-            'dikonfirmasi'=>'required|boolean'
+            'disetujui'=>'required|boolean'
         ];
     }
     function cost(){

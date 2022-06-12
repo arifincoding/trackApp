@@ -8,6 +8,7 @@ class Customer extends Model{
     protected $fillable = [
         'nama','noHp','bisaWA','jumlahService'
     ];
+    public $timestamps = false;
 }
 
 ?>

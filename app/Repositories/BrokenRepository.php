@@ -14,30 +14,30 @@ class BrokenRepository extends Repository{
     }
 
     function getListDataByIdService(string $idService){
-        $attributs=['id as idKerusakan','judul','biaya','dikonfirmasi'];
+        $attributs=['id as idKerusakan','judul','biaya','disetujui'];
         $filters = ['where'=>['idService'=>$idService]];
         $data = $this->getWhere($attributs,$filters);
         foreach($data as $item){
-            $item->dikonfirmasi = Formatter::boolval($item->dikonfirmasi);
+            $item->disetujui = Formatter::boolval($item->disetujui);
             $item->biaya = Formatter::currency($item->biaya);
         }
         return $data->toArray();
     }
 
     function getAllByIdService(int $idService){
-        $attributs = ['judul','deskripsi','biaya','dikonfirmasi'];
+        $attributs = ['judul','deskripsi','biaya','disetujui'];
         $data = $this->model->select($attributs)->where('idService',$idService)->orderByDesc('id')->get();
         foreach($data as $item){
-            $item->dikonfirmasi = Formatter::boolval($item->dikonfirmasi);
+            $item->disetujui = Formatter::boolval($item->disetujui);
             $item->biaya = Formatter::currency($item->biaya);
         }
         return $data->toArray();
     }
 
     function getDataById(string $id){
-        $attributs = ['id as idKerusakan','idService','judul','deskripsi','biaya','dikonfirmasi'];
+        $attributs = ['id as idKerusakan','idService','judul','deskripsi','biaya','disetujui'];
         $data = $this->findById($id,$attributs);
-        $data->dikonfirmasi = Formatter::boolval($data->dikonfirmasi);
+        $data->disetujui = Formatter::boolval($data->disetujui);
         $data->biayaString = Formatter::currency($data->biaya);
         return $data->toArray();
     }
@@ -49,7 +49,7 @@ class BrokenRepository extends Repository{
         }
         $attributs += [
             'idService'=>$idService,
-            'dikonfirmasi'=>$confirm,
+            'disetujui'=>$confirm,
         ];
         $data = $this->save($attributs);
         return ['idKerusakan'=>$data->id];

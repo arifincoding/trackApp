@@ -28,7 +28,7 @@ class BrokenController extends Controller{
         $inputs = $request->only('judul','deskripsi');
         $validation = $validator->validate($inputs);
         $findService = $this->serviceRepository->getDataById($id);
-        $data = $this->brokenRepository->create($inputs,$id, $findService['butuhKonfirmasi']);
+        $data = $this->brokenRepository->create($inputs,$id, $findService['butuhPersetujuan']);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
@@ -55,10 +55,10 @@ class BrokenController extends Controller{
     }
 
     public function updateBrokenCofirmation(Request $request,$id, BrokenValidation $validator){
-        $inputs = $request->only('dikonfirmasi');
+        $inputs = $request->only('disetujui');
         $validator->confirm();
         $validator->validate($inputs);
-        $total = $this->setTotalCostBrokenAgree($id,$inputs['dikonfirmasi']);
+        $total = $this->setTotalCostBrokenAgree($id,$inputs['disetujui']);
         $data = $this->brokenRepository->update($inputs,$id);
         if($total !== null){
             $this->serviceRepository->updateTotalPrice($data['idService'],$total);
@@ -86,9 +86,9 @@ class BrokenController extends Controller{
 
     private function setTotalCostBrokenAgree(int $id,bool $isAgree){
         $dataBroken = $this->brokenRepository->getDataById($id);
-        if($dataBroken['dikonfirmasi'] !== $isAgree){
+        if($dataBroken['disetujui'] !== $isAgree){
             $dataService = $this->serviceRepository->getDataById($dataBroken['idService']);
-            if($isAgree === true && $dataBroken['dikonfirmasi'] !== null){
+            if($isAgree === true && $dataBroken['disetujui'] !== null){
                 return $dataService['totalBiaya'] + $dataBroken['biaya'];
             }
             else if($isAgree === false){

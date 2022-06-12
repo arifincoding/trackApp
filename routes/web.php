@@ -17,10 +17,7 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->post('/services/{id}/warranty','WarrantyController@newWarrantyByIdService');
-$router->get('/services/{id}/warranty','WarrantyController@getServiceWarrantyByIdService');
-$router->put('/services/warranty/{id}','WarrantyController@updateWarranty');
-$router->delete('/services/warranty/{id}','WarrantyController@deleteWarranty');
+$router->post('/coba/{id}','HistoryController@create');
 
 $router->post('/user/login','AuthController@login');
 

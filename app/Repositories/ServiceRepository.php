@@ -7,7 +7,7 @@ use App\Repositories\Repository;
 use App\Exceptions\Handler;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\Helpers\DateAndTime;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\Formatter;
 
@@ -59,31 +59,27 @@ class ServiceRepository extends Repository{
         return [
             'idService' => $data->id
             ,'idCustomer'=>$data->idCustomer
-            ,'nama' => $data->namaProduk
-            ,'kategori' => $data->kategori
+            ,'idProduk'=>$data->idProduct
             ,'kode' => $data->kode
             ,'keluhan' => $data->keluhan
             ,'status' => $data->status
             ,'totalBiaya' => $data->totalBiaya
             ,'totalBiayaString'=>Formatter::currency($data->totalBiaya)
             ,'diambil' => Formatter::boolval($data->diambil)
-            ,'sudahdikonfirmasi'=> Formatter::boolval($data->dikonfirmasi)
-            ,'kelengkapan'=>$data->kelengkapan
-            ,'cacatProduk'=>$data->cacatProduk
-            ,'catatan'=>$data->catatan
+            ,'disetujui'=> Formatter::boolval($data->disetujui)
             ,'estimasiBiaya'=> $data->estimasiBiaya
             ,'estimasiBiayaString'=>Formatter::currency($data->estimasiBiaya)
             ,'uangMuka'=>$data->uangMuka
             ,'uangMukaString'=>Formatter::currency($data->uangMuka)
             ,'yangHarusDibayar'=> Formatter::currency($yangHarusDibayar)
-            ,'tanggalMasuk'=>$data->tanggalMasuk
-            ,'jamMasuk'=>$data->jamMasuk
-            ,'tanggalAmbil'=>$data->tanggalAmbil
-            ,'jamAmbil'=>$data->jamAmbil
+            ,'tanggalMasuk'=>$data->waktuMasuk->format('d-m-Y')
+            ,'jamMasuk'=>$data->waktuMasuk->format('H:i')
+            ,'tanggalAmbil'=>$data->waktuAmbil->format('d-m-Y')
+            ,'jamAmbil'=>$data->waktuAmbil->format('H:i')
             ,'garansi'=>$data->garansi
             ,'usernameCS'=>$data->usernameCS
             ,'usernameTeknisi'=>$data->usernameTeknisi,
-            'butuhKonfirmasi'=> Formatter::boolval($data->butuhKonfirmasi),
+            'butuhPersetujuan'=> Formatter::boolval($data->butuhPersetujuan),
             'sudahKonfirmasiBiaya'=> Formatter::boolval($data->konfirmasiBiaya),
         ];
     }
@@ -109,10 +105,10 @@ class ServiceRepository extends Repository{
                 'nama' => $cari,
             ];
         }
-        $attributs=['id as idService','kode','nama','kategori','keluhan','status','dikonfirmasi'];
+        $attributs=['id as idService','kode','nama','kategori','keluhan','status','disetujui'];
         $data = $this->getWhere($attributs,$filters);
         foreach($data as $item){
-            $item->dikonfirmasi = Formatter::boolval($item->dikonfirmasi);
+            $item->disetujui = Formatter::boolval($item->disetujui);
         }
         return $data->toArray();
     }
@@ -133,10 +129,10 @@ class ServiceRepository extends Repository{
                 'kode'=>$cari
             ];
         }
-        $attributs=['id as idService','kode','nama','kategori','keluhan','status','dikonfirmasi'];
+        $attributs=['id as idService','kode','nama','kategori','keluhan','status','disetujui'];
         $data = $this->getWhere($attributs,$filters);
         foreach($data as $item){
-            $item->dikonfirmasi = Formatter::boolval($item->dikonfirmasi);
+            $item->disetujui = Formatter::boolval($item->disetujui);
         }
         return $data->toArray();
     }
@@ -155,12 +151,12 @@ class ServiceRepository extends Repository{
     }
 
     public function getDataByCode(string $code){
-        $attributs = ['id as idService','kode','nama','kategori','status','dikonfirmasi','totalBiaya'];
+        $attributs = ['id as idService','kode','nama','kategori','status','disetujui','totalBiaya'];
         $data = $this->model->select($attributs)->where('kode',$code)->first();
         if(!$data){
             return [];
         }
-        $data->dikonfirmasi = Formatter::boolval($data->dikonfirmasi);
+        $data->disetujui = Formatter::boolval($data->disetujui);
         $data->totalBiaya = Formatter::currency($data->totalBiaya);
         $data->uangMuka = Formatter::currency($data->uangMuka);
         return $data->toArray();
@@ -171,9 +167,8 @@ class ServiceRepository extends Repository{
         $attributs['status']='antri';
         $attributs['konfirmasiBiaya']=false;
         $attributs['diambil']=false;
-        $attributs['dikonfirmasi']= $attributs['butuhKonfirmasi'] ? null : true;
-        $attributs['tanggalMasuk']= DateAndTime::getDateNow();
-        $attributs['jamMasuk']= DateAndTime::getTimeNow();
+        $attributs['disetujui']= $attributs['butuhPersetujuan'] ? null : true;
+        $attributs['waktuMasuk']= Carbon::now('GMT+7');
         $attributs['usernameCS']=  auth()->payload()->get('username');
         $data = $this->save($attributs);
         $this->setCodeService($data->toArray());
@@ -206,8 +201,7 @@ class ServiceRepository extends Repository{
     public function setDataTake(string $id){
         $attributs = [
             'diambil'=>true,
-            'tanggalAmbil'=>DateAndTime::getDateNow(),
-            'jamAmbil'=>DateAndTime::getTimeNow()
+            'waktuAmbil'=>Carbon::now('GMT+7')
         ];
         $data = $this->save($attributs, $id);
         return [
@@ -252,11 +246,11 @@ class ServiceRepository extends Repository{
             'bisaWA',
             'kode',
             'kategori','keluhan','status','totalBiaya','diambil',
-            'services.id as idService','dikonfirmasi'
+            'services.id as idService','setujui'
         ];
         if($first === true){
             $columns2 = [
-                'kelengkapan','catatan','estimasiBiaya','uangMuka','cacatProduk','tanggalMasuk','jamMasuk','tanggalAmbil','jamAmbil','garansi','usernameCS','usernameTeknisi','butuhKonfirmasi','konfirmasiBiaya'
+                'kelengkapan','catatan','estimasiBiaya','uangMuka','cacatProduk','tanggalMasuk','jamMasuk','tanggalAmbil','jamAmbil','garansi','usernameCS','usernameTeknisi','butuhPersetujuan','konfirmasiBiaya'
             ];
             $columns = array_merge($columns,$columns2);
         }
@@ -279,12 +273,12 @@ class ServiceRepository extends Repository{
                 ,'status' => $data->status
                 ,'totalBiaya'=>Formatter::currency($data->totalBiaya)
                 ,'diambil' => Formatter::boolval($data->diambil)
-                ,'sudahdikonfirmasi'=> Formatter::boolval($data->dikonfirmasi)
+                ,'disetujui'=> Formatter::boolval($data->disetujui)
             ]
         ];
     }
 
-    private function setCodeService(array $inputs){
+    public function setCodeService(array $inputs){
         $dataCtgr = DB::table('categories')->where('nama',$inputs['kategori'])->first();
         $date = DateAndTime::setDateFromString($inputs['tanggalMasuk']);
         $attributs = [

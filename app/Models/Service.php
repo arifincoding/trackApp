@@ -8,6 +8,7 @@ class Service extends Model{
     protected $fillable = [
         'kode','keluhan','uangMuka','status','estimasiBiaya','idCustomer','idProduct','butuhPersetujuan','disetujui','konfirmasiBiaya','diambil','waktuMasuk','waktuAmbil','usernameCS','usernameTeknisi','totalBiaya','garansi'
     ];
+    public $timestamps = false;
 }
 
 ?>

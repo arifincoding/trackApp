@@ -93,7 +93,7 @@ class userRepository extends Repository{
         return ['sukses'=>true];
     }
 
-    private function registerUser(string $idUser){
+    private function registerUser(int $idUser){
         $date = DateAndTime::getDateNow(false);
         $password = Str::random(8);
         $attributs=[

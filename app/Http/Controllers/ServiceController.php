@@ -12,25 +12,26 @@ use App\Validations\WarrantyValidation;
 // repository
 use App\Repositories\ServiceRepository;
 use App\Repositories\ResponbilityRepository;
-use App\Repositories\ServiceTrackRepository;
+use App\Repositories\HistoryRepository;
 use App\Repositories\CustomerRepository;
 use App\Repositories\BrokenRepository;
-use Illuminate\Support\Facades\Http;
+use App\Repositories\ProductRepository;
 
+use Illuminate\Support\Facades\Http;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Helpers\Formatter;
 
 class ServiceController extends Controller{
     
     private $serviceRepository;
-    private $serviceTrackRepository;
+    private $historyRepository;
     private $responbilityRepository;
     private $customerRepository;
     private $brokenRepository;
 
-    function __construct(ServiceRepository $service, ServiceTrackRepository $serviceTrack, ResponbilityRepository $responbility, CustomerRepository $customer, BrokenRepository $broken){
+    function __construct(ServiceRepository $service, HistoryRepository $history, ResponbilityRepository $responbility, CustomerRepository $customer, BrokenRepository $broken){
         $this->serviceRepository = $service;
-        $this->serviceTrackRepository = $serviceTrack;
+        $this->historyRepository = $history;
         $this->responbilityRepository = $responbility;
         $this->customerRepository = $customer;
         $this->brokenRepository = $broken;
@@ -73,23 +74,26 @@ class ServiceController extends Controller{
             return $this->jsonSuccess('data tidak ditemukan',200,[]);
         }
         $data['kerusakan'] = $this->brokenRepository->getAllByIdService($data['idService']);
-        $data['riwayat'] = $this->serviceTrackRepository->getAllByIdService($data['idService']);
+        $data['riwayat'] = $this->historyRepository->getAllByIdService($data['idService']);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
     function newService(Request $request, ServiceValidation $validator):JsonResponse
     {
         $validation = $validator->validate($request->all());
-
+        // customer
         $inputCustomer = $request->only(['noHp','bisaWA']);
         $inputCustomer['nama'] = $request->input('namaCustomer');
-        $inputService = $request->only(['kategori','keluhan','butuhKonfirmasi','kelengkapan','catatan','uangMuka','estimasiBiaya','cacatProduk']);
-        $inputService['nama'] = $request->input('namaProduk');
-
         $saveCustomer = $this->newCustomer($inputCustomer);
+        // product
+        $inputProduct = $request->only(['kategori','kelengkapan','catatan','cacatProduk']);
+        $inputProduct['nama'] = $request->input('namaProduk');
+        $saveProduct = $this->productRepository->create($inputProduct);
+        // service
+        $inputService = $request->only(['keluhan','butuhPersetujuan','uangMuka','estimasiBiaya']);
         $inputService['idCustomer'] = $saveCustomer['idCustomer'];
+        $inputService['idProduct'] = $saveProduct['idProduk'];
         $saveService = $this->serviceRepository->create($inputService);
-
         return $this->jsonSuccess('sukses',200,$saveService);
     }
 
@@ -106,14 +110,18 @@ class ServiceController extends Controller{
     }
 
     public function updateService(Request $request, $id, ServiceValidation $validator){
-
         $validation = $validator->validate($request->all());
+        $findService = $this->serviceRepository->getDataById($id);
+        // customer
         $inputCustomer = $request->only(['noHp','bisaWA']);
         $inputCustomer['nama'] = $request->input('namaCustomer');
-        $findService = $this->serviceRepository->getDataById($id);
         $saveCustomer = $this->updateCustomer($inputCustomer,$findService['idCustomer']);
-        $inputService = $request->only(['kategori','keluhan','butuhKonfirmasi','kelengkapan','catatan','uangMuka','estimasiBiaya','cacatProduk']);
-        $inputService['nama'] = $request->input('namaProduk');
+        // product
+        $inputProduct = $request->only(['kategori','kelengkapan','catatan','cacatProduk']);
+        $inputProduct['nama'] = $request->input('namaProduk');
+        $saveProduct = $this->productRepository->update($inputProduct,$findService['idProduct']);
+        // service
+        $inputService = $request->only(['keluhan','butuhPersetujuan','uangMuka','estimasiBiaya',]);
         $inputService['idCustomer'] = $saveCustomer['idCustomer'];
         $saveService = $this->serviceRepository->update($inputService,$id);
         return $this->jsonSuccess('sukses',200,$saveService);
@@ -171,7 +179,7 @@ class ServiceController extends Controller{
     }
 
     public function setServiceConfirmation(Request $request,string $id,ServiceValidation $validator){
-        $input =  $request->only('dikonfirmasi');
+        $input =  $request->only('disetujui');
         $validator->confirmation($input);
         $validator->validate($input);
         $data = $this->serviceRepository->setDataConfirmation($id,$input);
@@ -179,17 +187,18 @@ class ServiceController extends Controller{
     }
 
     public function deleteService($id){
-        $dataService = $this->serviceRepository->getDataById($id);
-        if($dataService){
-            $dataCustomer = $this->customerRepository->findDataById($dataService['idCustomer']);
-            if($dataCustomer['jumlahService'] > 1){
-                $this->customerRepository->updateCount($dataCustomer['id'],'minus');
+        $findService = $this->serviceRepository->getDataById($id);
+        if($findService){
+            $findCustomer = $this->customerRepository->findDataById($findService['idCustomer']);
+            if($findCustomer['jumlahService'] > 1){
+                $this->customerRepository->updateCount($findCustomer['id'],'minus');
             }else{
-                $this->customerRepository->deleteById($dataService['idCustomer']);
+                $this->customerRepository->deleteById($findService['idCustomer']);
             }
+            $this->productRepository->deleteById($findService['idProduct']);
             $data = $this->serviceRepository->deleteById($id);
             if($data['sukses']===true){
-                $this->serviceTrackRepository->deleteByIdService($id);
+                $this->historyRepository->deleteByIdService($id);
                 $this->brokenRepository->deleteByIdService($id);
             }
             return $this->jsonMessageOnly('sukses hapus data service');

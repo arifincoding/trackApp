@@ -8,4 +8,5 @@ class History extends Model{
     protected $fillable = [
         'idService','status','pesan','waktu'
     ];
+    public $timestamps = false;
 }
