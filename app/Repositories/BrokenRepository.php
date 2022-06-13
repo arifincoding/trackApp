@@ -17,11 +17,7 @@ class BrokenRepository extends Repository{
         $attributs=['id as idKerusakan','judul','biaya','disetujui'];
         $filters = ['where'=>['idService'=>$idService]];
         $data = $this->getWhere($attributs,$filters);
-        foreach($data as $item){
-            $item->disetujui = Formatter::boolval($item->disetujui);
-            $item->biaya = Formatter::currency($item->biaya);
-        }
-        return $data->toArray();
+        return $data;
     }
 
     function getAllByIdService(int $idService){

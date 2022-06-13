@@ -9,7 +9,7 @@ class ProductTransformer extends TransformerAbstract{
     public function transform(Product $customer){
         return [
             'nama'=>$customer->nama,
-            'noHp'=>$customer->kategori,
+            'kategori'=>$customer->kategori,
         ];
     }
 }

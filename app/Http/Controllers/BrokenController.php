@@ -7,7 +7,9 @@ use App\Repositories\BrokenRepository;
 use App\Validations\BrokenValidation;
 use App\Repositories\ServiceRepository;
 use Illuminate\Http\JsonResponse;
-
+use League\Fractal\Manager;
+use League\Fractal\Resource\Collection;
+use App\Transformers\BrokensTransformer;
 
 class BrokenController extends Controller{
 
@@ -20,7 +22,9 @@ class BrokenController extends Controller{
     }
 
     public function getListBrokenByIdService($id){
-        $data = $this->brokenRepository->getListDataByIdService($id);
+        $query = $this->brokenRepository->getListDataByIdService($id);
+        $fractal = new Manager();
+        $data = $fractal->createData(new Collection($query,new BrokensTransformer))->toArray();
         return $this->jsonSuccess('sukses',200,$data);
     }
 

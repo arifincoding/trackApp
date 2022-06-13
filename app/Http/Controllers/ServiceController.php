@@ -24,6 +24,7 @@ use App\Helpers\Formatter;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use App\Transformers\ServicesTransformer;
+use App\Transformers\ServicequeueTransformer;
 
 class ServiceController extends Controller{
     
@@ -57,13 +58,14 @@ class ServiceController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    function getServiceQueue(Request $request){
-        $username = auth()->payload()->get('username');
+    function getServiceQueue(Request $request,int $id){
         $filter = $request->only('limit','kategori','cari');
         $limit = $request->query('limit',0);
-        $resp = $this->responbilityRepository->getListDataByUsername($username);
+        $resp = $this->responbilityRepository->getListDataByUsername($id);
         if($resp){
-            $data = $this->serviceRepository->getListDataQueue($resp, $limit, $filter);
+            $query = $this->serviceRepository->getListDataQueue($resp, $limit, $filter);
+            $fractal = new Manager();
+            $data = $fractal->createData(new Collection($query,new ServicequeueTransformer))->toArray();
             return $this->jsonSuccess('sukses',200,$data);
         }
         throw new ModelNotFoundException();
@@ -72,7 +74,9 @@ class ServiceController extends Controller{
     function getProgressService(Request $request,$id){
         $filter = $request->only('status','cari','kategori');
         $limit = $request->query('limit',0);
-        $data = $this->serviceRepository->getListDataMyProgress($id,$limit,$filter);
+        $query = $this->serviceRepository->getListDataMyProgress($id,$limit,$filter);
+        $fractal = new Manager();
+        $data = $fractal->createData(new Collection($query,new ServicequeueTransformer))->toArray();
         return $this->jsonSuccess('sukses',200,$data);
     }
 

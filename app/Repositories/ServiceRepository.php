@@ -15,19 +15,7 @@ class ServiceRepository extends Repository{
     }
     
     public function getListDataJoinCustomer(int $limit=0, array $inputs=[]){
-        $attributs=[
-            'service' => ['id','kode','keluhan','status','totalBiaya','diambil','idCustomer','idProduct','disetujui'],
-            'product'=>['id','nama','kategori'],
-            'customer'=>['id','nama','noHp']
-        ];
-        $with = ['customer'=>function ($q) use($attributs){
-            $q->select($attributs['customer']);
-        },'product'=>function ($q) use ($attributs){
-            $q->select($attributs['product']);
-        }];
-
-        $data = $this->model->with($with);
-        $data->select($attributs['service']);
+        $data = $this->model->with('customer','product');
         // filter status service
         if(isset($inputs['status'])){
             $data->where('status',$inputs['status']);
@@ -94,56 +82,47 @@ class ServiceRepository extends Repository{
     }
 
     public function getListDataQueue(array $responbility, int $limit=0, array $inputs=[]){
-
         $resp = [];
         foreach($responbility as $item){
             array_push($resp,$item->kategori);
         }
-        $filters=[
-            'limit'=>$limit,
-            'where'=>[
-                'status'=>'antri',
-                'kategori'=> $inputs['kategori'] ?? null
-            ],
-            'orWhere'=>['kategori'=>$resp]
-        ];
-        $cari = $inputs['cari'] ?? null;
-        if($cari){
-            $filters['likeWhere'] = [
-                'kode' => $cari,
-                'nama' => $cari,
-            ];
+        $data = $this->model->with('product')->where('status','antri');
+        $data->whereHas('product',function ($q) use($resp){
+            foreach($resp as $item){
+                $q->orWhere('kategori',$item);
+            }
+        });
+        if(isset($inputs['kategori'])){
+            $data->whereHas('product',function ($q) use($inputs){
+                $q->where('kategori',$inputs['kategori']);
+            });
         }
-        $attributs=['id as idService','kode','nama','kategori','keluhan','status','disetujui'];
-        $data = $this->getWhere($attributs,$filters);
-        foreach($data as $item){
-            $item->disetujui = Formatter::boolval($item->disetujui);
+        if(isset($inputs['cari'])){
+            $data->where('kode','LIKE','%'.$inputs['cari'].'%');
+            $data->orWhereHas('product',function ($q) use($inputs){
+                $q->where('nama','LIKE','%'.$inputs['cari'].'%');
+            });
         }
-        return $data->toArray();
+        return $data->get();
     }
 
     public function getListDataMyProgress(string $username=null,int $limit=0,array $inputs=[]){
-        $filters = [
-            'limit'=>$limit,
-            'where'=>[
-                'usernameTeknisi'=>$username,
-                'status'=> $inputs['status'] ?? null,
-                'kategori'=> $inputs['kategori'] ?? null
-            ]
-        ];
-        $cari = $inputs['cari'] ?? null;
-        if($cari){
-            $filters['likeWhere'] = [
-                'nama'=>$cari,
-                'kode'=>$cari
-            ];
+        $data = $this->model->with('product')->where('usernameTeknisi',$username);
+        if(isset($inputs['status'])){
+            $data->where('status',$inputs['status']);
         }
-        $attributs=['id as idService','kode','nama','kategori','keluhan','status','disetujui'];
-        $data = $this->getWhere($attributs,$filters);
-        foreach($data as $item){
-            $item->disetujui = Formatter::boolval($item->disetujui);
+        if(isset($inputs['kategori'])){
+            $data->whereHas('product',function ($q) use($inputs){
+                $q->where('kategori',$inputs['kategori']);
+            });
         }
-        return $data->toArray();
+        if(isset($inputs['cari'])){
+            $data->where('kode','LIKE','%'.$inputs['cari'].'%');
+            $data->orWhereHas('product',function ($q) use ($inputs){
+                $q->where('nama','LIKE','%'.$inputs['cari'].'%');
+            });
+        }
+        return $data->get();
     }
 
     public function getDataByCode(string $code){
