@@ -217,46 +217,4 @@ class ServiceRepository extends Repository{
         $data = $this->delete($id);
         return ['sukses'=>$data];
     }
-    
-    // private function
-    
-    private function setSelectColumn($first=false){
-        $columns = [
-            'customers.nama as namaCustomer',
-            'services.nama as namaProduk',
-            'noHp',
-            'bisaWA',
-            'kode',
-            'kategori','keluhan','status','totalBiaya','diambil',
-            'services.id as idService','setujui'
-        ];
-        if($first === true){
-            $columns2 = [
-                'kelengkapan','catatan','estimasiBiaya','uangMuka','cacatProduk','tanggalMasuk','jamMasuk','tanggalAmbil','jamAmbil','garansi','usernameCS','usernameTeknisi','butuhPersetujuan','konfirmasiBiaya'
-            ];
-            $columns = array_merge($columns,$columns2);
-        }
-        return $columns;
-    }
-
-    private function setReturnData($data,$isById=false){
-        return [
-            'customer' => [
-                'nama' => $data->namaCustomer,
-                'noHp' => $data->noHp,
-                'bisaWA' => Formatter::boolval($data->bisaWA)
-            ],
-            'product' => [
-                'id' => $data->idService
-                ,'nama' => $data->namaProduk
-                ,'kategori' => $data->kategori
-                ,'kode' => $data->kode
-                ,'keluhan' => $data->keluhan
-                ,'status' => $data->status
-                ,'totalBiaya'=>Formatter::currency($data->totalBiaya)
-                ,'diambil' => Formatter::boolval($data->diambil)
-                ,'disetujui'=> Formatter::boolval($data->disetujui)
-            ]
-        ];
-    }
 }
