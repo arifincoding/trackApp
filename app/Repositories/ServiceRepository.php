@@ -51,7 +51,7 @@ class ServiceRepository extends Repository{
                 $q->where('nama','LIKE','%'.$inputs['cari'].'%');
             });
         }
-        return $data->get()->toArray();
+        return $data->get();
     }
 
     public function getDataById(string $id){

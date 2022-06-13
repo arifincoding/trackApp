@@ -21,6 +21,10 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Helpers\Formatter;
 
+use League\Fractal\Manager;
+use League\Fractal\Resource\Collection;
+use App\Transformers\ServicesTransformer;
+
 class ServiceController extends Controller{
     
     private $serviceRepository;
@@ -42,7 +46,9 @@ class ServiceController extends Controller{
     function getListService(Request $request){
         $limit = $request->query('limit',0);
         $filter = $request->only('kategori','status','cari');
-        $data = $this->serviceRepository->getListDataJoinCustomer($limit,$filter);
+        $query = $this->serviceRepository->getListDataJoinCustomer($limit,$filter);
+        $fractal = new Manager();
+        $data = $fractal->createData(new Collection($query,new ServicesTransformer))->toArray();
         return $this->jsonSuccess('sukses',200,$data);
     }
 
