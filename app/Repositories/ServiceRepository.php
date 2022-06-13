@@ -15,31 +15,43 @@ class ServiceRepository extends Repository{
     }
     
     public function getListDataJoinCustomer(int $limit=0, array $inputs=[]){
-        $columns = $this->setSelectColumn();
-        $filters = [
-            'limit'=>$limit,
-            'where'=>[
-                'services.kategori' => $inputs['kategori'] ?? null,
-                'services.status' => $inputs['status'] ?? null
-            ]
+        $attributs=[
+            'service' => ['id','kode','keluhan','status','totalBiaya','diambil','idCustomer','idProduct','disetujui'],
+            'product'=>['id','nama','kategori'],
+            'customer'=>['id','nama','noHp']
         ];
-        $cari = $inputs['cari'] ?? null;
-        if($cari){
-            $filters['likeWhere'] = [
-                'services.nama'=> $cari,
-                'customers.nama'=> $cari,
-                'services.kode'=> $cari,
-                'customers.noHp'=> $cari
-            ];
+        $with = ['customer'=>function ($q) use($attributs){
+            $q->select($attributs['customer']);
+        },'product'=>function ($q) use ($attributs){
+            $q->select($attributs['product']);
+        }];
+
+        $data = $this->model->with($with);
+        $data->select($attributs['service']);
+        // filter status service
+        if(isset($inputs['status'])){
+            $data->where('status',$inputs['status']);
         }
-        $table1= ['table'=>'services', 'key'=>'idCustomer'];
-        $table2= ['table'=>'customers', 'key'=>'id'];
-        $data = $this->getAllWithInnerJoin($table1,$table2,$filters)->orderByDesc('services.id')->get($columns);
-        $arrData = [];
-        foreach($data as $key=>$item){
-            $arrData[$key] = $this->setReturnData($item);
+        // filter kategori product
+        if(isset($inputs['kategori'])){
+            $data->whereHas('product', function ($q) use($inputs){
+                $q->where('kategori',$inputs['kategori']);
+            });
         }
-        return ['data'=>$arrData];
+        //filter cari
+        if(isset($inputs['cari'])){
+            $data->where(function ($q) use($inputs){
+                $q->orWhere('kode','LIKE','%'.$inputs['cari'].'%');
+            });
+            $data->orWhereHas('customer',function ($q) use($inputs){
+                $q->where('nama','LIKE','%'.$inputs['cari'].'%');
+                $q->orWhere('noHp','LIKE','%'.$inputs['cari'].'%');
+            });
+            $data->orWhereHas('product', function ($q) use($inputs){
+                $q->where('nama','LIKE','%'.$inputs['cari'].'%');
+            });
+        }
+        return $data->get()->toArray();
     }
 
     public function getDataById(string $id){

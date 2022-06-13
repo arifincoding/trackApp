@@ -28,6 +28,7 @@ class ServiceController extends Controller{
     private $responbilityRepository;
     private $customerRepository;
     private $brokenRepository;
+    private $productRepository;
 
     function __construct(ServiceRepository $service, HistoryRepository $history, ResponbilityRepository $responbility, CustomerRepository $customer, BrokenRepository $broken, ProductRepository $product){
         $this->serviceRepository = $service;
@@ -42,7 +43,7 @@ class ServiceController extends Controller{
         $limit = $request->query('limit',0);
         $filter = $request->only('kategori','status','cari');
         $data = $this->serviceRepository->getListDataJoinCustomer($limit,$filter);
-        return $this->jsonSuccess('sukses',200,$data['data']);
+        return $this->jsonSuccess('sukses',200,$data);
     }
 
     function getServiceById($id){

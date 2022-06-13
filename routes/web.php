@@ -23,6 +23,8 @@ $router->get('/services/{id}/track','ServiceController@getServiceTrackByCode');
 
 $router->get('/chat/scan','WhatsappController@scan');
 
+$router->get('/services','ServiceController@getListService');
+
 $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik']],function () use ($router){
 
     // employee
@@ -59,7 +61,7 @@ $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik,customer servic
     $router->get('/categories','CategoryController@getListCategory');
 
     // service
-    $router->get('/services','ServiceController@getListService');
+    
     $router->post('/services','ServiceController@newService');
     $router->put('/services/{id}','ServiceController@updateService');
     $router->delete('/services/{id}','ServiceController@deleteService');
