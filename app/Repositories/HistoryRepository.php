@@ -13,22 +13,6 @@ class HistoryRepository extends Repository{
         parent::__construct($model);
     }
 
-    public function getAllByIdService(int $idService):array
-    {
-        $attributs = ['status','pesan','waktu'];
-        $data = $this->model->select($attributs)->where('idService',$idService)->orderByDesc('id')->get();
-        $arrData = [];
-        foreach($data as $key=>$item){
-            $arrData[$key]= [
-                'status'=> $item->status,
-                'pesan'=> $item->pesan,
-                'tanggal'=> $item->waktu->format('d-m-Y'),
-                'jam'=> $item->waktu->format('H:i')
-            ];
-        }
-        return $arrData;
-    }
-
     function create(array $input, int $id):array
     {
         $attributs = [

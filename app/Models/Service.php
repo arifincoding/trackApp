@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Customer;
 
 class Service extends Model{
     protected $fillable = [
@@ -17,6 +16,14 @@ class Service extends Model{
 
     public function product(){
         return $this->belongsTo(Product::class,'idProduct');
+    }
+
+    public function kerusakan(){
+        return $this->hasMany(Broken::class,'idService');
+    }
+
+    public function riwayat(){
+        return $this->hasMany(History::class,'idService');
     }
 }
 

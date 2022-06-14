@@ -95,15 +95,7 @@ class ServiceRepository extends Repository{
     }
 
     public function getDataByCode(string $code){
-        $attributs = ['id as idService','kode','nama','kategori','status','disetujui','totalBiaya'];
-        $data = $this->model->select($attributs)->where('kode',$code)->first();
-        if(!$data){
-            return [];
-        }
-        $data->disetujui = Formatter::boolval($data->disetujui);
-        $data->totalBiaya = Formatter::currency($data->totalBiaya);
-        $data->uangMuka = Formatter::currency($data->uangMuka);
-        return $data->toArray();
+        return $this->model->with('product','kerusakan','riwayat')->where('kode',$code)->first();
     }
 
     public function create(array $attributs):array

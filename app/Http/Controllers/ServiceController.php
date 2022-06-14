@@ -27,6 +27,7 @@ use League\Fractal\Resource\Item;
 use App\Transformers\ServicesTransformer;
 use App\Transformers\ServicequeueTransformer;
 use App\Transformers\ServicedetailTransformer;
+use App\Transformers\ServicetrackTransformer;
 
 class ServiceController extends Controller{
     
@@ -85,12 +86,12 @@ class ServiceController extends Controller{
     }
 
     public function getServiceTrackByCode(string $id){
-        $data = $this->serviceRepository->getDataByCode($id);
-        if($data === []){
-            return $this->jsonSuccess('data tidak ditemukan',200,[]);
+        $query = $this->serviceRepository->getDataByCode($id);
+        if($query === null){
+            return $this->jsonSuccess('permintaan sukses data tidak ditemukan',200,[]);
         }
-        $data['kerusakan'] = $this->brokenRepository->getAllByIdService($data['idService']);
-        $data['riwayat'] = $this->historyRepository->getAllByIdService($data['idService']);
+        $fractal = new Manager();
+        $data = $fractal->createData(new Item($query, new ServicetrackTransformer))->toArray();
         return $this->jsonSuccess('sukses',200,$data);
     }
 

@@ -20,16 +20,6 @@ class BrokenRepository extends Repository{
         return $data;
     }
 
-    function getAllByIdService(int $idService){
-        $attributs = ['judul','deskripsi','biaya','disetujui'];
-        $data = $this->model->select($attributs)->where('idService',$idService)->orderByDesc('id')->get();
-        foreach($data as $item){
-            $item->disetujui = Formatter::boolval($item->disetujui);
-            $item->biaya = Formatter::currency($item->biaya);
-        }
-        return $data->toArray();
-    }
-
     function getDataById(string $id){
         $attributs = ['id as idKerusakan','idService','judul','deskripsi','biaya','disetujui'];
         $data = $this->findById($id,$attributs);
