@@ -75,6 +75,9 @@ $router->group(['prefix'=>'','middleware'=>['auth']],function () use ($router){
     // customer
     $router->get('/customers/{id}','CustomerController@getCustomerById');
 
+    // product
+    $router->get('/products/{id}','ProductController@show');
+
     // user
     $router->post('/user/logout','AuthController@logout');
     $router->post('/user/refresh','AuthController@createRefreshToken');

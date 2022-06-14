@@ -15,7 +15,7 @@ class HistoryController extends Controller{
     }
 
     public function create(Request $request, $id, HistoryValidation $validator){
-        $input = $request->only(['status','pesan','idService']);
+        $input = $request->only(['status','pesan']);
         $validator->validate($input);
         $data = $this->historyRepository->create($input,$id);
         return $this->jsonSuccess('sukses',200,$data);
