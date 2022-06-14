@@ -27,6 +27,7 @@ class ResponbilityRepository extends Repository{
         $table2 = ['table'=>'categories', 'key'=>'id'];
         $filters = ['where'=>['username'=>$username]];
         $data = $this->getAllWithInnerJoin($table1,$table2,$filters)->orderByDesc('responbilities.id')->get($columns);
+        $data = $this->model->with('kategori')->where('username',$username)->get();
         if($data->toArray() == []){
             return null;
         }

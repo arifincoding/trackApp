@@ -21,8 +21,6 @@ $router->post('/user/login','AuthController@login');
 
 $router->get('/services/{id}/track','ServiceController@getServiceTrackByCode');
 
-$router->get('/chat/scan','WhatsappController@scan');
-
 $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik']],function () use ($router){
 
     // employee
@@ -51,6 +49,7 @@ $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik']],function () 
     // responbility
     $router->post('/employes/{id}/technician/responbilities','ResponbilityController@newTechnicianResponbilities');
     $router->delete('/employes/technician/responbilities/{id}','ResponbilityController@delete');
+    $router->get('/chat/scan','WhatsappController@scan');
 });
 
 $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik,customer service']],function () use ($router){
