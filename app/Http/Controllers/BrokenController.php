@@ -52,9 +52,7 @@ class BrokenController extends Controller{
         $inputs = $request->only('biaya');
         $validator->cost();
         $validator->validate($inputs);
-        $totalCost = $this->setTotalCost($id,$inputs['biaya']);
         $data = $this->brokenRepository->update($inputs,$id);
-        $this->serviceRepository->updateTotalPrice($data['idService'],$totalCost);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
@@ -62,43 +60,12 @@ class BrokenController extends Controller{
         $inputs = $request->only('disetujui');
         $validator->confirm();
         $validator->validate($inputs);
-        $total = $this->setTotalCostBrokenAgree($id,$inputs['disetujui']);
         $data = $this->brokenRepository->update($inputs,$id);
-        if($total !== null){
-            $this->serviceRepository->updateTotalPrice($data['idService'],$total);
-        }
         return $this->jsonSuccess('sukses',200,$data);
     }
 
     public function deleteBroken($id){
         $data = $this->brokenRepository->deleteById($id);
         return $this->jsonMessageOnly('sukses hapus data kerusakan');
-    }
-
-    private function setTotalCost(int $id, int $cost){
-        $findBroken = $this->brokenRepository->getDataById($id);
-        $findService = $this->serviceRepository->getDataById($findBroken['idService']);
-        if($findBroken['biaya'] !== null){
-            return $findService['totalBiaya'] + ($cost - $findBroken['biaya']);
-        }
-        else if($findService['totalBiaya'] !== null){
-            return $findService['totalBiaya'] + $cost;
-        }else{
-            return $cost;
-        }
-    }
-
-    private function setTotalCostBrokenAgree(int $id,bool $isAgree){
-        $dataBroken = $this->brokenRepository->getDataById($id);
-        if($dataBroken['disetujui'] !== $isAgree){
-            $dataService = $this->serviceRepository->getDataById($dataBroken['idService']);
-            if($isAgree === true && $dataBroken['disetujui'] !== null){
-                return $dataService['totalBiaya'] + $dataBroken['biaya'];
-            }
-            else if($isAgree === false){
-                return $dataService['totalBiaya'] - $dataBroken['biaya'];
-            }
-        }
-        return null;
     }
 }

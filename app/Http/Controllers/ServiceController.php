@@ -185,6 +185,12 @@ class ServiceController extends Controller{
 
     public function setServiceConfirmCost(string $id){
         $data = $this->serviceRepository->setDataConfirmCost($id);
+        $brokens = $this->brokenRepository->getListDataByIdService($id);
+        $total = 0;
+        foreach($brokens as $item){
+            $total += $item->biaya;
+        }
+        $this->serviceRepository->updateTotalPrice($id,$total);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
@@ -201,6 +207,13 @@ class ServiceController extends Controller{
         $validator->confirmation($input);
         $validator->validate($input);
         $data = $this->serviceRepository->setDataConfirmation($id,$input);
+        $brokens = $this->brokenRepository->getListDataByIdService($id,['disetujui'=>1]);
+        $total = 0;
+        foreach($brokens as $item){
+            $total += $item->biaya;
+        }
+        $this->serviceRepository->updateTotalPrice($id,$total);
+        $this->brokenRepository->setCostInNotAgreeToZero($id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 

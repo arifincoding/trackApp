@@ -13,14 +13,19 @@ class BrokenRepository extends Repository{
         parent::__construct($model);
     }
 
-    function getListDataByIdService(string $idService){
+    function getListDataByIdService(int $idService, array $filter=[]){
         $attributs=['id as idKerusakan','judul','biaya','disetujui'];
-        $filters = ['where'=>['idService'=>$idService]];
+        $filters = [
+            'where'=>[
+                'idService'=>$idService,
+                'disetujui'=> $filter['disetujui'] ?? null
+            ]
+        ];
         $data = $this->getWhere($attributs,$filters);
         return $data;
     }
 
-    function getDataById(string $id){
+    function getDataById(int $id){
         $attributs = ['id as idKerusakan','idService','judul','deskripsi','biaya','disetujui'];
         $data = $this->findById($id,$attributs);
         $data->disetujui = Formatter::boolval($data->disetujui);
@@ -28,7 +33,7 @@ class BrokenRepository extends Repository{
         return $data->toArray();
     }
 
-    function create(array $attributs,string $idService, int $confirmed=0){
+    function create(array $attributs,int $idService, int $confirmed=0){
         $confirm = null;
         if($confirmed === 0){
             $confirm = true;
@@ -41,7 +46,7 @@ class BrokenRepository extends Repository{
         return ['idKerusakan'=>$data->id];
     }
 
-    function update(array $attributs, string $id){
+    function update(array $attributs, int $id){
         $data = $this->save($attributs,$id);
         return [
             'idKerusakan'=>$data->id,
@@ -49,14 +54,18 @@ class BrokenRepository extends Repository{
         ];
     }
 
-    function deleteById(string $id){
+    function setCostInNotAgreeToZero(int $idService){
+        $data = $this->model->where('idService',$idService)->where('disetujui',0)->update(['biaya'=>0]);
+    }
+
+    function deleteById(int $id){
         $data = $this->delete($id);
         return[
             'sukses'=>$data
         ];
     }
 
-    function deleteByIdService(string $id){
+    function deleteByIdService(int $id){
         $find = $this->model->where('idService',$id)->first();
         if($find){
             $data = $this->model->where('idService',$id)->delete();
