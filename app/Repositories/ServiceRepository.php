@@ -45,10 +45,10 @@ class ServiceRepository extends Repository{
         return $this->findById($id);
     }
 
-    public function getListDataQueue(array $responbility, int $limit=0, array $inputs=[]){
+    public function getListDataQueue($responbility, int $limit=0, array $inputs=[]){
         $resp = [];
         foreach($responbility as $item){
-            array_push($resp,$item->kategori);
+            array_push($resp,$item->kategori->nama);
         }
         $data = $this->model->with('product')->where('status','antri');
         $data->whereHas('product',function ($q) use($resp){

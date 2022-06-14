@@ -36,12 +36,10 @@ class BrokenTest extends TestCase{
             'status',
             'message',
             'data'=>['*'=>[
-                'idKerusakan',
-                'idService',
+                'id',
                 'judul',
-                'deskripsi',
                 'biaya',
-                'dikonfirmasi'
+                'disetujui'
             ]]
             ]);
     }
@@ -81,7 +79,7 @@ class BrokenTest extends TestCase{
                 'judul',
                 'deskripsi',
                 'biaya',
-                'dikonfirmasi'
+                'disetujui'
             ]
             ]);
     }
@@ -108,7 +106,7 @@ class BrokenTest extends TestCase{
     public function testShouldUpdateBrokenConfirmation(){
         $data = Broken::orderByDesc('id')->first();
         $parameters = [
-            'dikonfirmasi'=>true,
+            'disetujui'=>true,
         ];
         $header = ['Authorization'=>'Bearer '.$this->owner()];
         $this->put('/services/brokens/'.$data->id.'/confirm',$parameters,$header);

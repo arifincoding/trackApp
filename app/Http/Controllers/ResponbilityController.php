@@ -9,6 +9,10 @@ use App\Validations\ResponbilityValidation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
+use League\Fractal\Manager;
+use League\Fractal\Resource\Collection;
+use App\Transformers\ResponbilitiesTransformer;
+
 class ResponbilityController extends Controller{
     
     private $responbilityRepository;
@@ -20,8 +24,10 @@ class ResponbilityController extends Controller{
     }
 
     function getTechnicianResponbilities(string $id){
-        $data = $this->responbilityRepository->getListDataByUsername($id);
-        if($data){
+        $query = $this->responbilityRepository->getListDataByUsername($id);
+        if($query){
+            $fractal = new Manager();
+            $data = $fractal->createData(new Collection($query, new ResponbilitiesTransformer))->toArray();
             return $this->jsonSuccess('sukses',200,$data);
         }
         return $this->jsonSuccess('sukses',200,[]);

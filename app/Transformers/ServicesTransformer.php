@@ -10,7 +10,7 @@ use App\Helpers\Formatter;
 
 class ServicesTransformer extends TransformerAbstract{
 
-    protected array $defaultIncludes = ['Customer','Product'];
+    protected array $defaultIncludes = ['customer','product'];
 
     public function transform(Service $service){
         return [

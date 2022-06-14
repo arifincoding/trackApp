@@ -21,12 +21,12 @@ abstract class TestCase extends BaseTestCase
     }
 
     protected function owner(){
-        return $this->setToken('2204003','62EEFAsw');
+        return $this->setToken('2206001','pzH5Rjro');
     }
     protected function cs(){
-        return $this->setToken('2204004','SM5S5yfY');
+        return $this->setToken('2206003','GuBjhG6I');
     }
     protected function teknisi(){
-        return $this->setToken('2204006','RUQQyCvm');
+        return $this->setToken('2206002','xQpdjyZF');
     }
 }

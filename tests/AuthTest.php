@@ -4,7 +4,7 @@ class AuthTest extends TestCase {
 
     // login and get token
     public function testShouldReturnLoginToken(){
-        $parameters = ['username'=>'2204003', 'password'=>'62EEFAsw'];
+        $parameters = ['username'=>'2206001', 'password'=>'pzH5Rjro'];
         $response = $this->post('/user/login',$parameters);
         $this->seeStatusCode(200);
         $this->seeJsonStructure(

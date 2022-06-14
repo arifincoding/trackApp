@@ -11,7 +11,8 @@ class ResponbilityValidation extends Validation{
         $data = User::where('id',$id)->firstOrFail();
         $this->rules =[
             'idKategori'=>'required|array',
-    ];
+        ];
+    if(is_array($input['idKategori'])){
     foreach($input['idKategori'] as $key=>$item){
         $this->rules['idKategori.'.$key] = [
             'filled',
@@ -28,6 +29,7 @@ class ResponbilityValidation extends Validation{
                 }
             }
         }];
+    }
     }
     $this->attributes = [
         'idKategori'=>'kategori',

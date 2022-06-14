@@ -12,26 +12,26 @@ class ResponbilityRepository extends Repository{
     }
 
     function getListDataByUsername(string $username){
-        $columns=[
-            'responbilities.id as idTanggungJawab',
-            'nama as kategori'
-        ];
+        // $columns=[
+        //     'responbilities.id as idTanggungJawab',
+        //     'nama as kategori'
+        // ];
         
-        $checkData = $this->model->where('username',$username)->first();
+        // $checkData = $this->model->where('username',$username)->first();
         
-        if(!$checkData){
-            return null;
-        }
+        // if(!$checkData){
+        //     return null;
+        // }
         
-        $table1 = ['table'=>'responbilities','key'=>'idKategori'];
-        $table2 = ['table'=>'categories', 'key'=>'id'];
-        $filters = ['where'=>['username'=>$username]];
-        $data = $this->getAllWithInnerJoin($table1,$table2,$filters)->orderByDesc('responbilities.id')->get($columns);
+        // $table1 = ['table'=>'responbilities','key'=>'idKategori'];
+        // $table2 = ['table'=>'categories', 'key'=>'id'];
+        // $filters = ['where'=>['username'=>$username]];
+        // $data = $this->getAllWithInnerJoin($table1,$table2,$filters)->orderByDesc('responbilities.id')->get($columns);
         $data = $this->model->with('kategori')->where('username',$username)->get();
         if($data->toArray() == []){
             return null;
         }
-        return $data->toArray();
+        return $data;
     }
 
     function create(array $inputs, string $role, string $username){
