@@ -56,6 +56,7 @@ class BrokenRepository extends Repository{
 
     function setCostInNotAgreeToZero(int $idService){
         $data = $this->model->where('idService',$idService)->where('disetujui',0)->update(['biaya'=>0]);
+        return true;
     }
 
     function deleteById(int $id){
