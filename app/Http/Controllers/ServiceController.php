@@ -7,7 +7,6 @@ use Illuminate\Http\JsonResponse;
 
 // validation
 use App\Validations\ServiceValidation;
-use App\Validations\WarrantyValidation;
 
 // repository
 use App\Repositories\ServiceRepository;
@@ -19,7 +18,6 @@ use App\Repositories\ProductRepository;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\Helpers\Formatter;
 
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
