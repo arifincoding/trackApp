@@ -30,7 +30,10 @@ class HistoryRepository extends Repository{
 
     function deleteByIdService(string $id):array
     {
-        $data = $this->delete($id,'idService');
-        return ['sukses'=>$data];
+        $find = $this->model->where('idService',$id)->first();
+        if($find){
+            $data = $this->delete($id,'idService');
+        }
+        return ['sukses'=>true];
     }
 }

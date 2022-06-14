@@ -249,14 +249,14 @@ class ServiceTest extends TestCase{
     }
 
     // delete service
-    // public function testShouldDeleteService(){
-    //     $data = Service::orderByDesc('id')->first();
-    //     $header = ['Authorization'=>'Bearer '.$this->owner()];
-    //     $this->delete('/services/'.$data->id,$header);
-    //     $this->seeStatusCode(200);
-    //     $this->seeJsonStructure([
-    //         'status',
-    //         'message'
-    //         ]);
-    // }
+    public function testShouldDeleteService(){
+        $data = Service::orderByDesc('id')->first();
+        $header = ['Authorization'=>'Bearer '.$this->owner()];
+        $this->delete('/services/'.$data->id,$header);
+        $this->seeStatusCode(200);
+        $this->seeJsonStructure([
+            'status',
+            'message'
+            ]);
+    }
 }

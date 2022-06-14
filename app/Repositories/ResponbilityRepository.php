@@ -12,21 +12,6 @@ class ResponbilityRepository extends Repository{
     }
 
     function getListDataByUsername(string $username){
-        // $columns=[
-        //     'responbilities.id as idTanggungJawab',
-        //     'nama as kategori'
-        // ];
-        
-        // $checkData = $this->model->where('username',$username)->first();
-        
-        // if(!$checkData){
-        //     return null;
-        // }
-        
-        // $table1 = ['table'=>'responbilities','key'=>'idKategori'];
-        // $table2 = ['table'=>'categories', 'key'=>'id'];
-        // $filters = ['where'=>['username'=>$username]];
-        // $data = $this->getAllWithInnerJoin($table1,$table2,$filters)->orderByDesc('responbilities.id')->get($columns);
         $data = $this->model->with('kategori')->where('username',$username)->get();
         if($data->toArray() == []){
             return null;
@@ -39,21 +24,12 @@ class ResponbilityRepository extends Repository{
             throw new Exception('gagal tambah tanggung jawab karena pegawai ini bukan teknisi');
         }
         $arrAtribut = [];
-        if(is_array($inputs['idKategori']) == true){
-            foreach($inputs['idKategori'] as $key=>$item){
-                $arrAtribut[$key]['username'] = $username;
-                $arrAtribut[$key]['idKategori'] = $item;
-            }
-        }else{
-            $arrAtribut = [
-                'username'=>auth()->payload()->get('username'),
-                'idKategori'=>$inputs['idKategori']
-            ];
+        foreach($inputs['idKategori'] as $key=>$item){
+            $arrAtribut[$key]['username'] = $username;
+            $arrAtribut[$key]['idKategori'] = $item;
         }
         $data = $this->model->insert($arrAtribut);
-        return [
-            'message'=>'sukses tambah data tanggung jawab'
-        ];
+        return true;
     }
 
     function deleteDataById(string $id){

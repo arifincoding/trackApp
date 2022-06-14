@@ -9,7 +9,7 @@ use App\Helpers\Formatter;
 
 class ServicequeueTransformer extends TransformerAbstract{
 
-    protected array $defaultIncludes = ['Product'];
+    protected array $defaultIncludes = ['product'];
 
     public function transform(Service $service){
         return [

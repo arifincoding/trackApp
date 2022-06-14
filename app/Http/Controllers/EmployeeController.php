@@ -41,7 +41,7 @@ class EmployeeController extends Controller{
         $validation = $validator->validate($inputs);
         $data = $this->userRepository->create($inputs);
         $register = $this->userRepository->registerUser($data['idPegawai']);
-        // Mail::to($register['email'])->send(new EmployeeMail($register['username'],$register['password']));
+        Mail::to($register['email'])->send(new EmployeeMail($register['username'],$register['password']));
         return $this->jsonSuccess('sukses',200,$data);
     }
 

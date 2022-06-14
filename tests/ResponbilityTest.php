@@ -9,7 +9,7 @@ class ResponbilityTest extends TestCase{
 
     // create responbility
     public function testShouldCreateResponbility(){
-        $user = User::orderByDesc('id')->first();
+        $user = User::where('peran','teknisi')->orderByDesc('id')->first();
         $category = Category::orderByDesc('id')->first();
         $parameters = [
             'idKategori'=> [$category->id]
@@ -19,16 +19,13 @@ class ResponbilityTest extends TestCase{
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
-            'message',
-            'data'=>[
-                'message'
-            ]
+            'message'
             ]);
     }
 
     // get all responbility by username
     public function testShouldReturnAllRespobilityByUsername(){
-        $data = User::orderByDesc('id')->first();
+        $data = User::where('peran','teknisi')->orderByDesc('id')->first();
         $header = ['Authorization'=>'Bearer '.$this->owner()];
         $this->get('/employes/'.$data->username.'/technician/responbilities',$header);
         $this->seeStatusCode(200);
@@ -36,8 +33,10 @@ class ResponbilityTest extends TestCase{
             'status',
             'message',
             'data'=>['*'=>[
-                'idTanggungJawab',
-                'kategori'
+                'id',
+                'kategori'=>[
+                    'nama'
+                ]
             ]]
             ]);
     }

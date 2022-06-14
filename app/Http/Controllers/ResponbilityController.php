@@ -39,7 +39,7 @@ class ResponbilityController extends Controller{
         $validation = $validator->validate($input);
         $findUser = $this->userRepository->getDataById($id);
         $data = $this->responbilityRepository->create($input, $findUser['peran'],$findUser['username']);
-        return $this->jsonSuccess('sukses',200,$data);
+        return $this->jsonMessageOnly('sukses tambah tanggung jawab');
     }
 
     public function delete($id){
