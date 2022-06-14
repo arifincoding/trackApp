@@ -23,8 +23,10 @@ use App\Helpers\Formatter;
 
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
+use League\Fractal\Resource\Item;
 use App\Transformers\ServicesTransformer;
 use App\Transformers\ServicequeueTransformer;
+use App\Transformers\ServicedetailTransformer;
 
 class ServiceController extends Controller{
     
@@ -54,7 +56,9 @@ class ServiceController extends Controller{
     }
 
     function getServiceById($id){
-        $data = $this->serviceRepository->findDataById($id);
+        $query = $this->serviceRepository->findDataById($id);
+        $fractal = new Manager();
+        $data = $fractal->createData(new Item($query, new ServicedetailTransformer))->toArray();
         return $this->jsonSuccess('sukses',200,$data);
     }
 

@@ -5,7 +5,6 @@ namespace App\Repositories;
 use App\Models\Service;
 use App\Repositories\Repository;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use App\Helpers\Formatter;
 
 class ServiceRepository extends Repository{
@@ -48,37 +47,7 @@ class ServiceRepository extends Repository{
     }
 
     public function findDataById(int $id){
-        $data = $this->findById($id);
-        $yangHarusDibayar = $data->totalBiaya;
-        if($data->uangMuka !== null){
-            $yangHarusDibayar = $data->totalBiaya - $data->uangMuka;
-        }
-        return [
-            'idService' => $data->id
-            ,'idCustomer'=>$data->idCustomer
-            ,'idProduk'=>$data->idProduct
-            ,'kode' => $data->kode
-            ,'keluhan' => $data->keluhan
-            ,'status' => $data->status
-            ,'totalBiaya' => $data->totalBiaya
-            ,'totalBiayaString'=>Formatter::currency($data->totalBiaya)
-            ,'diambil' => Formatter::boolval($data->diambil)
-            ,'disetujui'=> Formatter::boolval($data->disetujui)
-            ,'estimasiBiaya'=> $data->estimasiBiaya
-            ,'estimasiBiayaString'=>Formatter::currency($data->estimasiBiaya)
-            ,'uangMuka'=>$data->uangMuka
-            ,'uangMukaString'=>Formatter::currency($data->uangMuka)
-            ,'yangHarusDibayar'=> Formatter::currency($yangHarusDibayar)
-            ,'tanggalMasuk'=>$data->waktuMasuk->format('d-m-Y')
-            ,'jamMasuk'=>$data->waktuMasuk->format('H:i')
-            ,'tanggalAmbil'=>$data->waktuAmbil->format('d-m-Y')
-            ,'jamAmbil'=>$data->waktuAmbil->format('H:i')
-            ,'garansi'=>$data->garansi
-            ,'usernameCS'=>$data->usernameCS
-            ,'usernameTeknisi'=>$data->usernameTeknisi,
-            'butuhPersetujuan'=> Formatter::boolval($data->butuhPersetujuan),
-            'sudahKonfirmasiBiaya'=> Formatter::boolval($data->konfirmasiBiaya),
-        ];
+        return $this->findById($id);
     }
 
     public function getListDataQueue(array $responbility, int $limit=0, array $inputs=[]){
