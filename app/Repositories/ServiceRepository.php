@@ -13,7 +13,7 @@ class ServiceRepository extends Repository{
         parent::__construct($model);
     }
     
-    public function getListDataJoinCustomer(int $limit=0, array $inputs=[]){
+    public function getListData(int $limit=0, array $inputs=[]){
         $data = $this->model->with('customer','product');
         // filter status service
         if(isset($inputs['status'])){
@@ -39,11 +39,6 @@ class ServiceRepository extends Repository{
             });
         }
         return $data->get();
-    }
-
-    public function getDataById(string $id){
-        $data = $this->findById($id);
-        return $data->toArray();
     }
 
     public function findDataById(int $id){
@@ -118,27 +113,12 @@ class ServiceRepository extends Repository{
         $data = $this->save($attributs, $idService);
     }
 
-    public function update(array $attributs,$id):array{
+    public function update(array $attributs,int $id):array
+    {
         $data = $this->save($attributs,$id);
         return [
             'idService'=>$data->id
         ];
-    }
-
-    public function updateDataStatus(array $inputs, string $id){
-        $attributs = [
-            'usernameTeknisi'=>auth()->payload()->get('username'),
-            'status'=>$inputs['status']
-        ];
-        $data = $this->save($attributs,$id);
-        return [
-            'idService'=>$data->id
-        ];
-    }
-
-    public function updateWarranty(array $attributs, string $id=null){
-        $data = $this->save($attributs,$id);
-        return ['idService'=>$data->id];
     }
 
     public function setDataTake(string $id){
@@ -150,28 +130,6 @@ class ServiceRepository extends Repository{
         return [
             'idService'=>$data->id
         ];
-    }
-
-    public function setDataConfirmCost(string $id){
-        $attributs = [
-            'konfirmasibiaya'=>true
-        ];
-        $data = $this->save($attributs,$id);
-        return [
-            'idService'=>$data->id
-        ];
-    }
-
-    public function setDataConfirmation(string $id,array $attributs){
-        $data = $this->save($attributs,$id);
-        return [
-            'idService'=>$data->id
-        ];
-    }
-
-    public function updateTotalPrice(string $id, int $totalCost){
-        $attributs['totalBiaya'] = $totalCost;
-        $data = $this->save($attributs,$id);
     }
 
     public function deleteById(string $id){

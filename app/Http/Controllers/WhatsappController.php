@@ -43,8 +43,8 @@ class WhatsappController extends Controller{
     }
 
     public function chat(Request $request,$id){
-        $findService = $this->serviceRepository->getDataById($id);
-        $findCustomer = $this->customerRepository->findDataById($findService['idCustomer']);
+        $findService = $this->serviceRepository->findDataById($id);
+        $findCustomer = $this->customerRepository->findDataById($findService->idCustomer);
         if($findCustomer['bisaWA'] === 1){
             if($this->check() === true){
                 $response = Http::post('http://127.0.0.1:4000/chats/send',[

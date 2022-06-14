@@ -31,8 +31,8 @@ class BrokenController extends Controller{
     public function newBrokenByIdService(Request $request,$id,BrokenValidation $validator){
         $inputs = $request->only('judul','deskripsi');
         $validation = $validator->validate($inputs);
-        $findService = $this->serviceRepository->getDataById($id);
-        $data = $this->brokenRepository->create($inputs,$id, $findService['butuhPersetujuan']);
+        $findService = $this->serviceRepository->findDataById($id);
+        $data = $this->brokenRepository->create($inputs,$id, $findService->butuhPersetujuan);
         return $this->jsonSuccess('sukses',200,$data);
     }
 

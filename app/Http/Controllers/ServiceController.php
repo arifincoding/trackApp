@@ -50,7 +50,7 @@ class ServiceController extends Controller{
     function getListService(Request $request){
         $limit = $request->query('limit',0);
         $filter = $request->only('kategori','status','cari');
-        $query = $this->serviceRepository->getListDataJoinCustomer($limit,$filter);
+        $query = $this->serviceRepository->getListData($limit,$filter);
         $fractal = new Manager();
         $data = $fractal->createData(new Collection($query,new ServicesTransformer))->toArray();
         return $this->jsonSuccess('sukses',200,$data);
@@ -129,15 +129,15 @@ class ServiceController extends Controller{
 
     public function updateService(Request $request, $id, ServiceValidation $validator){
         $validation = $validator->validate($request->all());
-        $findService = $this->serviceRepository->getDataById($id);
+        $findService = $this->serviceRepository->findDataById($id);
         // customer
         $inputCustomer = $request->only(['noHp','bisaWA']);
         $inputCustomer['nama'] = $request->input('namaCustomer');
-        $saveCustomer = $this->updateCustomer($inputCustomer,$findService['idCustomer']);
+        $saveCustomer = $this->updateCustomer($inputCustomer,$findService->idCustomer);
         // product
         $inputProduct = $request->only(['kategori','kelengkapan','catatan','cacatProduk']);
         $inputProduct['nama'] = $request->input('namaProduk');
-        $saveProduct = $this->productRepository->update($inputProduct,$findService['idProduct']);
+        $saveProduct = $this->productRepository->update($inputProduct,$findService->idProduct);
         // service
         $inputService = $request->only(['keluhan','butuhPersetujuan','uangMuka','estimasiBiaya',]);
         $inputService['idCustomer'] = $saveCustomer['idCustomer'];
@@ -174,7 +174,8 @@ class ServiceController extends Controller{
         $input = $request->only('status');
         $validator->statusService();
         $validator->validate($input);
-        $data = $this->serviceRepository->updateDataStatus($input,$id);
+        $input['usernameTeknisi']=auth()->payload()->get('username');
+        $data = $this->serviceRepository->update($input,$id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
@@ -184,13 +185,13 @@ class ServiceController extends Controller{
     }
 
     public function setServiceConfirmCost(string $id){
-        $data = $this->serviceRepository->setDataConfirmCost($id);
         $brokens = $this->brokenRepository->getListDataByIdService($id);
         $total = 0;
         foreach($brokens as $item){
             $total += $item->biaya;
         }
-        $this->serviceRepository->updateTotalPrice($id,$total);
+        $input = ['konfirmasibiaya'=>true,'totalBiaya'=>$total];
+        $data = $this->serviceRepository->update($input,$id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
@@ -198,7 +199,7 @@ class ServiceController extends Controller{
         $input = $request->only('garansi');
         $validator->serviceWarranty();
         $validator->validate($input);
-        $data = $this->serviceRepository->updateWarranty($input,$id);
+        $data = $this->serviceRepository->update($input,$id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
@@ -206,27 +207,27 @@ class ServiceController extends Controller{
         $input =  $request->only('disetujui');
         $validator->confirmation($input);
         $validator->validate($input);
-        $data = $this->serviceRepository->setDataConfirmation($id,$input);
         $brokens = $this->brokenRepository->getListDataByIdService($id,['disetujui'=>1]);
         $total = 0;
         foreach($brokens as $item){
             $total += $item->biaya;
         }
-        $this->serviceRepository->updateTotalPrice($id,$total);
+        $input['totalBiaya'] = $total;
+        $data = $this->serviceRepository->update($input,$id);
         $this->brokenRepository->setCostInNotAgreeToZero($id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
     public function deleteService($id){
-        $findService = $this->serviceRepository->getDataById($id);
+        $findService = $this->serviceRepository->findDataById($id);
         if($findService){
-            $findCustomer = $this->customerRepository->findDataById($findService['idCustomer']);
+            $findCustomer = $this->customerRepository->findDataById($findService->idCustomer);
             if($findCustomer['jumlahService'] > 1){
                 $this->customerRepository->updateCount($findCustomer['id'],'minus');
             }else{
-                $this->customerRepository->deleteById($findService['idCustomer']);
+                $this->customerRepository->deleteById($findService->idCustomer);
             }
-            $this->productRepository->deleteById($findService['idProduct']);
+            $this->productRepository->deleteById($findService->idProduct);
             $data = $this->serviceRepository->deleteById($id);
             if($data['sukses']===true){
                 $this->historyRepository->deleteByIdService($id);
