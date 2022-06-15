@@ -97,7 +97,7 @@ class ServiceTest extends TestCase{
             'status',
             'message',
             'data'=>[
-                'idService'
+                'id'
                 ,'idCustomer'
                 ,'idProduk'
                 ,'kode'

@@ -20,7 +20,7 @@ class ServicedetailTransformer extends TransformerAbstract{
             $jamAmbil = Carbon::parse($data->waktuAmbil)->format('H:i');
         }
         return [
-            'idService' => $data->id
+            'id' => $data->id
             ,'idCustomer'=>$data->idCustomer
             ,'idProduk'=>$data->idProduct
             ,'kode' => $data->kode
