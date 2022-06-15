@@ -14,7 +14,7 @@ class ServiceRepository extends Repository{
     }
     
     public function getListData(int $limit=0, array $inputs=[]){
-        $data = $this->model->with('customer','product');
+        $data = $this->model->with('customer','product')->orderByDesc('id');
         // filter status service
         if(isset($inputs['status'])){
             $data->where('status',$inputs['status']);
@@ -50,7 +50,7 @@ class ServiceRepository extends Repository{
         foreach($responbility as $item){
             array_push($resp,$item->kategori->nama);
         }
-        $data = $this->model->with('product')->where('status','antri');
+        $data = $this->model->with('product')->where('status','antri')->orderByDesc('id');
         $data->whereHas('product',function ($q) use($resp){
             foreach($resp as $item){
                 $q->orWhere('kategori',$item);
@@ -71,7 +71,7 @@ class ServiceRepository extends Repository{
     }
 
     public function getListDataMyProgress(string $username=null,int $limit=0,array $inputs=[]){
-        $data = $this->model->with('product')->where('usernameTeknisi',$username);
+        $data = $this->model->with('product')->where('usernameTeknisi',$username)->orderByDesc('id');
         if(isset($inputs['status'])){
             $data->where('status',$inputs['status']);
         }
@@ -90,7 +90,11 @@ class ServiceRepository extends Repository{
     }
 
     public function getDataByCode(string $code){
-        return $this->model->with('product','kerusakan','riwayat')->where('kode',$code)->first();
+        return $this->model->with(['product','kerusakan'=>function ($q){
+            $q->orderByDesc('id');
+        },'riwayat'=>function ($q){
+            $q->orderByDesc('id');
+        }])->where('kode',$code)->first();
     }
 
     public function create(array $attributs):array
