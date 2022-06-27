@@ -39,6 +39,8 @@ class userRepository extends Repository{
         $attributs = ['id as idPegawai','username',DB::raw("CONCAT(namaDepan,' ',namaBelakang) AS nama"),'noHp','peran'];
         
         $data = $this->getWhere($attributs,$filters,false);
+
+        $data->where('peran','!=','pemilik');
         
         if(count(explode(' ',$cari)) > 1){
             $data->where(DB::raw('CONCAT_WS(" ",namaDepan,namaBelakang)'),'LIKE','%'.$cari.'%');
