@@ -10,6 +10,7 @@ class CustomerTransformer extends TransformerAbstract{
         return [
             'nama'=>$customer->nama,
             'noHp'=>$customer->noHp,
+            'bisaWA'=>$customer->bisaWA
         ];
     }
 }
