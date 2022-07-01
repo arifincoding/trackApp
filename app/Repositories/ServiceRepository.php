@@ -42,7 +42,7 @@ class ServiceRepository extends Repository{
     }
 
     public function getDataWithRelationById(int $id){
-        return $this->model->with('klien','produk','kerusakan')->where('id',$id)->first();
+        return $this->model->with(['klien','produk','kerusakan'=>function($q){$q->orderByDesc('id');}])->where('id',$id)->first();
     }
     public function findDataById(int $id){
         return $this->findById($id);
