@@ -46,9 +46,9 @@ class ServicedetailTransformer extends TransformerAbstract{
             ,'jamAmbil'=>$jamAmbil
             ,'garansi'=>$data->garansi
             ,'usernameCS'=>$data->usernameCS
-            ,'usernameTeknisi'=>$data->usernameTeknisi,
-            'butuhPersetujuan'=> Formatter::boolval($data->butuhPersetujuan),
-            'sudahKonfirmasiBiaya'=> Formatter::boolval($data->konfirmasiBiaya),
+            ,'usernameTeknisi'=>$data->usernameTeknisi
+            ,'butuhPersetujuan'=> Formatter::boolval($data->butuhPersetujuan)
+            ,'sudahKonfirmasiBiaya'=> Formatter::boolval($data->konfirmasiBiaya)
         ];
     }
     public function includeKlien(Service $data){
