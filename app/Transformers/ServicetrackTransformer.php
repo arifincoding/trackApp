@@ -11,7 +11,7 @@ use League\Fractal\TransformerAbstract;
 
 class ServicetrackTransformer extends TransformerAbstract{
     
-    protected array $defaultIncludes = ['product','kerusakan','riwayat'];
+    protected array $defaultIncludes = ['produk','kerusakan','riwayat'];
 
     public function transform(Service $data){
         return [
@@ -22,8 +22,8 @@ class ServicetrackTransformer extends TransformerAbstract{
         ];
     }
 
-    public function includeProduct(Service $data){
-        return $this->item($data->product,new ProductTransformer);
+    public function includeProduk(Service $data){
+        return $this->item($data->produk,new ProductTransformer);
     }
 
     public function includeKerusakan(Service $data){

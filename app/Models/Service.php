@@ -10,11 +10,11 @@ class Service extends Model{
     ];
     public $timestamps = false;
 
-    public function customer(){
+    public function klien(){
         return $this->belongsTo(Customer::class,'idCustomer');
     }
 
-    public function product(){
+    public function produk(){
         return $this->belongsTo(Product::class,'idProduct');
     }
 

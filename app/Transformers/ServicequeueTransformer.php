@@ -9,7 +9,7 @@ use App\Helpers\Formatter;
 
 class ServicequeueTransformer extends TransformerAbstract{
 
-    protected array $defaultIncludes = ['product'];
+    protected array $defaultIncludes = ['produk'];
 
     public function transform(Service $service){
         return [
@@ -21,8 +21,8 @@ class ServicequeueTransformer extends TransformerAbstract{
         ];
     }
     
-    public function includeProduct(Service $service){
-        return $this->item($service->product, new ProductTransformer);
+    public function includeProduk(Service $service){
+        return $this->item($service->produk, new ProductTransformer);
     }
 }
 

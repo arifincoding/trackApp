@@ -14,14 +14,14 @@ class ServiceRepository extends Repository{
     }
     
     public function getListData(int $limit=0, array $inputs=[]){
-        $data = $this->model->with('customer','product')->orderByDesc('id');
+        $data = $this->model->with('klien','produk')->orderByDesc('id');
         // filter status service
         if(isset($inputs['status'])){
             $data->where('status',$inputs['status']);
         }
-        // filter kategori product
+        // filter kategori produk
         if(isset($inputs['kategori'])){
-            $data->whereHas('product', function ($q) use($inputs){
+            $data->whereHas('produk', function ($q) use($inputs){
                 $q->where('kategori',$inputs['kategori']);
             });
         }
@@ -30,17 +30,20 @@ class ServiceRepository extends Repository{
             $data->where(function ($q) use($inputs){
                 $q->orWhere('kode','LIKE','%'.$inputs['cari'].'%');
             });
-            $data->orWhereHas('customer',function ($q) use($inputs){
+            $data->orWhereHas('klien',function ($q) use($inputs){
                 $q->where('nama','LIKE','%'.$inputs['cari'].'%');
                 $q->orWhere('noHp','LIKE','%'.$inputs['cari'].'%');
             });
-            $data->orWhereHas('product', function ($q) use($inputs){
+            $data->orWhereHas('produk', function ($q) use($inputs){
                 $q->where('nama','LIKE','%'.$inputs['cari'].'%');
             });
         }
         return $data->get();
     }
 
+    public function getDataWithRelationById(int $id){
+        return $this->model->with('klien','produk','kerusakan')->where('id',$id)->first();
+    }
     public function findDataById(int $id){
         return $this->findById($id);
     }
@@ -50,20 +53,20 @@ class ServiceRepository extends Repository{
         foreach($responbility as $item){
             array_push($resp,$item->kategori->nama);
         }
-        $data = $this->model->with('product')->where('status','antri')->orderByDesc('id');
-        $data->whereHas('product',function ($q) use($resp){
+        $data = $this->model->with('produk')->where('status','antri')->orderByDesc('id');
+        $data->whereHas('produk',function ($q) use($resp){
             foreach($resp as $item){
                 $q->orWhere('kategori',$item);
             }
         });
         if(isset($inputs['kategori'])){
-            $data->whereHas('product',function ($q) use($inputs){
+            $data->whereHas('produk',function ($q) use($inputs){
                 $q->where('kategori',$inputs['kategori']);
             });
         }
         if(isset($inputs['cari'])){
             $data->where('kode','LIKE','%'.$inputs['cari'].'%');
-            $data->orWhereHas('product',function ($q) use($inputs){
+            $data->orWhereHas('produk',function ($q) use($inputs){
                 $q->where('nama','LIKE','%'.$inputs['cari'].'%');
             });
         }
@@ -71,18 +74,18 @@ class ServiceRepository extends Repository{
     }
 
     public function getListDataMyProgress(string $username=null,int $limit=0,array $inputs=[]){
-        $data = $this->model->with('product')->where('usernameTeknisi',$username)->orderByDesc('id');
+        $data = $this->model->with('produk')->where('usernameTeknisi',$username)->orderByDesc('id');
         if(isset($inputs['status'])){
             $data->where('status',$inputs['status']);
         }
         if(isset($inputs['kategori'])){
-            $data->whereHas('product',function ($q) use($inputs){
+            $data->whereHas('produk',function ($q) use($inputs){
                 $q->where('kategori',$inputs['kategori']);
             });
         }
         if(isset($inputs['cari'])){
             $data->where('kode','LIKE','%'.$inputs['cari'].'%');
-            $data->orWhereHas('product',function ($q) use ($inputs){
+            $data->orWhereHas('produk',function ($q) use ($inputs){
                 $q->where('nama','LIKE','%'.$inputs['cari'].'%');
             });
         }
@@ -90,7 +93,7 @@ class ServiceRepository extends Repository{
     }
 
     public function getDataByCode(string $code){
-        return $this->model->with(['product','kerusakan'=>function ($q){
+        return $this->model->with(['produk','kerusakan'=>function ($q){
             $q->orderByDesc('id');
         },'riwayat'=>function ($q){
             $q->orderByDesc('id');

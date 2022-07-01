@@ -54,9 +54,12 @@ class ServiceController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    function getServiceById($id){
-        $query = $this->serviceRepository->findDataById($id);
+    function getServiceById(Request $request,$id){
+        $query = $this->serviceRepository->getDataWithRelationById($id);
         $fractal = new Manager();
+        if($request->query('include')){
+            $fractal->parseIncludes($request->query('include'));
+        }
         $data = $fractal->createData(new Item($query, new ServicedetailTransformer))->toArray();
         return $this->jsonSuccess('sukses',200,$data);
     }

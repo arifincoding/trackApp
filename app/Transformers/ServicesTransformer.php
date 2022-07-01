@@ -10,7 +10,7 @@ use App\Helpers\Formatter;
 
 class ServicesTransformer extends TransformerAbstract{
 
-    protected array $defaultIncludes = ['customer','product'];
+    protected array $defaultIncludes = ['klien','produk'];
 
     public function transform(Service $service){
         return [
@@ -24,11 +24,11 @@ class ServicesTransformer extends TransformerAbstract{
         ];
     }
 
-    public function includeCustomer(Service $service){
-        return $this->item($service->customer, new CustomerTransformer);
+    public function includeKlien(Service $service){
+        return $this->item($service->klien, new CustomerTransformer);
     }
-    public function includeProduct(Service $service){
-        return $this->item($service->product, new ProductTransformer);
+    public function includeProduk(Service $service){
+        return $this->item($service->produk, new ProductTransformer);
     }
 }
 

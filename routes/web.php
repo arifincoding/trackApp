@@ -71,13 +71,6 @@ $router->group(['prefix'=>'','middleware'=>['auth']],function () use ($router){
     $router->get('/services/{id}/detail','ServiceController@getServiceById');
     $router->get('/services/{id}/brokens','BrokenController@getListBrokenByIdService');
     $router->get('/services/brokens/{id}','BrokenController@getBrokenById');
-
-    // customer
-    $router->get('/customers/{id}','CustomerController@getCustomerById');
-
-    // product
-    $router->get('/products/{id}','ProductController@show');
-
     // user
     $router->post('/user/logout','AuthController@logout');
     $router->post('/user/refresh','AuthController@createRefreshToken');
