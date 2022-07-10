@@ -75,16 +75,193 @@ class ServiceTest extends TestCase{
                 'totalBiaya',
                 'diambil',
                 'disetujui',
-                'customer'=>[
+                'klien'=>[
                     'nama',
                     'noHp'
                 ],
-                'product'=>[
+                'produk'=>[
                     'nama',
                     'kategori'
                 ]
             ]]
                 ]);
+    }
+
+    // get service by id with brokens,customer and product
+    public function testShouldreturnServiceWithAllRelation(){
+        $data = Service::find(24);
+        $header = ['Authorization'=>'Bearer '.$this->cs()];
+        $this->get('/services/'.$data->id.'/detail?include=klien,produk,kerusakan',$header);
+        $this->seeStatusCode(200);
+        $this->seeJsonStructure([
+            'status',
+            'message',
+            'data'=>[
+                'id'
+                ,'kode'
+                ,'keluhan'
+                ,'status'
+                ,'totalBiaya'
+                ,'totalBiayaString'
+                ,'diambil'
+                ,'disetujui'
+                ,'estimasiBiaya'
+                ,'estimasiBiayaString'
+                ,'uangMuka'
+                ,'uangMukaString'
+                ,'yangHarusDibayar'
+                ,'tanggalMasuk'
+                ,'jamMasuk'
+                ,'tanggalAmbil'
+                ,'jamAmbil'
+                ,'garansi'
+                ,'usernameCS'
+                ,'usernameTeknisi'
+                ,'butuhPersetujuan'
+                ,'sudahKonfirmasiBiaya'
+                ,'klien'=>[
+                    'nama',
+                    'noHp',
+                    'bisaWA'
+                ]
+                ,'produk'=>[
+                    'nama',
+                    'kategori',
+                    'cacatProduk',
+                    'kelengkapan',
+                    'catatan'
+                ]
+                ,'kerusakan'=>['*'=>[
+                    'id',
+                    'judul',
+                    'biaya',
+                    'disetujui'
+                ]]
+            ]
+        ]);
+    }
+
+    public function testShouldreturnServiceWithKlien(){
+        $data = Service::find(24);
+        $header = ['Authorization'=>'Bearer '.$this->cs()];
+        $this->get('/services/'.$data->id.'/detail?include=klien',$header);
+        $this->seeStatusCode(200);
+        $this->seeJsonStructure([
+            'status',
+            'message',
+            'data'=>[
+                'id'
+                ,'kode'
+                ,'keluhan'
+                ,'status'
+                ,'totalBiaya'
+                ,'totalBiayaString'
+                ,'diambil'
+                ,'disetujui'
+                ,'estimasiBiaya'
+                ,'estimasiBiayaString'
+                ,'uangMuka'
+                ,'uangMukaString'
+                ,'yangHarusDibayar'
+                ,'tanggalMasuk'
+                ,'jamMasuk'
+                ,'tanggalAmbil'
+                ,'jamAmbil'
+                ,'garansi'
+                ,'usernameCS'
+                ,'usernameTeknisi'
+                ,'butuhPersetujuan'
+                ,'sudahKonfirmasiBiaya'
+                ,'klien'=>[
+                    'nama',
+                    'noHp',
+                    'bisaWA'
+                ]
+            ]
+        ]);
+    }
+
+    public function testShouldreturnServiceWithProduk(){
+        $data = Service::find(24);
+        $header = ['Authorization'=>'Bearer '.$this->cs()];
+        $this->get('/services/'.$data->id.'/detail?include=produk',$header);
+        $this->seeStatusCode(200);
+        $this->seeJsonStructure([
+            'status',
+            'message',
+            'data'=>[
+                'id'
+                ,'kode'
+                ,'keluhan'
+                ,'status'
+                ,'totalBiaya'
+                ,'totalBiayaString'
+                ,'diambil'
+                ,'disetujui'
+                ,'estimasiBiaya'
+                ,'estimasiBiayaString'
+                ,'uangMuka'
+                ,'uangMukaString'
+                ,'yangHarusDibayar'
+                ,'tanggalMasuk'
+                ,'jamMasuk'
+                ,'tanggalAmbil'
+                ,'jamAmbil'
+                ,'garansi'
+                ,'usernameCS'
+                ,'usernameTeknisi'
+                ,'butuhPersetujuan'
+                ,'sudahKonfirmasiBiaya'
+                ,'produk'=>[
+                    'nama',
+                    'kategori',
+                    'cacatProduk',
+                    'kelengkapan',
+                    'catatan'
+                ]
+            ]
+        ]);
+    }
+
+    public function testShouldreturnServiceWithKerusakan(){
+        $data = Service::find(24);
+        $header = ['Authorization'=>'Bearer '.$this->cs()];
+        $this->get('/services/'.$data->id.'/detail?include=kerusakan',$header);
+        $this->seeStatusCode(200);
+        $this->seeJsonStructure([
+            'status',
+            'message',
+            'data'=>[
+                'id'
+                ,'kode'
+                ,'keluhan'
+                ,'status'
+                ,'totalBiaya'
+                ,'totalBiayaString'
+                ,'diambil'
+                ,'disetujui'
+                ,'estimasiBiaya'
+                ,'estimasiBiayaString'
+                ,'uangMuka'
+                ,'uangMukaString'
+                ,'yangHarusDibayar'
+                ,'tanggalMasuk'
+                ,'jamMasuk'
+                ,'tanggalAmbil'
+                ,'jamAmbil'
+                ,'garansi'
+                ,'usernameCS'
+                ,'usernameTeknisi'
+                ,'butuhPersetujuan'
+                ,'sudahKonfirmasiBiaya'
+                ,'kerusakan'=>['*'=>[
+                    'id',
+                    'judul',
+                    'biaya',
+                    'disetujui'
+                ]]
+            ]
+        ]);
     }
 
     // get service by id
@@ -98,8 +275,6 @@ class ServiceTest extends TestCase{
             'message',
             'data'=>[
                 'id'
-                ,'idCustomer'
-                ,'idProduk'
                 ,'kode'
                 ,'keluhan'
                 ,'status'
@@ -122,7 +297,39 @@ class ServiceTest extends TestCase{
                 ,'butuhPersetujuan'
                 ,'sudahKonfirmasiBiaya'
             ]
-                ]);
+        ]);
+    }
+
+    // track
+    public function testShouldReturnTrackingInfo(){
+        $this->get('/services/220624024/track');
+        $this->seeStatusCode(200);
+        $this->seeJsonStructure([
+            'status',
+            'message',
+            'data'=>[
+                'kode',
+                'status',
+                'disetujui',
+                'totalBiaya',
+                'produk'=>[
+                    'nama',
+                    'kategori'
+                ],
+                'kerusakan'=>['*'=>[
+                    'judul',
+                    'deskripsi',
+                    'biaya',
+                    'disetujui'
+                ]],
+                'riwayat'=>['*'=>[
+                    'status',
+                    'pesan',
+                    'tanggal',
+                    'jam'
+                ]]
+            ]
+        ]);
     }
 
     // get service queue
@@ -140,7 +347,7 @@ class ServiceTest extends TestCase{
                 'keluhan',
                 'status',
                 'disetujui',
-                'product'=>[
+                'produk'=>[
                     'nama',
                     'kategori'
                 ]
@@ -162,7 +369,7 @@ class ServiceTest extends TestCase{
                 'keluhan',
                 'status',
                 'disetujui',
-                'product'=>[
+                'produk'=>[
                     'nama',
                     'kategori'
                 ]

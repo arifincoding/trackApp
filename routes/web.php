@@ -17,18 +17,18 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->post('/user/login','AuthController@login');
+$router->post('/user/login','UserController@login');
 
 $router->get('/services/{id}/track','ServiceController@getServiceTrackByCode');
 
 $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik']],function () use ($router){
 
     // employee
-    $router->post('/employes','EmployeeController@createEmployee');
-    $router->put('/employes/{id}','EmployeeController@updateEmployee');
-    $router->get('/employes','EmployeeController@getListEmployee');
-    $router->get('/employes/{id}','EmployeeController@getEmployeeById');
-    $router->delete('/employes/{id}','EmployeeController@deleteEmployee');
+    $router->post('/employes','UserController@create');
+    $router->put('/employes/{id}','UserController@update');
+    $router->get('/employes','UserController@all');
+    $router->get('/employes/{id}','UserController@show');
+    $router->delete('/employes/{id}','UserController@delete');
     $router->get('/employes/{id}/categories-not-in-responbility','CategoryController@getCategoryNotInResponbility');
 
     // categories
@@ -72,8 +72,8 @@ $router->group(['prefix'=>'','middleware'=>['auth']],function () use ($router){
     $router->get('/services/{id}/brokens','BrokenController@getListBrokenByIdService');
     $router->get('/services/brokens/{id}','BrokenController@getBrokenById');
     // user
-    $router->post('/user/logout','AuthController@logout');
-    $router->post('/user/refresh','AuthController@createRefreshToken');
+    $router->post('/user/logout','UserController@logout');
+    $router->post('/user/refresh','UserController@createRefreshToken');
     $router->put('/user/change-password','UserController@changeMyPassword');
     $router->get('/user/account','UserController@getMyAccount');
     $router->put('/user/account','UserController@updateMyAccount');
