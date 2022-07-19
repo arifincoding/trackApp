@@ -25,7 +25,7 @@ class ServicesTransformer extends TransformerAbstract{
     }
 
     public function includeKlien(Service $service){
-        return $this->item($service->klien, new CustomerTransformer);
+        return $this->item($service->klien, new CustomersTransformer);
     }
     public function includeProduk(Service $service){
         return $this->item($service->produk, new ProductTransformer);

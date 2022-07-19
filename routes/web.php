@@ -19,7 +19,7 @@ $router->get('/', function () use ($router) {
 
 $router->post('/user/login','UserController@login');
 
-$router->get('/services/{id}/track','ServiceController@getServiceTrackByCode');
+$router->get('/services/{id}/track','ServiceController@getServiceTrack');
 
 $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik']],function () use ($router){
 
@@ -42,9 +42,9 @@ $router->group(['prefix'=>'','middleware'=>['auth','role:pemilik']],function () 
     $router->put('/services/brokens/{id}/confirm','BrokenController@updateBrokenCofirmation');
 
     // services
-    $router->put('/services/{id}/confirm-cost','ServiceController@setServiceConfirmCost');
-    $router->put('/services/{id}/warranty','ServiceController@updateServiceWarranty');
-    $router->put('/services/{id}/confirmation','ServiceController@setServiceConfirmation');
+    $router->put('/services/{id}/confirm-cost','ServiceController@setConfirmCost');
+    $router->put('/services/{id}/warranty','ServiceController@updateWarranty');
+    $router->put('/services/{id}/confirmation','ServiceController@setConfirmation');
 
     // responbility
     $router->post('/employes/{id}/technician/responbilities','ResponbilityController@newTechnicianResponbilities');

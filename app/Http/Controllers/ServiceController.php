@@ -86,7 +86,7 @@ class ServiceController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function getServiceTrackByCode(string $id){
+    public function getServiceTrack(string $id){
         $query = $this->serviceRepository->getDataByCode($id);
         if($query === null){
             return $this->jsonSuccess('permintaan sukses data tidak ditemukan',200,[]);
@@ -185,7 +185,7 @@ class ServiceController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function setServiceConfirmCost(string $id){
+    public function setConfirmCost(string $id){
         $brokens = $this->brokenRepository->getListDataByIdService($id);
         $total = 0;
         foreach($brokens as $item){
@@ -196,7 +196,7 @@ class ServiceController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function updateServiceWarranty(Request $request, $id,ServiceValidation $validator){
+    public function updateWarranty(Request $request, $id,ServiceValidation $validator){
         $input = $request->only('garansi');
         $validator->serviceWarranty();
         $validator->validate($input);
@@ -204,7 +204,7 @@ class ServiceController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function setServiceConfirmation(Request $request,string $id,ServiceValidation $validator){
+    public function setConfirmation(Request $request,string $id,ServiceValidation $validator){
         $input =  $request->only('disetujui');
         $validator->confirmation($input);
         $validator->validate($input);
