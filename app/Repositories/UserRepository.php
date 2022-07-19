@@ -6,10 +6,7 @@ use App\Models\User;
 use App\Repositories\Repository;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Exception;
-use App\Exceptions\Handler;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class userRepository extends Repository{
 
@@ -17,7 +14,7 @@ class userRepository extends Repository{
         parent::__construct($model);
     }
 
-    function getlistData(array $inputs):array
+    function getlistData(array $inputs)
     {
         $filters = [
             'limit'=>$inputs['limit'] ?? 0,
@@ -25,28 +22,9 @@ class userRepository extends Repository{
                 'peran'=> $inputs['peran'] ?? null
             ]
         ];
-        $cari = $inputs['cari'] ?? null;
-        if($cari){
-            if(count(explode(' ',$cari)) < 2){
-            $filters['likeWhere']=[
-                'username'=>$cari,
-                'namaDepan'=>$cari,
-                'namaBelakang'=>$cari
-            ];
-            }
-        }
-        
-        $attributs = ['id as idPegawai','username',DB::raw("CONCAT(namaDepan,' ',namaBelakang) AS nama"),'noHp','peran'];
-        
-        $data = $this->getWhere($attributs,$filters,false);
-
+        $data = $this->getWhere(['*'],$filters,false);
         $data->where('peran','!=','pemilik');
-        
-        if(count(explode(' ',$cari)) > 1){
-            $data->where(DB::raw('CONCAT_WS(" ",namaDepan,namaBelakang)'),'LIKE','%'.$cari.'%');
-        }
-        
-        return $data->get()->toArray();
+        return $data->get();
     }
 
     function getDataById($id):array

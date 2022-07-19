@@ -10,6 +10,9 @@ use App\Repositories\ResponbilityRepository;
 use Illuminate\Http\JsonResponse;
 use App\Mails\EmployeeMail;
 use Illuminate\Support\Facades\Mail;
+use League\Fractal\Manager;
+use League\Fractal\Resource\Collection;
+use App\Transformers\UsersTransformer;
 
 class UserController extends Controller{
 
@@ -69,10 +72,12 @@ class UserController extends Controller{
 
     function all(Request $request, UserValidation $validator): JsonResponse
     {
-        $filters = $request->only(['limit','peran','cari']);
+        $filters = $request->only(['limit','peran']);
         $validator->get();
         $validator->validate($filters);
-        $data = $this->repository->getListData($filters);
+        $query = $this->repository->getListData($filters);
+        $fractal = new Manager();
+        $data = $fractal->createData(new Collection($query,new UsersTransformer))->toArray();
         return $this->jsonSuccess('sukses',200,$data);
     }
 

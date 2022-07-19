@@ -13,7 +13,9 @@ class ServiceValidation extends Validation{
             'namaProduk'=>'required',
             'kategori'=>'required|exists:categories,nama',
             'keluhan'=>'required',
-            'butuhPersetujuan'=>'required|boolean'
+            'butuhPersetujuan'=>'required|boolean',
+            'estimasiBiaya'=>'nullable|numeric',
+            'uangMuka'=>'nullable|numeric'
         ];
     }
 

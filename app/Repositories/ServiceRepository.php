@@ -5,7 +5,6 @@ namespace App\Repositories;
 use App\Models\Service;
 use App\Repositories\Repository;
 use Illuminate\Support\Carbon;
-use App\Helpers\Formatter;
 
 class ServiceRepository extends Repository{
     public function __construct(Service $model)

@@ -24,11 +24,6 @@ class Repository{
         return $data;
     }
 
-    protected function getAll($limit=null, array $orderBy=['id','desc']){
-        $data = $this->model->orderBy($orderBy[0],$orderBy[1])->take($limit);
-        return $data;
-    }
-
     protected function getWhere(array $attributs=['*'],array $filters=[],bool $withGet=true){
         $query = $this->model->select($attributs)->orderByDesc('id');
         if($filters !== []){
@@ -82,33 +77,6 @@ class Repository{
             return $this->model->select($attributs)->findOrFail($id);
         }
         return $this->model->findOrFail($id);
-    }
-
-    protected function getAllWithInnerJoin(array $table1, array $table2,array $filters=[]){
-        
-        $query = DB::table($table1['table'])->join($table2['table'],$table1['table'].'.'.$table1['key'],'=',$table2['table'].'.'.$table2['key']);
-        if($filters !== []){
-            if(isset($filters['limit'])){
-                if($filters['limit'] !== 0){
-                    $query->take($limit);
-                }
-            }
-            if(isset($filters['where'])){
-                foreach($filters['where'] as $key=>$item){
-                    if($item !== null){
-                        $query->where($key,$item);
-                    }
-                }
-            }
-            if(isset($filters['likeWhere'])){
-                $query->where(function ($q) use ($filters){
-                    foreach($filters['likeWhere'] as $key=>$item){
-                        $q->orWhere($key,'LIKE','%'.$item.'%');
-                    }
-                });
-            }
-        }
-        return $query;
     }
 
     protected function delete(string $filter, string $filterName='id'){
