@@ -19,12 +19,14 @@ class UserController extends Controller{
     private $repository;
     private $responbilityRepository;
 
-    function __construct(UserRepository $repository, ResponbilityRepository $responbility){
+    function __construct(UserRepository $repository, ResponbilityRepository $responbility)
+    {
         $this->repository = $repository;
         $this->responbilityRepository = $responbility;
     }
 
-    public function login(Request $request, UserValidation $validator){
+    public function login(Request $request, UserValidation $validator): JsonResponse
+    {
         $credentials = $request->only('username','password');
         $validator->login();
         $validator->validate($credentials);
@@ -38,22 +40,26 @@ class UserController extends Controller{
         return $this->jsonToken($token);
     }
 
-    public function createRefreshToken(){
+    public function createRefreshToken(): JsonResponse
+    {
         $newToken = auth()->refresh();
         return $this->jsonToken($newToken);
     }
 
-    public function logout(){
+    public function logout(): JsonResponse
+    {
         auth()->logout();
         return $this->jsonMessageOnly('sukses logout');
     }
 
-    function getMyAccount(){
+    function getMyAccount(): JsonResponse
+    {
         $data = $this->repository->findByUsername(auth()->payload()->get('username'));
         return $this->jsonSuccess('sukses ambil data',200,$data);
     }
 
-    function updateMyAccount(Request $request, UserValidation $validator){
+    function updateMyAccount(Request $request, UserValidation $validator): JsonResponse
+    {
         $input = $request->only(['email','noHp','alamat']);
         $find = $this->repository->findByUsername(auth()->payload()->get('username'));
         $validator->update($find['id']);
@@ -62,7 +68,8 @@ class UserController extends Controller{
         return $this->jsonMessageOnly('sukses update akun');
     }
 
-    function changeMyPassword(Request $request, UserValidation $validator){
+    function changeMyPassword(Request $request, UserValidation $validator): JsonResponse
+    {
         $input = $request->only(['sandiLama','sandiBaru']);
         $validator->changePassword();
         $validator->validate($input);
@@ -89,7 +96,16 @@ class UserController extends Controller{
 
     function create(Request $request, UserValidation $validator): JsonResponse
     {
-        $inputs = $request->only(['namaDepan','namaBelakang','jenisKelamin','noHp','alamat','peran','email']);
+        $attributs = [
+            'namaDepan',
+            'namaBelakang',
+            'jenisKelamin',
+            'noHp',
+            'alamat',
+            'peran',
+            'email'
+        ];
+        $inputs = $request->only($attributs);
         $validator->post();
         $validation = $validator->validate($inputs);
         $data = $this->repository->create($inputs);
@@ -100,14 +116,24 @@ class UserController extends Controller{
 
     function update(Request $request, $id, UserValidation $validator): JsonResponse
     {
-        $inputs = $request->only(['namaDepan','namaBelakang','jenisKelamin','noHp','alamat','peran','email']);
+        $attributs = [
+            'namaDepan',
+            'namaBelakang',
+            'jenisKelamin',
+            'noHp',
+            'alamat',
+            'peran',
+            'email'
+        ];
+        $inputs = $request->only($attributs);
         $validator->post($id);
         $validation = $validator->validate($inputs);
         $data = $this->repository->update($inputs, $id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    function delete($id){
+    function delete($id): JsonResponse
+    {
         $find = $this->repository->getDataById($id);
         $delete = $this->repository->deleteById($id);
         if($delete === true){

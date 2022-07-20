@@ -36,7 +36,8 @@ class ServiceController extends Controller{
     private $brokenRepository;
     private $productRepository;
 
-    function __construct(ServiceRepository $service, HistoryRepository $history, ResponbilityRepository $responbility, CustomerRepository $customer, BrokenRepository $broken, ProductRepository $product){
+    function __construct(ServiceRepository $service, HistoryRepository $history, ResponbilityRepository $responbility, CustomerRepository $customer, BrokenRepository $broken, ProductRepository $product)
+    {
         $this->serviceRepository = $service;
         $this->historyRepository = $history;
         $this->responbilityRepository = $responbility;
@@ -45,7 +46,8 @@ class ServiceController extends Controller{
         $this->productRepository = $product;
     }
 
-    function getListService(Request $request){
+    function getListService(Request $request): JsonResponse
+    {
         $limit = $request->query('limit',0);
         $filter = $request->only('kategori','status','cari');
         $query = $this->serviceRepository->getListData($limit,$filter);
@@ -54,7 +56,8 @@ class ServiceController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    function getServiceById(Request $request,$id){
+    function getServiceById(Request $request,$id): JsonResponse
+    {
         $query = $this->serviceRepository->getDataWithRelationById($id);
         $fractal = new Manager();
         if($request->query('include')){
@@ -64,7 +67,8 @@ class ServiceController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    function getServiceQueue(Request $request,int $id){
+    function getServiceQueue(Request $request,int $id)
+    {
         $filter = $request->only('limit','kategori','cari');
         $limit = $request->query('limit',0);
         $resp = $this->responbilityRepository->getListDataByUsername($id);
@@ -77,7 +81,8 @@ class ServiceController extends Controller{
         throw new ModelNotFoundException();
     }
 
-    function getProgressService(Request $request,$id){
+    function getProgressService(Request $request,$id): JsonResponse
+    {
         $filter = $request->only('status','cari','kategori');
         $limit = $request->query('limit',0);
         $query = $this->serviceRepository->getListDataMyProgress($id,$limit,$filter);
@@ -86,7 +91,8 @@ class ServiceController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function getServiceTrack(string $id){
+    public function getServiceTrack(string $id): JsonResponse
+    {
         $query = $this->serviceRepository->getDataByCode($id);
         if($query === null){
             return $this->jsonSuccess('permintaan sukses data tidak ditemukan',200,[]);
@@ -116,7 +122,8 @@ class ServiceController extends Controller{
         return $this->jsonSuccess('sukses',200,$saveService);
     }
 
-    private function newCustomer(array $input){
+    private function newCustomer(array $input):array
+    {
         $data = [];
         $checkData = $this->customerRepository->isCustomerExist($input);
         if($checkData['exist'] === false){
@@ -128,7 +135,8 @@ class ServiceController extends Controller{
         return $data;
     }
 
-    public function updateService(Request $request, $id, ServiceValidation $validator){
+    public function updateService(Request $request, $id, ServiceValidation $validator): JsonResponse
+    {
         $validation = $validator->validate($request->all());
         $findService = $this->serviceRepository->findDataById($id);
         // customer
@@ -146,7 +154,8 @@ class ServiceController extends Controller{
         return $this->jsonSuccess('sukses',200,$saveService);
     }
 
-    private function updateCustomer(array $input,$id){
+    private function updateCustomer(array $input,$id):array
+    {
         $findData = $this->customerRepository->findDataById($id);
         $checkData = $this->customerRepository->isCustomerExist($input);
         $data = ['idCustomer'=>$findData['id']];
@@ -171,7 +180,8 @@ class ServiceController extends Controller{
         return $data;
     }
 
-    public function updateServiceStatus(Request $request,$id, ServiceValidation $validator){
+    public function updateServiceStatus(Request $request,$id, ServiceValidation $validator): JsonResponse
+    {
         $input = $request->only('status');
         $validator->statusService();
         $validator->validate($input);
@@ -180,12 +190,14 @@ class ServiceController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function setServiceTake(string $id){
+    public function setServiceTake(string $id): JsonResponse
+    {
         $data = $this->serviceRepository->setDataTake($id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function setConfirmCost(string $id){
+    public function setConfirmCost(string $id): JsonResponse
+    {
         $brokens = $this->brokenRepository->getListDataByIdService($id);
         $total = 0;
         foreach($brokens as $item){
@@ -196,7 +208,8 @@ class ServiceController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function updateWarranty(Request $request, $id,ServiceValidation $validator){
+    public function updateWarranty(Request $request, $id,ServiceValidation $validator): JsonResponse
+    {
         $input = $request->only('garansi');
         $validator->serviceWarranty();
         $validator->validate($input);
@@ -204,7 +217,8 @@ class ServiceController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function setConfirmation(Request $request,string $id,ServiceValidation $validator){
+    public function setConfirmation(Request $request,string $id,ServiceValidation $validator): JsonResponse
+    {
         $input =  $request->only('disetujui');
         $validator->confirmation($input);
         $validator->validate($input);
@@ -219,7 +233,8 @@ class ServiceController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function deleteService($id){
+    public function deleteService($id): JsonResponse
+    {
         $findService = $this->serviceRepository->findDataById($id);
         if($findService){
             $findCustomer = $this->customerRepository->findDataById($findService->idCustomer);

@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 use App\Repositories\CustomerRepository;
 use App\Repositories\ServiceRepository;
+use Illuminate\Http\JsonResponse;
 
 class WhatsappController extends Controller{
 
@@ -13,12 +14,14 @@ class WhatsappController extends Controller{
     private $customerRepository;
     private $serviceRepository;
 
-    public function __construct(CustomerRepository $customer, ServiceRepository $service){
+    public function __construct(CustomerRepository $customer, ServiceRepository $service)
+    {
         $this->customerRepository = $customer;
         $this->serviceRepository = $service;
     }
 
-    public function scan(){
+    public function scan(): JsonResponse
+    {
         if($this->check() === true){
             $this->delete();
         }
@@ -42,7 +45,8 @@ class WhatsappController extends Controller{
         return $response->object()->success;
     }
 
-    public function chat(Request $request,$id){
+    public function chat(Request $request,$id): JsonResponse
+    {
         $findService = $this->serviceRepository->findDataById($id);
         $findCustomer = $this->customerRepository->findDataById($findService->idCustomer);
         if($findCustomer['bisaWA'] === 1){
