@@ -12,7 +12,8 @@ class ServiceRepository extends Repository{
         parent::__construct($model);
     }
     
-    public function getListData(int $limit=0, array $inputs=[]){
+    public function getListData(array $inputs=[])
+    {
         $data = $this->model->with('klien','produk')->orderByDesc('id');
         // filter status service
         if(isset($inputs['status'])){
@@ -40,14 +41,20 @@ class ServiceRepository extends Repository{
         return $data->get();
     }
 
-    public function getDataWithRelationById(int $id){
+    public function getDataWithRelationById(int $id)
+    {
         return $this->model->with(['klien','produk','kerusakan'=>function($q){$q->orderByDesc('id');}])->where('id',$id)->first();
     }
-    public function findDataById(int $id){
+    public function findDataById(int $id)
+    {
         return $this->findById($id);
     }
 
-    public function getListDataQueue($responbility, int $limit=0, array $inputs=[]){
+    public function getListDataQueue($responbility, array $inputs)
+    {
+        if($responbility === null){
+            return [];
+        }
         $resp = [];
         foreach($responbility as $item){
             array_push($resp,$item->kategori->nama);
@@ -72,7 +79,8 @@ class ServiceRepository extends Repository{
         return $data->get();
     }
 
-    public function getListDataMyProgress(string $username=null,int $limit=0,array $inputs=[]){
+    public function getListDataMyProgress(string $username,array $inputs)
+    {
         $data = $this->model->with('produk')->where('usernameTeknisi',$username)->orderByDesc('id');
         if(isset($inputs['status'])){
             $data->where('status',$inputs['status']);
@@ -91,12 +99,14 @@ class ServiceRepository extends Repository{
         return $data->get();
     }
 
-    public function getDataByCode(string $code){
-        return $this->model->with(['produk','kerusakan'=>function ($q){
+    public function getDataByCode(string $code)
+    {
+        $data = $this->model->with(['produk','kerusakan'=>function ($q){
             $q->orderByDesc('id');
         },'riwayat'=>function ($q){
             $q->orderByDesc('id');
         }])->where('kode',$code)->first();
+        return $data;
     }
 
     public function create(array $attributs):array
@@ -111,7 +121,8 @@ class ServiceRepository extends Repository{
         return ['idService'=>$data->id];
     }
 
-    public function setCodeService(int $idService){
+    public function setCodeService(int $idService):void
+    {
         $date = Carbon::now('GMT+7');
         $attributs = [
             'kode'=>$date->format('y').$date->format('m').$date->format('d').sprintf("%03d",$idService)
@@ -127,7 +138,8 @@ class ServiceRepository extends Repository{
         ];
     }
 
-    public function setDataTake(string $id){
+    public function setDataTake(string $id):array
+    {
         $attributs = [
             'diambil'=>true,
             'waktuAmbil'=>Carbon::now('GMT+7')
@@ -138,7 +150,8 @@ class ServiceRepository extends Repository{
         ];
     }
 
-    public function deleteById(string $id){
+    public function deleteById(string $id):array
+    {
         $data = $this->delete($id);
         return ['sukses'=>$data];
     }

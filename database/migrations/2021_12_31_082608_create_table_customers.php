@@ -18,7 +18,6 @@ class CreateTableCustomers extends Migration
             $table->string('nama',50);
             $table->string('noHp',20)->nullable();
             $table->boolean('bisaWA')->nullable();
-            $table->integer('jumlahService');
         });
     }
 

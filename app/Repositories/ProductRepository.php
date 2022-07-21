@@ -12,23 +12,18 @@ class ProductRepository extends Repository{
         parent::__construct($model);
     }
 
-    public function getDataById(int $id):array
+    public function create(array $attributs):int
     {
-        $attributs = ['id as idProduk','nama','kategori','cacatProduk','kelengkapan','catatan'];
-        $data = $this->findById($id,$attributs);
-        return $data->toArray();
-    }
-
-    public function create(array $attributs):array
-    {
+        $attributs['nama'] = $attributs['namaProduk'];
+        unset($attributs['namaProduk']);
         $data = $this->save($attributs);
-        return [
-            'idProduk'=>$data->id
-        ];
+        return $data->id;
     }
 
     public function update(array $attributs, int $id):array
     {
+        $attributs['nama'] = $attributs['namaProduk'];
+        unset($attributs['namaProduk']);
         $data = $this->save($attributs, $id);
         return [
             'idProduk'=>$data->id

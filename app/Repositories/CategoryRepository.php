@@ -9,18 +9,21 @@ use Illuminate\Support\Facades\DB;
 
 class CategoryRepository extends Repository{
     
-    function __construct(Category $model){
+    function __construct(Category $model)
+    {
         parent::__construct($model);
     }
 
-    function saveData(array $attributs=[], string $id=null){
+    function saveData(array $attributs=[], string $id=null):array
+    {
         $data = $this->save($attributs,$id);
         return [
             'idKategori'=>$data->id
         ];
     }
 
-    function getListData(int $limit = 0, string $search = ''){
+    function getListData(int $limit = 0, string $search = ''):array
+    {
         $filters = [
             'limit'=>$limit
         ];
@@ -34,7 +37,8 @@ class CategoryRepository extends Repository{
         return $data->toArray();
     }
 
-    function getDataById(string $id){
+    function getDataById(string $id):array
+    {
         $attributs = ['id as idKategori','nama'];
         $data = $this->findById($id,$attributs);
         return $data->toArray();
@@ -46,7 +50,8 @@ class CategoryRepository extends Repository{
         return $data;
     }
 
-    function deleteDataById(string $id){
+    function deleteDataById(string $id):array
+    {
         $data = $this->delete($id);
         return [
             'sukses'=>$data

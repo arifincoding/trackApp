@@ -8,7 +8,7 @@ class ServiceValidation extends Validation{
     function __construct(){
         $this->rules = [
             'namaCustomer'=>'required|regex:/^[\pL\s\-]+$/u',
-            'noHp'=>'numeric',
+            'noHp'=>'nullable|numeric',
             'bisaWA'=>'boolean',
             'namaProduk'=>'required',
             'kategori'=>'required|exists:categories,nama',

@@ -110,7 +110,7 @@ class UserController extends Controller{
         $validation = $validator->validate($inputs);
         $data = $this->repository->create($inputs);
         $register = $this->repository->registerUser($data['idPegawai']);
-        Mail::to($register['email'])->send(new EmployeeMail($register['username'],$register['password']));
+        // Mail::to($register['email'])->send(new EmployeeMail($register['username'],$register['password']));
         return $this->jsonSuccess('sukses',200,$data);
     }
 

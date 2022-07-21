@@ -4,21 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-
-// validation
 use App\Validations\ServiceValidation;
-
-// repository
 use App\Repositories\ServiceRepository;
 use App\Repositories\ResponbilityRepository;
 use App\Repositories\HistoryRepository;
 use App\Repositories\CustomerRepository;
 use App\Repositories\BrokenRepository;
 use App\Repositories\ProductRepository;
-
-use Illuminate\Support\Facades\Http;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
@@ -48,9 +40,8 @@ class ServiceController extends Controller{
 
     function getListService(Request $request): JsonResponse
     {
-        $limit = $request->query('limit',0);
         $filter = $request->only('kategori','status','cari');
-        $query = $this->serviceRepository->getListData($limit,$filter);
+        $query = $this->serviceRepository->getListData($filter);
         $fractal = new Manager();
         $data = $fractal->createData(new Collection($query,new ServicesTransformer))->toArray();
         return $this->jsonSuccess('sukses',200,$data);
@@ -69,23 +60,18 @@ class ServiceController extends Controller{
 
     function getServiceQueue(Request $request,int $id)
     {
-        $filter = $request->only('limit','kategori','cari');
-        $limit = $request->query('limit',0);
+        $filter = $request->only('kategori','cari');
         $resp = $this->responbilityRepository->getListDataByUsername($id);
-        if($resp){
-            $query = $this->serviceRepository->getListDataQueue($resp, $limit, $filter);
-            $fractal = new Manager();
-            $data = $fractal->createData(new Collection($query,new ServicequeueTransformer))->toArray();
-            return $this->jsonSuccess('sukses',200,$data);
-        }
-        throw new ModelNotFoundException();
+        $query = $this->serviceRepository->getListDataQueue($resp, $filter);
+        $fractal = new Manager();
+        $data = $fractal->createData(new Collection($query,new ServicequeueTransformer))->toArray();
+        return $this->jsonSuccess('sukses',200,$data);
     }
 
     function getProgressService(Request $request,$id): JsonResponse
     {
         $filter = $request->only('status','cari','kategori');
-        $limit = $request->query('limit',0);
-        $query = $this->serviceRepository->getListDataMyProgress($id,$limit,$filter);
+        $query = $this->serviceRepository->getListDataMyProgress($id,$filter);
         $fractal = new Manager();
         $data = $fractal->createData(new Collection($query,new ServicequeueTransformer))->toArray();
         return $this->jsonSuccess('sukses',200,$data);
@@ -94,90 +80,44 @@ class ServiceController extends Controller{
     public function getServiceTrack(string $id): JsonResponse
     {
         $query = $this->serviceRepository->getDataByCode($id);
-        if($query === null){
-            return $this->jsonSuccess('permintaan sukses data tidak ditemukan',200,[]);
+        $data =[];
+        $message = 'data tidak ditemukan';
+        if($query){
+            $message = 'sukses';
+            $fractal = new Manager();
+            $data = $fractal->createData(new Item($query, new ServicetrackTransformer))->toArray();
         }
-        $fractal = new Manager();
-        $data = $fractal->createData(new Item($query, new ServicetrackTransformer))->toArray();
-        return $this->jsonSuccess('sukses',200,$data);
+        return $this->jsonSuccess($message,200,$data);
     }
 
     function newService(Request $request, ServiceValidation $validator):JsonResponse
     {
         $validation = $validator->validate($request->all());
-        // customer
-        $inputCustomer = $request->only(['noHp','bisaWA']);
-        $inputCustomer['nama'] = $request->input('namaCustomer');
-        $saveCustomer = $this->newCustomer($inputCustomer);
-        // product
-        $inputProduct = $request->only(['kategori','kelengkapan','catatan','cacatProduk']);
-        $inputProduct['nama'] = $request->input('namaProduk');
-        $saveProduct = $this->productRepository->create($inputProduct);
-        // service
-        $inputService = $request->only(['keluhan','butuhPersetujuan','uangMuka','estimasiBiaya']);
-        $inputService['idCustomer'] = $saveCustomer['idCustomer'];
-        $inputService['idProduct'] = $saveProduct['idProduk'];
-        $saveService = $this->serviceRepository->create($inputService);
+        $inputs = [
+            'customer'=>$request->only(['namaCustomer','noHp','bisaWA']),
+            'product'=>$request->only(['namaProduk','kategori','kelengkapan','catatan','cacatProduk']),
+            'service'=>$request->only(['keluhan','butuhPersetujuan','uangMuka','estimasiBiaya'])
+        ];
+        $inputs['service']['idCustomer'] = $this->customerRepository->create($inputs['customer']);
+        $inputs['service']['idProduct'] = $this->productRepository->create($inputs['product']);
+        $saveService = $this->serviceRepository->create($inputs['service']);
         $this->serviceRepository->setCodeService($saveService['idService']);
         return $this->jsonSuccess('sukses',200,$saveService);
-    }
-
-    private function newCustomer(array $input):array
-    {
-        $data = [];
-        $checkData = $this->customerRepository->isCustomerExist($input);
-        if($checkData['exist'] === false){
-            $data = $this->customerRepository->create($input);
-        }else{
-            $data = $this->customerRepository->updateCount($checkData['idCustomer'],'plus');
-            $this->customerRepository->update($input,$data['idCustomer']);
-        }
-        return $data;
     }
 
     public function updateService(Request $request, $id, ServiceValidation $validator): JsonResponse
     {
         $validation = $validator->validate($request->all());
-        $findService = $this->serviceRepository->findDataById($id);
-        // customer
-        $inputCustomer = $request->only(['noHp','bisaWA']);
-        $inputCustomer['nama'] = $request->input('namaCustomer');
-        $saveCustomer = $this->updateCustomer($inputCustomer,$findService->idCustomer);
-        // product
-        $inputProduct = $request->only(['kategori','kelengkapan','catatan','cacatProduk']);
-        $inputProduct['nama'] = $request->input('namaProduk');
-        $saveProduct = $this->productRepository->update($inputProduct,$findService->idProduct);
-        // service
-        $inputService = $request->only(['keluhan','butuhPersetujuan','uangMuka','estimasiBiaya',]);
-        $inputService['idCustomer'] = $saveCustomer['idCustomer'];
-        $saveService = $this->serviceRepository->update($inputService,$id);
+        $inputs = [
+            'customer'=>$request->only(['namaCustomer','noHp','bisaWA']),
+            'product'=>$request->only(['namaProduk','kategori','kelengkapan','catatan','cacatProduk']),
+            'service'=>$request->only(['keluhan','butuhPersetujuan','uangMuka','estimasiBiaya'])
+        ];
+        $find = $this->serviceRepository->findDataById($id);
+        $this->customerRepository->update($inputs['customer'],$find->idCustomer);
+        $this->productRepository->update($inputs['product'],$find->idProduct);
+        $saveService = $this->serviceRepository->update($inputs['service'],$id);
         return $this->jsonSuccess('sukses',200,$saveService);
-    }
-
-    private function updateCustomer(array $input,$id):array
-    {
-        $findData = $this->customerRepository->findDataById($id);
-        $checkData = $this->customerRepository->isCustomerExist($input);
-        $data = ['idCustomer'=>$findData['id']];
-        if($findData['jumlahService'] > 1){
-            if($input['nama'] != $findData['nama'] || $input['noHp'] != $findData['noHp']){
-                if($checkData['exist'] === true){
-                    $data = $this->customerRepository->updateCount($checkData['idCustomer'],'plus');
-                }else{
-                    $data = $this->customerRepository->create($input);
-                }
-                $this->customerRepository->updateCount($id,'minus');
-            }
-        }else{
-            if($input['nama'] != $findData['nama'] || $input['noHp'] != $findData['noHp']){
-                if($checkData['exist'] === true){
-                    $data = $this->customerRepository->updateCount($checkData['idCustomer'],'plus');
-                    $this->customerRepository->deleteById($id);
-                }
-            }
-        }
-        $this->customerRepository->update($input,$data['idCustomer']);
-        return $data;
     }
 
     public function updateServiceStatus(Request $request,$id, ServiceValidation $validator): JsonResponse
@@ -235,22 +175,13 @@ class ServiceController extends Controller{
 
     public function deleteService($id): JsonResponse
     {
-        $findService = $this->serviceRepository->findDataById($id);
-        if($findService){
-            $findCustomer = $this->customerRepository->findDataById($findService->idCustomer);
-            if($findCustomer['jumlahService'] > 1){
-                $this->customerRepository->updateCount($findCustomer['id'],'minus');
-            }else{
-                $this->customerRepository->deleteById($findService->idCustomer);
-            }
-            $this->productRepository->deleteById($findService->idProduct);
-            $data = $this->serviceRepository->deleteById($id);
-            if($data['sukses']===true){
-                $this->historyRepository->deleteByIdService($id);
-                $this->brokenRepository->deleteByIdService($id);
-            }
-            return $this->jsonMessageOnly('sukses hapus data service');
-        }
+        $find = $this->serviceRepository->findDataById($id);
+        $this->customerRepository->deleteById($find->idCustomer);
+        $this->productRepository->deleteById($find->idProduct);
+        $this->serviceRepository->deleteById($id);
+        $this->historyRepository->deleteByIdService($id);
+        $this->brokenRepository->deleteByIdService($id);
+        return $this->jsonMessageOnly('sukses hapus data service');
     }
 }
 ?>

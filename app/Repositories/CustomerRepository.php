@@ -13,7 +13,7 @@ class CustomerRepository extends Repository{
         parent::__construct($model);
     }
 
-    public function create(array $inputs):array
+    public function create(array $inputs):int
     {
         $noHp = $inputs['noHp'] ?? null;
         $wa = false;
@@ -21,54 +21,30 @@ class CustomerRepository extends Repository{
             $wa = $inputs['bisaWA'];
         }
         $attributs = [
-            'nama'=>$inputs['nama'],
+            'nama'=>$inputs['namaCustomer'],
             'noHp'=>$inputs['noHp'],
-            'bisaWA'=> $wa,
-            'jumlahService'=>1
+            'bisaWA'=> $wa
         ];
         $data = $this->save($attributs);
-        return ['idCustomer'=>$data->id];
+        return $data->id;
     }
 
-    public function isCustomerExist(array $inputs)
+    public function getDataById(int $id):array
     {
-        if(!empty($inputs['noHp'])){
-            $findData = $this->model->where('nama',$inputs['nama'])->where('noHp',$inputs['noHp'])->first();
-            if($findData){
-                return [
-                    'exist'=>true,
-                    'idCustomer'=>$findData->id
-                ];
-            }
-        }
-        return ['exist'=>false];
-    }
-
-    public function getDataById(int $id){
         $attributs = ['id as idCustomer','nama','noHp','bisaWA'];
         $data = $this->findById($id, $attributs);
         $data->bisaWA = Formatter::boolval($data->bisaWA);
         return $data->toArray();
     }
 
-    public function findDataById(string $id){
+    public function findDataById(string $id):array
+    {
         $data = $this->findById($id);
         return $data->toArray();
     }
 
-    public function updateCount(string $id, string $operator){
-        $attributs['jumlahService'] = 0;
-        $findData = $this->findById($id);
-        if($operator === 'plus'){
-            $attributs['jumlahService'] = $findData->jumlahService + 1;
-        }else if($operator === 'minus'){
-            $attributs['jumlahService'] = $findData->jumlahService - 1;
-        }
-        $data = $this->save($attributs,$findData->id);
-        return ['idCustomer'=>$data->id];
-    }
-
-    public function update(array $inputs, string $id){
+    public function update(array $inputs, string $id):array
+    {
         $noHp = $inputs['noHp'] ?? null;
         $wa = $inputs['bisaWA'];
         if($noHp === null){
@@ -76,7 +52,7 @@ class CustomerRepository extends Repository{
         }
         
         $attributs = [
-            'nama'=>$inputs['nama'],
+            'nama'=>$inputs['namaCustomer'],
             'noHp'=>$inputs['noHp'],
             'bisaWA'=> $wa,
         ];
@@ -85,7 +61,8 @@ class CustomerRepository extends Repository{
         return ['idCustomer'=>$data->id];
     }
 
-    public function deleteById(string $idCustomer){
+    public function deleteById(string $idCustomer):array
+    {
         $data = $this->delete($idCustomer);
         return ['sukses'=>true];
     }

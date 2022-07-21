@@ -19,7 +19,8 @@ class ResponbilityRepository extends Repository{
         return $data;
     }
 
-    function create(array $inputs, string $role, string $username){
+    function create(array $inputs, string $role, string $username):bool
+    {
         if($role !== 'teknisi'){
             throw new Exception('gagal tambah tanggung jawab karena pegawai ini bukan teknisi');
         }
@@ -32,14 +33,16 @@ class ResponbilityRepository extends Repository{
         return true;
     }
 
-    function deleteDataById(string $id){
+    function deleteDataById(string $id):array
+    {
         $data = $this->delete($id);
         return [
             'sukses' => $data
         ];
     }
 
-    function deleteByUsername(string $username){
+    function deleteByUsername(string $username):array
+    {
         $find= $this->model->where('username',$username)->first();
         if($find){
             $data = $this->model->where('username',$username)->delete();
