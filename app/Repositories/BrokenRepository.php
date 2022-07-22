@@ -40,6 +40,14 @@ class BrokenRepository extends Repository{
         return $data->toArray();
     }
 
+    function findDataByIdService(int $id, string $filter){
+        if($filter === 'biaya'){
+            return $this->model->where('idService',$id)->where('biaya',null)->first();
+        }else if($filter === 'disetujui'){
+            return $this->model->where('idService',$id)->where('disetujui',null)->first();
+        }
+    }
+
     function create(array $attributs,int $idService, int $confirmed=0):array
     {
         $confirm = null;

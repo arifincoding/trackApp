@@ -393,21 +393,6 @@ class ServiceTest extends TestCase{
             ]);
     }
 
-    // set service taking
-    public function testShouldSetServiceTake(){
-        $data = Service::orderByDesc('id')->first();
-        $header = ['Authorization'=>'Bearer '.$this->cs()];
-        $this->put('/services/'.$data->id.'/take',[],$header);
-        $this->seeStatusCode(200);
-        $this->seeJsonStructure([
-            'status',
-            'message',
-            'data'=>[
-                'idService'
-            ]
-            ]);
-    }
-
     // set confirmation cost
     public function testShouldSetConfirmCost(){
         $data = Service::orderByDesc('id')->first();
@@ -445,6 +430,21 @@ class ServiceTest extends TestCase{
         $parameters = ['disetujui'=>true];
         $header = ['Authorization'=>'Bearer '.$this->owner()];
         $this->put('/services/'.$data->id.'/confirmation',$parameters,$header);
+        $this->seeStatusCode(200);
+        $this->seeJsonStructure([
+            'status',
+            'message',
+            'data'=>[
+                'idService'
+            ]
+            ]);
+    }
+
+    // set service taking
+    public function testShouldSetServiceTake(){
+        $data = Service::orderByDesc('id')->first();
+        $header = ['Authorization'=>'Bearer '.$this->cs()];
+        $this->put('/services/'.$data->id.'/take',[],$header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',

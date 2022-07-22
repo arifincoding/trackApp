@@ -132,12 +132,20 @@ class ServiceController extends Controller{
 
     public function setServiceTake(string $id): JsonResponse
     {
+        $find = $this->serviceRepository->findDataById($id);
+        if($find->garansi === null){
+            return $this->jsonValidationError('garansi perbaikan belum di tentukan');
+        }
         $data = $this->serviceRepository->setDataTake($id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
     public function setConfirmCost(string $id): JsonResponse
     {
+        $find = $this->brokenRepository->findDataByIdService($id,'biaya');
+        if($find !== null){
+            return $this->jsonValidationError('data kerusakan masih ada yang belum diberi biaya');
+        }
         $brokens = $this->brokenRepository->getListDataByIdService($id);
         $total = 0;
         foreach($brokens as $item){
@@ -162,6 +170,10 @@ class ServiceController extends Controller{
         $input =  $request->only('disetujui');
         $validator->confirmation($input);
         $validator->validate($input);
+        $find = $this->brokenRepository->findDataByIdService($id,'disetujui');
+        if($find !== null){
+            return $this->jsonValidationError('data kerusakan masih ada yang belum diberi persetujuan');
+        }
         $brokens = $this->brokenRepository->getListDataByIdService($id,['disetujui'=>1]);
         $total = 0;
         foreach($brokens as $item){
