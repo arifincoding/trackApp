@@ -52,7 +52,10 @@ class userRepository extends Repository{
     function update(array $attributs, string $id):array
     {
         $data = $this->save($attributs, $id);
-        return ['idPegawai'=>$data->id];
+        return [
+            'idPegawai'=>$data->id,
+            'username'=>$data->username
+        ];
     }
 
     function deleteById(string $id):bool

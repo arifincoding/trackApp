@@ -4,14 +4,16 @@ namespace App\Repositories;
 
 use App\Models\Responbility;
 use App\Repositories\Repository;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ResponbilityRepository extends Repository{
-    function __construct(Responbility $model){
+    
+    function __construct(Responbility $model)
+    {
         $this->model = $model;
     }
 
-    function getListDataByUsername(string $username){
+    function getListDataByUsername(string $username)
+    {
         $data = $this->model->with('kategori')->where('username',$username)->get();
         if($data->toArray() == []){
             return null;
@@ -21,9 +23,6 @@ class ResponbilityRepository extends Repository{
 
     function create(array $inputs, string $role, string $username):bool
     {
-        if($role !== 'teknisi'){
-            throw new Exception('gagal tambah tanggung jawab karena pegawai ini bukan teknisi');
-        }
         $arrAtribut = [];
         foreach($inputs['idKategori'] as $key=>$item){
             $arrAtribut[$key]['username'] = $username;

@@ -39,6 +39,9 @@ class ResponbilityController extends Controller{
         $validator->post($id,$input);
         $validation = $validator->validate($input);
         $findUser = $this->userRepository->getDataById($id);
+        if($findUser['peran'] !== 'teknisi'){
+            return $this->jsonValidationError('gagal tambah tanggung jawab karena pegawai ini bukan teknisi');
+        }
         $data = $this->responbilityRepository->create($input, $findUser['peran'],$findUser['username']);
         return $this->jsonMessageOnly('sukses tambah tanggung jawab');
     }
