@@ -15,7 +15,7 @@ class CategoryController extends Controller{
         $this->repository = $repository;
     }
 
-    function getListCategory(Request $request, CategoryValidation $validator): JsonResponse
+    function all(Request $request, CategoryValidation $validator): JsonResponse
     {
         $validator->query();
         $validation = $validator->validate($request->only(['limit','cari']));
@@ -25,7 +25,7 @@ class CategoryController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    function getCategoryById($id): JsonResponse
+    function show($id): JsonResponse
     {
         $data = $this->repository->getDataById($id);
         return $this->jsonSuccess('sukses',200,$data);
@@ -37,7 +37,7 @@ class CategoryController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    function newCategory(Request $request, CategoryValidation $validator): JsonResponse
+    function create(Request $request, CategoryValidation $validator): JsonResponse
     {
         $input = $request->only('nama');
         $validator->post();
@@ -46,7 +46,7 @@ class CategoryController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    function updateCategory(Request $request, $id, CategoryValidation $validator): JsonResponse
+    function update(Request $request, $id, CategoryValidation $validator): JsonResponse
     {
         $input = $request->only('nama');
         $validator->post($id);
@@ -55,7 +55,7 @@ class CategoryController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    function deleteCategory($id): JsonResponse
+    function delete($id): JsonResponse
     {
         $data = $this->repository->deleteDataById($id);
         return $this->jsonMessageOnly('sukses hapus data kategori');

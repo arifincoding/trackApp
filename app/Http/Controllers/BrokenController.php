@@ -22,7 +22,7 @@ class BrokenController extends Controller{
         $this->serviceRepository = $service;
     }
 
-    public function getListBrokenByIdService($id): JsonResponse
+    public function getListByIdService($id): JsonResponse
     {
         $query = $this->brokenRepository->getListDataByIdService($id);
         $fractal = new Manager();
@@ -30,7 +30,7 @@ class BrokenController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function newBrokenByIdService(Request $request,$id,BrokenValidation $validator): JsonResponse
+    public function newByIdService(Request $request,$id,BrokenValidation $validator): JsonResponse
     {
         $inputs = $request->only('judul','deskripsi');
         $validation = $validator->validate($inputs);
@@ -45,7 +45,7 @@ class BrokenController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function updateBroken(Request $request, $id, BrokenValidation $validator): JsonResponse
+    public function update(Request $request, $id, BrokenValidation $validator): JsonResponse
     {
         $inputs = $request->only('judul','deskripsi');
         $validator->validate($inputs);
@@ -53,7 +53,7 @@ class BrokenController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function updateBrokenCost(Request $request, $id, BrokenValidation $validator): JsonResponse
+    public function updateCost(Request $request, $id, BrokenValidation $validator): JsonResponse
     {
         $inputs = $request->only('biaya');
         $validator->cost();
@@ -62,7 +62,7 @@ class BrokenController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function updateBrokenCofirmation(Request $request,$id, BrokenValidation $validator): JsonResponse
+    public function updateCofirmation(Request $request,$id, BrokenValidation $validator): JsonResponse
     {
         $inputs = $request->only('disetujui');
         $validator->confirm();
@@ -71,7 +71,7 @@ class BrokenController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function deleteBroken($id): JsonResponse
+    public function delete($id): JsonResponse
     {
         $data = $this->brokenRepository->deleteById($id);
         return $this->jsonMessageOnly('sukses hapus data kerusakan');

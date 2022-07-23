@@ -22,7 +22,7 @@ class ResponbilityController extends Controller{
         $this->userRepository = $user;
     }
 
-    function getTechnicianResponbilities(string $id): JsonResponse
+    function all(string $id): JsonResponse
     {
         $query = $this->responbilityRepository->getListDataByUsername($id);
         if($query){
@@ -33,7 +33,7 @@ class ResponbilityController extends Controller{
         return $this->jsonSuccess('sukses',200,[]);
     }
 
-    function newTechnicianResponbilities(Request $request, $id, ResponbilityValidation $validator): JsonResponse
+    function create(Request $request, $id, ResponbilityValidation $validator): JsonResponse
     {
         $input = $request->only(['idKategori']);
         $validator->post($id,$input);

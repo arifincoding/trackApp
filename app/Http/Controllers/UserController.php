@@ -68,7 +68,7 @@ class UserController extends Controller{
         return $this->jsonMessageOnly('sukses update akun');
     }
 
-    function changeMyPassword(Request $request, UserValidation $validator): JsonResponse
+    function changePassword(Request $request, UserValidation $validator): JsonResponse
     {
         $input = $request->only(['sandiLama','sandiBaru']);
         $validator->changePassword();
