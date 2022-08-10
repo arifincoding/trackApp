@@ -1,6 +1,5 @@
 <?php
-use Laravel\Lumen\Testing\DatabaseMigrations;
-use Laravel\Lumen\Testing\DatabaseTransactions;
+
 use App\Models\User;
 use App\Models\Responbility;
 use App\Models\Category;
@@ -9,6 +8,7 @@ class ResponbilityTest extends TestCase{
 
     // create responbility
     public function testShouldCreateResponbility(){
+        Category::create(['nama'=>'ujicobatest']);
         $user = User::where('peran','teknisi')->orderByDesc('id')->first();
         $category = Category::orderByDesc('id')->first();
         $parameters = [
