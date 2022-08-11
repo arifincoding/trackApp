@@ -51,5 +51,6 @@ class ResponbilityTest extends TestCase{
             'status',
             'message'
         ]);
+        Category::where('id',$data->idKategori)->delete();
     }
 }

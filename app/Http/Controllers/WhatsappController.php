@@ -58,8 +58,8 @@ class WhatsappController extends Controller{
                 ]);
                 return $this->jsonMessageOnly('sukses mengirim pesan whatsapp');
             }
-            return $this->jsonMessageOnly('session kedaluarsa harap scan ulang kode qr'); 
+            return $this->jsonValidationError('session kedaluarsa harap scan ulang kode qr'); 
         }
-        return $this->jsonMessageOnly('customer tidak memiliki whatsapp');
+        return $this->jsonValidationError('customer tidak memiliki whatsapp');
     }
 }
