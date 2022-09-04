@@ -6,8 +6,9 @@ use Illuminate\Http\Request;
 use App\Repositories\HistoryRepository;
 use App\Validations\HistoryValidation;
 use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Contracts\HistoryControllerContract;
 
-class HistoryController extends Controller{
+class HistoryController extends Controller implements HistoryControllerContract {
 
     private $historyRepository;
 
@@ -16,7 +17,7 @@ class HistoryController extends Controller{
         $this->historyRepository = $history;
     }
 
-    public function create(Request $request, $id, HistoryValidation $validator): JsonResponse
+    public function create(Request $request, int $id, HistoryValidation $validator): JsonResponse
     {
         $input = $request->only(['status','pesan']);
         $validator->validate($input);

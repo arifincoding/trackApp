@@ -18,8 +18,10 @@ use App\Transformers\ServicesTransformer;
 use App\Transformers\ServicequeueTransformer;
 use App\Transformers\ServicedetailTransformer;
 use App\Transformers\ServicetrackTransformer;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Contracts\ServiceControllerContract;
 
-class ServiceController extends Controller{
+class ServiceController extends Controller implements ServiceControllerContract {
     
     private $serviceRepository;
     private $historyRepository;
@@ -58,7 +60,7 @@ class ServiceController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    function getServiceQueue(Request $request,int $id)
+    function getServiceQueue(Request $request,int $id): JsonResponse
     {
         $filter = $request->only('kategori','cari');
         $resp = $this->responbilityRepository->getListDataByUsername($id);
@@ -125,7 +127,7 @@ class ServiceController extends Controller{
         $input = $request->only('status');
         $validator->statusService();
         $validator->validate($input);
-        $input['usernameTeknisi']=auth()->payload()->get('username');
+        $input['usernameTeknisi']=Auth::payload()->get('username');
         $data = $this->serviceRepository->update($input,$id);
         return $this->jsonSuccess('sukses',200,$data);
     }

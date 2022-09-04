@@ -6,8 +6,9 @@ use Illuminate\Http\Request;
 use App\Repositories\CategoryRepository;
 use App\Validations\CategoryValidation;
 use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Contracts\CategoryControllerContract;
 
-class CategoryController extends Controller{
+class CategoryController extends Controller implements CategoryControllerContract {
 
     private $repository;
     

@@ -10,8 +10,9 @@ use Illuminate\Http\JsonResponse;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use App\Transformers\ResponbilitiesTransformer;
+use App\Http\Controllers\Contracts\ResponbilityControllerContract;
 
-class ResponbilityController extends Controller{
+class ResponbilityController extends Controller implements ResponbilityControllerContract {
     
     private $responbilityRepository;
     private $userRepository;

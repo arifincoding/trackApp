@@ -7,8 +7,9 @@ use Illuminate\Http\Request;
 use App\Repositories\CustomerRepository;
 use App\Repositories\ServiceRepository;
 use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Contracts\WhatsappControllerContract;
 
-class WhatsappController extends Controller{
+class WhatsappController extends Controller implements WhatsappControllerContract {
 
 
     private $customerRepository;

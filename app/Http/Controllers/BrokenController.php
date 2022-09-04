@@ -10,8 +10,9 @@ use Illuminate\Http\JsonResponse;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use App\Transformers\BrokensTransformer;
+use App\Http\Controllers\Contracts\BrokenControllerContract;
 
-class BrokenController extends Controller{
+class BrokenController extends Controller implements BrokenControllerContract {
 
     private $brokenRepository;
     private $serviceRepository;
@@ -22,7 +23,7 @@ class BrokenController extends Controller{
         $this->serviceRepository = $service;
     }
 
-    public function getListByIdService($id): JsonResponse
+    public function getListByIdService(int $id): JsonResponse
     {
         $query = $this->brokenRepository->getListDataByIdService($id);
         $fractal = new Manager();
@@ -30,7 +31,7 @@ class BrokenController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function newByIdService(Request $request,$id,BrokenValidation $validator): JsonResponse
+    public function newByIdService(Request $request,int $id,BrokenValidation $validator): JsonResponse
     {
         $inputs = $request->only('judul','deskripsi');
         $validation = $validator->validate($inputs);
@@ -39,13 +40,13 @@ class BrokenController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function getBrokenById($id): JsonResponse
+    public function getBrokenById(int $id): JsonResponse
     {
         $data = $this->brokenRepository->getDataById($id);
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function update(Request $request, $id, BrokenValidation $validator): JsonResponse
+    public function update(Request $request, int $id, BrokenValidation $validator): JsonResponse
     {
         $inputs = $request->only('judul','deskripsi');
         $validator->validate($inputs);
@@ -53,7 +54,7 @@ class BrokenController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function updateCost(Request $request, $id, BrokenValidation $validator): JsonResponse
+    public function updateCost(Request $request, int $id, BrokenValidation $validator): JsonResponse
     {
         $inputs = $request->only('biaya');
         $validator->cost();
@@ -62,7 +63,7 @@ class BrokenController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function updateCofirmation(Request $request,$id, BrokenValidation $validator): JsonResponse
+    public function updateCofirmation(Request $request, int $id, BrokenValidation $validator): JsonResponse
     {
         $inputs = $request->only('disetujui');
         $validator->confirm();
@@ -71,7 +72,7 @@ class BrokenController extends Controller{
         return $this->jsonSuccess('sukses',200,$data);
     }
 
-    public function delete($id): JsonResponse
+    public function delete( int $id): JsonResponse
     {
         $data = $this->brokenRepository->deleteById($id);
         return $this->jsonMessageOnly('sukses hapus data kerusakan');

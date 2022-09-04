@@ -13,8 +13,9 @@ use Illuminate\Support\Facades\Mail;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use App\Transformers\UsersTransformer;
+use App\Http\Controllers\Contracts\UserControllerContract;
 
-class UserController extends Controller{
+class UserController extends Controller implements UserControllerContract {
 
     private $repository;
     private $responbilityRepository;
@@ -30,7 +31,7 @@ class UserController extends Controller{
         $credentials = $request->only('username','password');
         $validator->login();
         $validator->validate($credentials);
-        if (!$token = auth()->attempt($credentials)){
+        if (!$token = Auth::attempt($credentials)){
             return $this->jsonValidationError([
                 'password'=>[
                     'password salah'
@@ -42,26 +43,26 @@ class UserController extends Controller{
 
     public function createRefreshToken(): JsonResponse
     {
-        $newToken = auth()->refresh();
+        $newToken = Auth::refresh();
         return $this->jsonToken($newToken);
     }
 
     public function logout(): JsonResponse
     {
-        auth()->logout();
+        Auth::logout();
         return $this->jsonMessageOnly('sukses logout');
     }
 
     function getMyAccount(): JsonResponse
     {
-        $data = $this->repository->findByUsername(auth()->payload()->get('username'));
+        $data = $this->repository->findByUsername(Auth::payload()->get('username'));
         return $this->jsonSuccess('sukses ambil data',200,$data);
     }
 
     function updateMyAccount(Request $request, UserValidation $validator): JsonResponse
     {
         $input = $request->only(['email','noHp','alamat']);
-        $find = $this->repository->findByUsername(auth()->payload()->get('username'));
+        $find = $this->repository->findByUsername(Auth::payload()->get('username'));
         $validator->update($find['id']);
         $validator->validate($input);
         $data = $this->repository->update($input,$find['id']);
@@ -73,7 +74,7 @@ class UserController extends Controller{
         $input = $request->only(['sandiLama','sandiBaru']);
         $validator->changePassword();
         $validator->validate($input);
-        $data = $this->repository->changePassword($input,auth()->payload()->get('username'));
+        $data = $this->repository->changePassword($input,Auth::payload()->get('username'));
         return $this->jsonMessageOnly('sukses merubah sandi akun');
     }
 
