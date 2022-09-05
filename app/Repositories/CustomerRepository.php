@@ -4,11 +4,10 @@ namespace App\Repositories;
 
 use App\Models\Customer;
 use App\Repositories\Repository;
-use App\Exceptions\Handler;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Helpers\Formatter;
+use App\Repositories\Contracts\CustomerRepoContract;
 
-class CustomerRepository extends Repository{
+class CustomerRepository extends Repository implements CustomerRepoContract {
     function __construct(Customer $model){
         parent::__construct($model);
     }
@@ -37,13 +36,13 @@ class CustomerRepository extends Repository{
         return $data->toArray();
     }
 
-    public function findDataById(string $id):array
+    public function findDataById(int $id):array
     {
         $data = $this->findById($id);
         return $data->toArray();
     }
 
-    public function update(array $inputs, string $id):array
+    public function update(array $inputs, int $id):array
     {
         $noHp = $inputs['noHp'] ?? null;
         $wa = $inputs['bisaWA'];
@@ -61,11 +60,9 @@ class CustomerRepository extends Repository{
         return ['idCustomer'=>$data->id];
     }
 
-    public function deleteById(string $idCustomer):array
+    public function deleteById(int $id):array
     {
-        $data = $this->delete($idCustomer);
+        $data = $this->delete($id);
         return ['sukses'=>true];
     }
 }
-
-?>

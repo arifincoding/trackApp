@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use Laravel\Lumen\Routing\Controller as BaseController;
+use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Contracts\ControllerContract;
 
-class Controller extends BaseController
+class Controller extends BaseController implements ControllerContract
 {
-    function jsonSuccess(string $message="ok", int $status=200, $data = []){
+    function jsonSuccess(string $message="ok", int $status=200, $data = []):JsonResponse
+    {
         if(!isset($data)){
             $data = [];
         }
@@ -17,7 +20,8 @@ class Controller extends BaseController
         ],$status);
     }
 
-    function jsonToken(string $token){
+    function jsonToken(string $token):JsonResponse
+    {
         return response()->json([
             'token' => $token,
             'token_type' => 'bearer',
@@ -25,14 +29,16 @@ class Controller extends BaseController
         ], 200);
     }
 
-    function jsonMessageOnly(string $massage){
+    function jsonMessageOnly(string $massage):JsonResponse
+    {
         return response()->json([
             'status'=>200,
             'message'=>$massage
         ],200);
     }
 
-    function jsonValidationError($errors){
+    function jsonValidationError($errors):JsonResponse
+    {
         return response()->json([
             'status'=>422,
             'message'=>'kesalahan validasi',

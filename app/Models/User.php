@@ -9,8 +9,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Lumen\Auth\Authorizable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Support\Str;
-use Exception;
 
 class User extends Model implements AuthenticatableContract, AuthorizableContract, JWTSubject
 {

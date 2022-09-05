@@ -4,8 +4,10 @@ namespace App\Repositories;
 
 use App\Repositories\Repository;
 use App\Models\Product;
+use App\Repositories\Contracts\ProductRepoContract;
 
-class ProductRepository extends Repository{
+class ProductRepository extends Repository implements ProductRepoContract
+{
 
     public function __construct(Product $model)
     {

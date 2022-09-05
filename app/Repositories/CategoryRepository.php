@@ -5,55 +5,58 @@ namespace App\Repositories;
 use App\Models\Category;
 use App\Repositories\Repository;
 use Illuminate\Support\Facades\DB;
+use App\Repositories\Contracts\CategoryRepoContract;
 
-class CategoryRepository extends Repository{
-    
+class CategoryRepository extends Repository implements CategoryRepoContract
+{
+
     function __construct(Category $model)
     {
         parent::__construct($model);
     }
 
-    function saveData(array $attributs=[], string $id=null):array
+    function saveData(array $attributs = [], int $id = null): array
     {
-        $data = $this->save($attributs,$id);
+        $data = $this->save($attributs, $id);
         return [
-            'idKategori'=>$data->id
+            'idKategori' => $data->id
         ];
     }
 
-    function getListData(int $limit = 0, string $search = ''):array
+    function getListData(int $limit = 0, string $search = ''): array
     {
         $filters = [
-            'limit'=>$limit
+            'limit' => $limit
         ];
-        if($search !== ''){
+        if ($search !== '') {
             $filters['likeWhere'] = [
-                'nama'=>$search
+                'nama' => $search
             ];
         }
-        $attributs = ['id as idKategori','nama'];
-        $data = $this->getWhere($attributs,$filters);
+        $attributs = ['id as idKategori', 'nama'];
+        $data = $this->getWhere($attributs, $filters);
         return $data->toArray();
     }
 
-    function getDataById(string $id):array
+    function getDataById(int $id): array
     {
-        $attributs = ['id as idKategori','nama'];
-        $data = $this->findById($id,$attributs);
+        $attributs = ['id as idKategori', 'nama'];
+        $data = $this->findById($id, $attributs);
         return $data->toArray();
     }
 
-    function getDataNotInResponbility(string $username){
-        $responbilityIdCategory = DB::table('responbilities')->where('username',$username)->pluck('idKategori');
-        $data = DB::table('categories')->whereNotIn('id',$responbilityIdCategory)->select('id as idKategori','nama')->get();
+    function getDataNotInResponbility(string $username)
+    {
+        $responbilityIdCategory = DB::table('responbilities')->where('username', $username)->pluck('idKategori');
+        $data = DB::table('categories')->whereNotIn('id', $responbilityIdCategory)->select('id as idKategori', 'nama')->get();
         return $data;
     }
 
-    function deleteDataById(string $id):array
+    function deleteDataById(int $id): array
     {
         $data = $this->delete($id);
         return [
-            'sukses'=>$data
+            'sukses' => $data
         ];
     }
 }

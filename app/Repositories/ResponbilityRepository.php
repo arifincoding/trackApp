@@ -4,9 +4,11 @@ namespace App\Repositories;
 
 use App\Models\Responbility;
 use App\Repositories\Repository;
+use App\Repositories\Contracts\ResponbilityRepoContract;
 
-class ResponbilityRepository extends Repository{
-    
+class ResponbilityRepository extends Repository implements ResponbilityRepoContract
+{
+
     function __construct(Responbility $model)
     {
         $this->model = $model;
@@ -14,17 +16,17 @@ class ResponbilityRepository extends Repository{
 
     function getListDataByUsername(string $username)
     {
-        $data = $this->model->with('kategori')->where('username',$username)->get();
-        if($data->toArray() == []){
+        $data = $this->model->with('kategori')->where('username', $username)->get();
+        if ($data->toArray() == []) {
             return null;
         }
         return $data;
     }
 
-    function create(array $inputs, string $role, string $username):bool
+    function create(array $inputs, string $role, string $username): bool
     {
         $arrAtribut = [];
-        foreach($inputs['idKategori'] as $key=>$item){
+        foreach ($inputs['idKategori'] as $key => $item) {
             $arrAtribut[$key]['username'] = $username;
             $arrAtribut[$key]['idKategori'] = $item;
         }
@@ -32,7 +34,7 @@ class ResponbilityRepository extends Repository{
         return true;
     }
 
-    function deleteDataById(string $id):array
+    function deleteDataById(int $id): array
     {
         $data = $this->delete($id);
         return [
@@ -40,14 +42,12 @@ class ResponbilityRepository extends Repository{
         ];
     }
 
-    function deleteByUsername(string $username):array
+    function deleteByUsername(string $username): array
     {
-        $find= $this->model->where('username',$username)->first();
-        if($find){
-            $data = $this->model->where('username',$username)->delete();
+        $find = $this->model->where('username', $username)->first();
+        if ($find) {
+            $data = $this->model->where('username', $username)->delete();
         }
-        return ['sukses'=>true];
+        return ['sukses' => true];
     }
 }
-
-?>
