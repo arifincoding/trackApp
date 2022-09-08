@@ -3,25 +3,24 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Repositories\HistoryRepository;
-use App\Validations\HistoryValidation;
+use App\Services\HistoryService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Contracts\HistoryControllerContract;
 
-class HistoryController extends Controller implements HistoryControllerContract {
+class HistoryController extends Controller implements HistoryControllerContract
+{
 
-    private $historyRepository;
+    private $service;
 
-    public function __construct(HistoryRepository $history)
+    public function __construct(HistoryService $service)
     {
-        $this->historyRepository = $history;
+        $this->service = $service;
     }
 
-    public function create(Request $request, int $id, HistoryValidation $validator): JsonResponse
+    public function create(Request $request, int $id): JsonResponse
     {
-        $input = $request->only(['status','pesan']);
-        $validator->validate($input);
-        $data = $this->historyRepository->create($input,$id);
-        return $this->jsonSuccess('sukses',200,$data);
+        $inputs = $request->only(['status', 'pesan']);
+        $data = $this->service->newHistory($inputs, $id);
+        return $this->jsonSuccess('sukses', 200, $data);
     }
 }

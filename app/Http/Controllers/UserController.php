@@ -3,120 +3,76 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Repositories\UserRepository;
-use App\Validations\UserValidation;
-use Illuminate\Support\Facades\Auth;
-use App\Repositories\ResponbilityRepository;
+use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
-use App\Mails\EmployeeMail;
-use Illuminate\Support\Facades\Mail;
-use League\Fractal\Manager;
-use League\Fractal\Resource\Collection;
-use App\Transformers\UsersTransformer;
 use App\Http\Controllers\Contracts\UserControllerContract;
 
 class UserController extends Controller implements UserControllerContract
 {
 
-    private $repository;
-    private $responbilityRepository;
+    private $service;
 
-    function __construct(UserRepository $repository, ResponbilityRepository $responbility)
+    function __construct(UserService $service)
     {
-        $this->repository = $repository;
-        $this->responbilityRepository = $responbility;
+        $this->service = $service;
     }
 
-    public function login(Request $request, UserValidation $validator): JsonResponse
+    public function login(Request $request): JsonResponse
     {
         $credentials = $request->only('username', 'password');
-        $validator->login();
-        $validator->validate($credentials);
-        if (!$token = Auth::attempt($credentials)) {
-            return $this->jsonValidationError([
-                'password' => [
-                    'password salah'
-                ]
-            ]);
+        $data = $this->service->login($credentials);
+        if ($data['success'] === false) {
+            return $this->jsonValidationError($data['error']);
         }
-        return $this->jsonToken($token);
+        return $this->jsonToken($data['token']);
     }
 
     public function createRefreshToken(): JsonResponse
     {
-        $newToken = Auth::refresh();
+        $newToken = $this->service->createRefreshToken();
         return $this->jsonToken($newToken);
     }
 
     public function logout(): JsonResponse
     {
-        Auth::logout();
-        return $this->jsonMessageOnly('sukses logout');
+        $data = $this->service->logout();
+        return $this->jsonMessageOnly($data);
     }
 
     function getMyAccount(): JsonResponse
     {
-        $data = $this->repository->findByUsername(Auth::payload()->get('username'));
+        $data = $this->service->getMyAccount();
         return $this->jsonSuccess('sukses ambil data', 200, $data);
     }
 
-    function updateMyAccount(Request $request, UserValidation $validator): JsonResponse
+    function updateMyAccount(Request $request): JsonResponse
     {
-        $input = $request->only(['email', 'noHp', 'alamat']);
-        $find = $this->repository->findByUsername(Auth::payload()->get('username'));
-        $validator->update($find['id']);
-        $validator->validate($input);
-        $data = $this->repository->update($input, $find['id']);
-        return $this->jsonMessageOnly('sukses update akun');
+        $inputs = $request->only(['email', 'noHp', 'alamat']);
+        $data = $this->service->updateMyAccount($inputs);
+        return $this->jsonMessageOnly($data);
     }
 
-    function changePassword(Request $request, UserValidation $validator): JsonResponse
+    function changePassword(Request $request): JsonResponse
     {
-        $input = $request->only(['sandiLama', 'sandiBaru']);
-        $validator->changePassword();
-        $validator->validate($input);
-        $data = $this->repository->changePassword($input, Auth::payload()->get('username'));
-        return $this->jsonMessageOnly('sukses merubah sandi akun');
+        $inputs = $request->only(['sandiLama', 'sandiBaru']);
+        $data = $this->service->changePassword($inputs);
+        return $this->jsonMessageOnly($data);
     }
 
-    function all(Request $request, UserValidation $validator): JsonResponse
+    function all(Request $request): JsonResponse
     {
-        $filters = $request->only(['limit', 'peran']);
-        $validator->get();
-        $validator->validate($filters);
-        $query = $this->repository->getListData($filters);
-        $fractal = new Manager();
-        $data = $fractal->createData(new Collection($query, new UsersTransformer))->toArray();
+        $inputs = $request->only(['limit', 'peran']);
+        $data = $this->service->getListUser($inputs);
         return $this->jsonSuccess('sukses', 200, $data);
     }
 
     function show(int $id): JsonResponse
     {
-        $dataUser = $this->repository->getDataById($id);
-        return $this->jsonSuccess('sukses', 200, $dataUser);
-    }
-
-    function create(Request $request, UserValidation $validator): JsonResponse
-    {
-        $attributs = [
-            'namaDepan',
-            'namaBelakang',
-            'jenisKelamin',
-            'noHp',
-            'alamat',
-            'peran',
-            'email'
-        ];
-        $inputs = $request->only($attributs);
-        $validator->post();
-        $validation = $validator->validate($inputs);
-        $data = $this->repository->create($inputs);
-        $register = $this->repository->registerUser($data['idPegawai']);
-        Mail::to($register['email'])->send(new EmployeeMail($register['username'], $register['password']));
+        $data = $this->service->getUserById($id);
         return $this->jsonSuccess('sukses', 200, $data);
     }
 
-    function update(Request $request, int $id, UserValidation $validator): JsonResponse
+    function create(Request $request): JsonResponse
     {
         $attributs = [
             'namaDepan',
@@ -128,23 +84,29 @@ class UserController extends Controller implements UserControllerContract
             'email'
         ];
         $inputs = $request->only($attributs);
-        $validator->post($id);
-        $validation = $validator->validate($inputs);
-        $data = $this->repository->update($inputs, $id);
-        if ($inputs['peran'] !== 'teknisi') {
-            $this->responbilityRepository->deleteByUsername($data['username']);
-        }
-        unset($data['username']);
+        $data = $this->service->newUser($inputs);
+        return $this->jsonSuccess('sukses', 200, $data);
+    }
+
+    function update(Request $request, int $id): JsonResponse
+    {
+        $attributs = [
+            'namaDepan',
+            'namaBelakang',
+            'jenisKelamin',
+            'noHp',
+            'alamat',
+            'peran',
+            'email'
+        ];
+        $inputs = $request->only($attributs);
+        $data = $this->service->updateUserById($inputs, $id);
         return $this->jsonSuccess('sukses', 200, $data);
     }
 
     function delete(int $id): JsonResponse
     {
-        $find = $this->repository->getDataById($id);
-        $delete = $this->repository->deleteById($id);
-        if ($delete === true) {
-            $this->responbilityRepository->deleteByUsername($find['username']);
-        }
-        return $this->jsonMessageOnly('sukses hapus data pegawai');
+        $data = $this->service->deleteUserById($id);
+        return $this->jsonMessageOnly($data);
     }
 }

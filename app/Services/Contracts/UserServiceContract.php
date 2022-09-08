@@ -2,19 +2,17 @@
 
 namespace App\Services\Contracts;
 
-use App\Validations\UserValidation;
-
 interface UserServiceContract
 {
-    public function login(array $inputs, UserValidation $validator): array;
-    public function createRefreshToken(): array;
-    public function logout(): array;
+    public function login(array $inputs): array;
+    public function createRefreshToken(): string;
+    public function logout(): string;
     public function getMyAccount(): array;
-    public function updateMyAccount(array $inputs, UserValidation $validator): array;
-    public function changePassword(array $inputs, UserValidation $validator): array;
-    public function getListUser(array $inputs, UserValidation $validator): array;
+    public function updateMyAccount(array $inputs): string;
+    public function changePassword(array $inputs): string;
+    public function getListUser(array $inputs): array;
     public function getUserById(int $id): array;
-    public function create(array $inputs, UserValidation $validator): array;
-    public function update(array $request, int $id, UserValidation $validator): array;
-    public function delete(int $id): string;
+    public function newUser(array $inputs): array;
+    public function updateUserById(array $inputs, int $id): array;
+    public function deleteUserById(int $id): string;
 }

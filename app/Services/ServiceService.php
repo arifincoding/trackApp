@@ -1,0 +1,205 @@
+<?php
+
+namespace App\Services;
+
+use App\Services\Contracts\ServiceServiceContract;
+use App\Validations\ServiceValidation;
+use App\Repositories\ServiceRepository;
+use App\Repositories\ResponbilityRepository;
+use App\Repositories\HistoryRepository;
+use App\Repositories\CustomerRepository;
+use App\Repositories\BrokenRepository;
+use App\Repositories\ProductRepository;
+use League\Fractal\Manager;
+use League\Fractal\Resource\Collection;
+use League\Fractal\Resource\Item;
+use App\Transformers\ServicesTransformer;
+use App\Transformers\ServicequeueTransformer;
+use App\Transformers\ServicedetailTransformer;
+use App\Transformers\ServicetrackTransformer;
+use Illuminate\Support\Facades\Auth;
+
+class ServiceService implements ServiceServiceContract
+{
+    private $serviceRepository;
+    private $historyRepository;
+    private $responbilityRepository;
+    private $customerRepository;
+    private $brokenRepository;
+    private $productRepository;
+    private $serviceValidator;
+
+    public function __construct(ServiceRepository $service, HistoryRepository $history, ResponbilityRepository $responbility, CustomerRepository $customer, BrokenRepository $broken, ProductRepository $product, ServiceValidation $validator)
+    {
+        $this->serviceRepository = $service;
+        $this->historyRepository = $history;
+        $this->responbilityRepository = $responbility;
+        $this->customerRepository = $customer;
+        $this->brokenRepository = $broken;
+        $this->productRepository = $product;
+        $this->serviceValidator = $validator;
+    }
+
+    public function getListService(array $inputs): array
+    {
+        $query = $this->serviceRepository->getListData($inputs);
+        $fractal = new Manager();
+        $data = $fractal->createData(new Collection($query, new ServicesTransformer))->toArray();
+        return $data;
+    }
+
+    public function getServiceById(array $inputs, int $id): array
+    {
+        $query = $this->serviceRepository->getDataWithRelationById($id);
+        $fractal = new Manager();
+        if ($inputs['include']) {
+            $fractal->parseIncludes($inputs['include']);
+        }
+        $data = $fractal->createData(new Item($query, new ServicedetailTransformer))->toArray();
+        return $data;
+    }
+
+    public function getServiceQueue(array $inputs, string $username): array
+    {
+        $resp = $this->responbilityRepository->getListDataByUsername($username);
+        $query = $this->serviceRepository->getListDataQueue($resp, $inputs);
+        $fractal = new Manager();
+        $data = $fractal->createData(new Collection($query, new ServicequeueTransformer))->toArray();
+        return $data;
+    }
+
+    public function getProgressService(array $inputs, string $username): array
+    {
+        $query = $this->serviceRepository->getListDataMyProgress($username, $inputs);
+        $fractal = new Manager();
+        $data = $fractal->createData(new Collection($query, new ServicequeueTransformer))->toArray();
+        return $data;
+    }
+
+    public function getServiceTrack(string $code): array
+    {
+        $query = $this->serviceRepository->getDataByCode($code);
+        $data = [];
+        $message = 'data tidak ditemukan';
+        if ($query) {
+            $message = 'sukses';
+            $fractal = new Manager();
+            $data = $fractal->createData(new Item($query, new ServicetrackTransformer))->toArray();
+        }
+        return [
+            'message' => $message,
+            'data' => $data
+        ];
+    }
+
+    public function newService(array $inputs): array
+    {
+        $this->serviceValidator->validate($inputs['all']);
+        $inputs['service']['idCustomer'] = $this->customerRepository->create($inputs['customer']);
+        $inputs['service']['idProduct'] = $this->productRepository->create($inputs['product']);
+        $saveService = $this->serviceRepository->create($inputs['service']);
+        $this->serviceRepository->setCodeService($saveService['idService']);
+        return $saveService;
+    }
+
+    public function updateServiceById(array $inputs, int $id): array
+    {
+        $this->serviceValidator->validate($inputs['all']);
+        $find = $this->serviceRepository->findDataById($id);
+        $this->customerRepository->update($inputs['customer'], $find->idCustomer);
+        $this->productRepository->update($inputs['product'], $find->idProduct);
+        $saveService = $this->serviceRepository->update($inputs['service'], $id);
+        return $saveService;
+    }
+
+    public function updateServiceStatus(array $inputs, int $id): array
+    {
+        $this->serviceValidator->statusService();
+        $this->serviceValidator->validate($inputs);
+        $inputs['usernameTeknisi'] = Auth::payload()->get('username');
+        $data = $this->serviceRepository->update($inputs, $id);
+        return $data;
+    }
+
+    public function setServiceTake(int $id): array
+    {
+        $find = $this->serviceRepository->findDataById($id);
+        if ($find->garansi === null) {
+            return [
+                'success' => false,
+                'message' => 'garansi perbaikan belum di tentukan'
+            ];
+        }
+        $data = $this->serviceRepository->setDataTake($id);
+        return [
+            'success' => true,
+            'data' => $data
+        ];
+    }
+
+    public function setServiceConfirmCost(int $id): array
+    {
+        $find = $this->brokenRepository->findDataByIdService($id, 'biaya');
+        if ($find !== null) {
+            return [
+                'success' => false,
+                'message' => 'data kerusakan masih ada yang belum diberi biaya'
+            ];
+        }
+        $brokens = $this->brokenRepository->getListDataByIdService($id);
+        $total = 0;
+        foreach ($brokens as $item) {
+            $total += $item->biaya;
+        }
+        $inputs = ['konfirmasibiaya' => true, 'totalBiaya' => $total];
+        $data = $this->serviceRepository->update($inputs, $id);
+        return [
+            'success' => true,
+            'data' => $data
+        ];
+    }
+
+    public function updateServiceWarranty(array $inputs, int $id): array
+    {
+        $this->serviceValidator->serviceWarranty();
+        $this->serviceValidator->validate($inputs);
+        $data = $this->serviceRepository->update($inputs, $id);
+        return $data;
+    }
+
+    public function setServiceConfirmation(array $inputs, int $id): array
+    {
+        $this->serviceValidator->confirmation($inputs);
+        $this->serviceValidator->validate($inputs);
+        $find = $this->brokenRepository->findDataByIdService($id, 'disetujui');
+        if ($find !== null) {
+            return [
+                'success' => false,
+                'message' => 'data kerusakan masih ada yang belum diberi persetujuan'
+            ];
+        }
+        $brokens = $this->brokenRepository->getListDataByIdService($id, ['disetujui' => 1]);
+        $total = 0;
+        foreach ($brokens as $item) {
+            $total += $item->biaya;
+        }
+        $inputs['totalBiaya'] = $total;
+        $data = $this->serviceRepository->update($inputs, $id);
+        $this->brokenRepository->setCostInNotAgreeToZero($id);
+        return [
+            'success' => true,
+            'data' => $data
+        ];
+    }
+
+    public function deleteServiceById(int $id): string
+    {
+        $find = $this->serviceRepository->findDataById($id);
+        $this->customerRepository->deleteById($find->idCustomer);
+        $this->productRepository->deleteById($find->idProduct);
+        $this->serviceRepository->deleteById($id);
+        $this->historyRepository->deleteByIdService($id);
+        $this->brokenRepository->deleteByIdService($id);
+        return 'sukses hapus data service';
+    }
+}

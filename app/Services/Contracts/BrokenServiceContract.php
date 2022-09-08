@@ -2,15 +2,13 @@
 
 namespace App\Services\Contracts;
 
-use App\Validations\BrokenValidation;
-
 interface BrokenServiceContract
 {
-    public function getListByIdService(int $id): array;
-    public function newByIdService(array $inputs, int $id, BrokenValidation $validator): array;
+    public function getListBrokenByIdService(int $id): array;
+    public function newBrokenByIdService(array $inputs, int $id): array;
     public function getBrokenById(int $id): array;
-    public function update(array $inputs, int $id, BrokenValidation $validator): array;
-    public function updateCost(array $inputs, int $id, BrokenValidation $validator): array;
-    public function updateCofirmation(array $inputs, int $id, BrokenValidation $validator): array;
-    public function delete(int $id): string;
+    public function updateBroken(array $inputs, int $id): array;
+    public function updateBrokenCost(array $inputs, int $id): array;
+    public function updateBrokenCofirmation(array $inputs, int $id): array;
+    public function deleteBrokenById(int $id): string;
 }

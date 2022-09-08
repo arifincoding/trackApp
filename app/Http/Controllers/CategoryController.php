@@ -3,64 +3,56 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Repositories\CategoryRepository;
-use App\Validations\CategoryValidation;
+use App\Services\CategoryService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Contracts\CategoryControllerContract;
 
 class CategoryController extends Controller implements CategoryControllerContract
 {
 
-    private $repository;
+    private $service;
 
-    function __construct(CategoryRepository $repository)
+    function __construct(CategoryService $service)
     {
-        $this->repository = $repository;
+        $this->service = $service;
     }
 
-    function all(Request $request, CategoryValidation $validator): JsonResponse
+    function all(Request $request): JsonResponse
     {
-        $validator->query();
-        $validation = $validator->validate($request->only(['limit', 'cari']));
-        $limit = $request->query('limit') ?? 0;
-        $search = $request->query('cari') ?? '';
-        $data = $this->repository->getListData($limit, $search);
+        $inputs = $request->only(['limit', 'cari']);
+        $data = $this->service->getAllCategory($inputs);
         return $this->jsonSuccess('sukses', 200, $data);
     }
 
     function show(int $id): JsonResponse
     {
-        $data = $this->repository->getDataById($id);
+        $data = $this->service->getCategoryById($id);
         return $this->jsonSuccess('sukses', 200, $data);
     }
 
     function getCategoryNotInResponbility(string $id): JsonResponse
     {
-        $data = $this->repository->getDataNotInResponbility($id);
+        $data = $this->service->getCategoryNotInResponbility($id);
         return $this->jsonSuccess('sukses', 200, $data);
     }
 
-    function create(Request $request, CategoryValidation $validator): JsonResponse
+    function create(Request $request): JsonResponse
     {
-        $input = $request->only('nama');
-        $validator->post();
-        $validation = $validator->validate($input);
-        $data = $this->repository->saveData($input);
+        $inputs = $request->only('nama');
+        $data = $this->service->newCategory($inputs);
         return $this->jsonSuccess('sukses', 200, $data);
     }
 
-    function update(Request $request, int $id, CategoryValidation $validator): JsonResponse
+    function update(Request $request, int $id): JsonResponse
     {
-        $input = $request->only('nama');
-        $validator->post($id);
-        $validation = $validator->validate($input);
-        $data = $this->repository->saveData($input, $id);
+        $inputs = $request->only('nama');
+        $data = $this->service->updateCategoryById($inputs, $id);
         return $this->jsonSuccess('sukses', 200, $data);
     }
 
     function delete(int $id): JsonResponse
     {
-        $data = $this->repository->deleteDataById($id);
-        return $this->jsonMessageOnly('sukses hapus data kategori');
+        $data = $this->service->deleteCategoryById($id);
+        return $this->jsonMessageOnly($data);
     }
 }

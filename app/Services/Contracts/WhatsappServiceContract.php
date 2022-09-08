@@ -4,6 +4,6 @@ namespace App\Services\Contracts;
 
 interface WhatsappServiceContract
 {
-    public function scan(): array;
-    public function chat(array $inputs, int $id): string;
+    public function scanQr(): array;
+    public function sendMessage(array $inputs, int $id): string;
 }

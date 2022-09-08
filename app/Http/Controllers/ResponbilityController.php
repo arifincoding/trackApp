@@ -3,54 +3,39 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Repositories\ResponbilityRepository;
-use App\Repositories\UserRepository;
-use App\Validations\ResponbilityValidation;
+use App\Services\ResponbilityService;
 use Illuminate\Http\JsonResponse;
-use League\Fractal\Manager;
-use League\Fractal\Resource\Collection;
-use App\Transformers\ResponbilitiesTransformer;
 use App\Http\Controllers\Contracts\ResponbilityControllerContract;
 
 class ResponbilityController extends Controller implements ResponbilityControllerContract
 {
 
-    private $responbilityRepository;
-    private $userRepository;
+    private $service;
 
-    public function __construct(ResponbilityRepository $responbility, UserRepository $user)
+    public function __construct(ResponbilityService $service)
     {
-        $this->responbilityRepository = $responbility;
-        $this->userRepository = $user;
+        $this->service = $service;
     }
 
     function all(string $id): JsonResponse
     {
-        $query = $this->responbilityRepository->getListDataByUsername($id);
-        if ($query) {
-            $fractal = new Manager();
-            $data = $fractal->createData(new Collection($query, new ResponbilitiesTransformer))->toArray();
-            return $this->jsonSuccess('sukses', 200, $data);
-        }
-        return $this->jsonSuccess('sukses', 200, []);
+        $data = $this->service->getAllRespobilities($id);
+        return $this->jsonSuccess('sukses', 200, $data);
     }
 
-    function create(Request $request, int $id, ResponbilityValidation $validator): JsonResponse
+    function create(Request $request, int $id): JsonResponse
     {
-        $input = $request->only(['idKategori']);
-        $validator->post($id, $input);
-        $validator->validate($input);
-        $findUser = $this->userRepository->getDataById($id);
-        if ($findUser['peran'] !== 'teknisi') {
-            return $this->jsonValidationError('gagal tambah tanggung jawab karena pegawai ini bukan teknisi');
+        $inputs = $request->only(['idKategori']);
+        $data = $this->service->newResponbilities($inputs, $id);
+        if ($data['success'] === false) {
+            return $this->jsonValidationError($data['message']);
         }
-        $this->responbilityRepository->create($input, $findUser['peran'], $findUser['username']);
-        return $this->jsonMessageOnly('sukses tambah tanggung jawab');
+        return $this->jsonMessageOnly($data['message']);
     }
 
     public function delete(int $id): JsonResponse
     {
-        $this->responbilityRepository->deleteDataById($id);
-        return $this->jsonMessageOnly('sukses hapus data tanggung jawab');
+        $data = $this->service->deleteResponbilityById($id);
+        return $this->jsonMessageOnly($data);
     }
 }
