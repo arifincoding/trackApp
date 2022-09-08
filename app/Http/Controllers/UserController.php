@@ -15,7 +15,8 @@ use League\Fractal\Resource\Collection;
 use App\Transformers\UsersTransformer;
 use App\Http\Controllers\Contracts\UserControllerContract;
 
-class UserController extends Controller implements UserControllerContract {
+class UserController extends Controller implements UserControllerContract
+{
 
     private $repository;
     private $responbilityRepository;
@@ -28,15 +29,15 @@ class UserController extends Controller implements UserControllerContract {
 
     public function login(Request $request, UserValidation $validator): JsonResponse
     {
-        $credentials = $request->only('username','password');
+        $credentials = $request->only('username', 'password');
         $validator->login();
         $validator->validate($credentials);
-        if (!$token = Auth::attempt($credentials)){
+        if (!$token = Auth::attempt($credentials)) {
             return $this->jsonValidationError([
-                'password'=>[
+                'password' => [
                     'password salah'
                 ]
-                ]);
+            ]);
         }
         return $this->jsonToken($token);
     }
@@ -56,43 +57,43 @@ class UserController extends Controller implements UserControllerContract {
     function getMyAccount(): JsonResponse
     {
         $data = $this->repository->findByUsername(Auth::payload()->get('username'));
-        return $this->jsonSuccess('sukses ambil data',200,$data);
+        return $this->jsonSuccess('sukses ambil data', 200, $data);
     }
 
     function updateMyAccount(Request $request, UserValidation $validator): JsonResponse
     {
-        $input = $request->only(['email','noHp','alamat']);
+        $input = $request->only(['email', 'noHp', 'alamat']);
         $find = $this->repository->findByUsername(Auth::payload()->get('username'));
         $validator->update($find['id']);
         $validator->validate($input);
-        $data = $this->repository->update($input,$find['id']);
+        $data = $this->repository->update($input, $find['id']);
         return $this->jsonMessageOnly('sukses update akun');
     }
 
     function changePassword(Request $request, UserValidation $validator): JsonResponse
     {
-        $input = $request->only(['sandiLama','sandiBaru']);
+        $input = $request->only(['sandiLama', 'sandiBaru']);
         $validator->changePassword();
         $validator->validate($input);
-        $data = $this->repository->changePassword($input,Auth::payload()->get('username'));
+        $data = $this->repository->changePassword($input, Auth::payload()->get('username'));
         return $this->jsonMessageOnly('sukses merubah sandi akun');
     }
 
     function all(Request $request, UserValidation $validator): JsonResponse
     {
-        $filters = $request->only(['limit','peran']);
+        $filters = $request->only(['limit', 'peran']);
         $validator->get();
         $validator->validate($filters);
         $query = $this->repository->getListData($filters);
         $fractal = new Manager();
-        $data = $fractal->createData(new Collection($query,new UsersTransformer))->toArray();
-        return $this->jsonSuccess('sukses',200,$data);
+        $data = $fractal->createData(new Collection($query, new UsersTransformer))->toArray();
+        return $this->jsonSuccess('sukses', 200, $data);
     }
 
-    function show($id): JsonResponse
+    function show(int $id): JsonResponse
     {
         $dataUser = $this->repository->getDataById($id);
-        return $this->jsonSuccess('sukses',200,$dataUser);
+        return $this->jsonSuccess('sukses', 200, $dataUser);
     }
 
     function create(Request $request, UserValidation $validator): JsonResponse
@@ -111,11 +112,11 @@ class UserController extends Controller implements UserControllerContract {
         $validation = $validator->validate($inputs);
         $data = $this->repository->create($inputs);
         $register = $this->repository->registerUser($data['idPegawai']);
-        Mail::to($register['email'])->send(new EmployeeMail($register['username'],$register['password']));
-        return $this->jsonSuccess('sukses',200,$data);
+        Mail::to($register['email'])->send(new EmployeeMail($register['username'], $register['password']));
+        return $this->jsonSuccess('sukses', 200, $data);
     }
 
-    function update(Request $request, $id, UserValidation $validator): JsonResponse
+    function update(Request $request, int $id, UserValidation $validator): JsonResponse
     {
         $attributs = [
             'namaDepan',
@@ -130,22 +131,20 @@ class UserController extends Controller implements UserControllerContract {
         $validator->post($id);
         $validation = $validator->validate($inputs);
         $data = $this->repository->update($inputs, $id);
-        if($inputs['peran'] !== 'teknisi'){
+        if ($inputs['peran'] !== 'teknisi') {
             $this->responbilityRepository->deleteByUsername($data['username']);
         }
         unset($data['username']);
-        return $this->jsonSuccess('sukses',200,$data);
+        return $this->jsonSuccess('sukses', 200, $data);
     }
 
-    function delete($id): JsonResponse
+    function delete(int $id): JsonResponse
     {
         $find = $this->repository->getDataById($id);
         $delete = $this->repository->deleteById($id);
-        if($delete === true){
+        if ($delete === true) {
             $this->responbilityRepository->deleteByUsername($find['username']);
         }
         return $this->jsonMessageOnly('sukses hapus data pegawai');
     }
 }
-
-?>
