@@ -19,7 +19,7 @@ class ServiceController extends Controller implements ServiceControllerContract
 
     function getListService(Request $request): JsonResponse
     {
-        $inputs = $request->all();
+        $inputs = $request->only('status', 'kategori', 'cari');
         $data = $this->service->getListService($inputs);
         return $this->jsonSuccess('sukses', 200, $data);
     }
@@ -32,14 +32,14 @@ class ServiceController extends Controller implements ServiceControllerContract
 
     function getServiceQueue(Request $request, string $id): JsonResponse
     {
-        $inputs = $request->all();
+        $inputs = $request->only('kategori', 'cari');
         $data = $this->service->getServiceQueue($inputs, $id);
         return $this->jsonSuccess('sukses', 200, $data);
     }
 
     function getProgressService(Request $request, string $id): JsonResponse
     {
-        $inputs = $request->all();
+        $inputs = $request->only('status', 'kategori', 'cari');
         $data = $this->service->getProgressService($inputs, $id);
         return $this->jsonSuccess('sukses', 200, $data);
     }
@@ -66,7 +66,7 @@ class ServiceController extends Controller implements ServiceControllerContract
 
     public function updateServiceStatus(Request $request, int $id): JsonResponse
     {
-        $inputs = $request->all();
+        $inputs = $request->only('status');
         $data = $this->service->updateServiceStatus($inputs, $id);
         return $this->jsonSuccess('sukses', 200, $data);
     }
@@ -91,14 +91,14 @@ class ServiceController extends Controller implements ServiceControllerContract
 
     public function updateWarranty(Request $request, int $id): JsonResponse
     {
-        $inputs = $request->all();
+        $inputs = $request->only('garansi');
         $data = $this->service->updateServiceWarranty($inputs, $id);
         return $this->jsonSuccess('sukses', 200, $data);
     }
 
     public function setConfirmation(Request $request, int $id): JsonResponse
     {
-        $inputs =  $request->all();
+        $inputs =  $request->only('disetujui');
         $data = $this->service->setServiceConfirmation($inputs, $id);
         if ($data['success'] === false) {
             return $this->jsonValidationError($data['message']);
