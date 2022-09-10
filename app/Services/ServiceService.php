@@ -52,7 +52,7 @@ class ServiceService implements ServiceServiceContract
     {
         $query = $this->serviceRepository->getDataWithRelationById($id);
         $fractal = new Manager();
-        if ($inputs['include']) {
+        if (isset($inputs['include'])) {
             $fractal->parseIncludes($inputs['include']);
         }
         $data = $fractal->createData(new Item($query, new ServicedetailTransformer))->toArray();
@@ -94,21 +94,23 @@ class ServiceService implements ServiceServiceContract
 
     public function newService(array $inputs): array
     {
-        $this->serviceValidator->validate($inputs['all']);
-        $inputs['service']['idCustomer'] = $this->customerRepository->create($inputs['customer']);
-        $inputs['service']['idProduct'] = $this->productRepository->create($inputs['product']);
-        $saveService = $this->serviceRepository->create($inputs['service']);
+        $this->serviceValidator->validate($inputs);
+        $input = $this->inputsParse($inputs);
+        $input['service']['idCustomer'] = $this->customerRepository->saveData($input['customer']);
+        $input['service']['idProduct'] = $this->productRepository->saveData($input['product']);
+        $saveService = $this->serviceRepository->create($input['service']);
         $this->serviceRepository->setCodeService($saveService['idService']);
         return $saveService;
     }
 
     public function updateServiceById(array $inputs, int $id): array
     {
-        $this->serviceValidator->validate($inputs['all']);
+        $this->serviceValidator->validate($inputs);
         $find = $this->serviceRepository->findDataById($id);
-        $this->customerRepository->update($inputs['customer'], $find->idCustomer);
-        $this->productRepository->update($inputs['product'], $find->idProduct);
-        $saveService = $this->serviceRepository->update($inputs['service'], $id);
+        $input = $this->inputsParse($inputs);
+        $this->customerRepository->saveData($input['customer'], $find->idCustomer);
+        $this->productRepository->saveData($input['product'], $find->idProduct);
+        $saveService = $this->serviceRepository->update($input['service'], $id);
         return $saveService;
     }
 
@@ -201,5 +203,34 @@ class ServiceService implements ServiceServiceContract
         $this->historyRepository->deleteByIdService($id);
         $this->brokenRepository->deleteByIdService($id);
         return 'sukses hapus data service';
+    }
+
+    private function inputsParse(array $inputs): array
+    {
+        $noHp = $inputs['noHp'] ?? null;
+        $wa = $inputs['bisaWA'];
+        if ($noHp === null) {
+            $wa = false;
+        }
+        return [
+            'customer' => [
+                'nama' => $inputs['namaCustomer'],
+                'noHp' => $inputs['noHp'],
+                'bisaWA' => $wa
+            ],
+            'product' => [
+                'nama' => $inputs['namaProduk'],
+                'kategori' => $inputs['kategori'],
+                'kelengkapan' => $inputs['kelengkapan'],
+                'catatan' => $inputs['catatan'],
+                'cacatProduk' => $inputs['cacatProduk']
+            ],
+            'service' => [
+                'keluhan' => $inputs['keluhan'],
+                'butuhPersetujuan' => $inputs['butuhPersetujuan'],
+                'uangMuka' => $inputs['uangMuka'],
+                'estimasiBiaya' => $inputs['estimasiBiaya']
+            ]
+        ];
     }
 }

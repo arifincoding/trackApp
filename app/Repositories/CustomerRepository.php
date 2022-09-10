@@ -7,62 +7,36 @@ use App\Repositories\Repository;
 use App\Helpers\Formatter;
 use App\Repositories\Contracts\CustomerRepoContract;
 
-class CustomerRepository extends Repository implements CustomerRepoContract {
-    function __construct(Customer $model){
+class CustomerRepository extends Repository implements CustomerRepoContract
+{
+    function __construct(Customer $model)
+    {
         parent::__construct($model);
     }
 
-    public function create(array $inputs):int
+    public function saveData(array $attributs, int $id = null): int
     {
-        $noHp = $inputs['noHp'] ?? null;
-        $wa = false;
-        if($noHp !== null){
-            $wa = $inputs['bisaWA'];
-        }
-        $attributs = [
-            'nama'=>$inputs['namaCustomer'],
-            'noHp'=>$inputs['noHp'],
-            'bisaWA'=> $wa
-        ];
         $data = $this->save($attributs);
         return $data->id;
     }
 
-    public function getDataById(int $id):array
+    public function getDataById(int $id): array
     {
-        $attributs = ['id as idCustomer','nama','noHp','bisaWA'];
+        $attributs = ['id as idCustomer', 'nama', 'noHp', 'bisaWA'];
         $data = $this->findById($id, $attributs);
         $data->bisaWA = Formatter::boolval($data->bisaWA);
         return $data->toArray();
     }
 
-    public function findDataById(int $id):array
+    public function findDataById(int $id): array
     {
         $data = $this->findById($id);
         return $data->toArray();
     }
 
-    public function update(array $inputs, int $id):array
-    {
-        $noHp = $inputs['noHp'] ?? null;
-        $wa = $inputs['bisaWA'];
-        if($noHp === null){
-            $wa = false;
-        }
-        
-        $attributs = [
-            'nama'=>$inputs['namaCustomer'],
-            'noHp'=>$inputs['noHp'],
-            'bisaWA'=> $wa,
-        ];
-        
-        $data = $this->save($attributs, $id);
-        return ['idCustomer'=>$data->id];
-    }
-
-    public function deleteById(int $id):array
+    public function deleteById(int $id): array
     {
         $data = $this->delete($id);
-        return ['sukses'=>true];
+        return ['sukses' => true];
     }
 }

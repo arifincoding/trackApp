@@ -2,65 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
-use App\Repositories\CustomerRepository;
-use App\Repositories\ServiceRepository;
+use App\Services\WhatsappService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Contracts\WhatsappControllerContract;
 
-class WhatsappController extends Controller implements WhatsappControllerContract {
+class WhatsappController extends Controller implements WhatsappControllerContract
+{
 
+    private $service;
 
-    private $customerRepository;
-    private $serviceRepository;
-
-    public function __construct(CustomerRepository $customer, ServiceRepository $service)
+    public function __construct(WhatsappService $service)
     {
-        $this->customerRepository = $customer;
-        $this->serviceRepository = $service;
+        $this->service = $service;
     }
 
     public function scan(): JsonResponse
     {
-        if($this->check() === true){
-            $this->delete();
-        }
-        $response = Http::post('http://127.0.0.1:4000/sessions/add',[
-            'id'=>'owner',
-            'isLegacy'=>false
-        ]);
-        $data = $response->object();
-        $qr = $data->data->qr;
-        return $this->jsonSuccess('sukses',200,['qr'=>$qr]);
+        $data = $this->service->scanQr();
+        return $this->jsonSuccess('sukses', 200, ['qr' => $data]);
     }
 
-    private function check(){
-        $response = Http::get('http://127.0.0.1:4000/sessions/find/owner');
-        $data = $response->object();
-        return $data->success;
-    }
-
-    private function delete(){
-        $response = Http::delete('http://127.0.0.1:4000/sessions/delete/owner');
-        return $response->object()->success;
-    }
-
-    public function chat(Request $request,$id): JsonResponse
+    public function chat(Request $request, $id): JsonResponse
     {
-        $findService = $this->serviceRepository->findDataById($id);
-        $findCustomer = $this->customerRepository->findDataById($findService->idCustomer);
-        if($findCustomer['bisaWA'] === 1){
-            if($this->check() === true){
-                $response = Http::post('http://127.0.0.1:4000/chats/send',[
-                    'id'=>'owner',
-                    'receiver'=>$findCustomer['noHp'],
-                    'message'=>urldecode($request->input('pesan'))
-                ]);
-                return $this->jsonMessageOnly('sukses mengirim pesan whatsapp');
-            }
-            return $this->jsonValidationError('session kedaluarsa harap scan ulang kode qr'); 
-        }
-        return $this->jsonMessageOnly('customer tidak memiliki whatsapp');
+        $data = $this->service->sendMessage($request->all(), $id);
+        return $this->jsonMessageOnly($data);
     }
 }

@@ -19,7 +19,7 @@ class ServiceController extends Controller implements ServiceControllerContract
 
     function getListService(Request $request): JsonResponse
     {
-        $inputs = $request->only('kategori', 'status', 'cari');
+        $inputs = $request->all();
         $data = $this->service->getListService($inputs);
         return $this->jsonSuccess('sukses', 200, $data);
     }
@@ -32,14 +32,14 @@ class ServiceController extends Controller implements ServiceControllerContract
 
     function getServiceQueue(Request $request, string $id): JsonResponse
     {
-        $inputs = $request->only('kategori', 'cari');
+        $inputs = $request->all();
         $data = $this->service->getServiceQueue($inputs, $id);
         return $this->jsonSuccess('sukses', 200, $data);
     }
 
     function getProgressService(Request $request, string $id): JsonResponse
     {
-        $inputs = $request->only('status', 'cari', 'kategori');
+        $inputs = $request->all();
         $data = $this->service->getProgressService($inputs, $id);
         return $this->jsonSuccess('sukses', 200, $data);
     }
@@ -52,31 +52,21 @@ class ServiceController extends Controller implements ServiceControllerContract
 
     function newService(Request $request): JsonResponse
     {
-        $inputs = [
-            'all' => $request->all(),
-            'customer' => $request->only(['namaCustomer', 'noHp', 'bisaWA']),
-            'product' => $request->only(['namaProduk', 'kategori', 'kelengkapan', 'catatan', 'cacatProduk']),
-            'service' => $request->only(['keluhan', 'butuhPersetujuan', 'uangMuka', 'estimasiBiaya'])
-        ];
+        $inputs = $request->all();
         $data = $this->service->newService($inputs);
         return $this->jsonSuccess('sukses', 200, $data);
     }
 
     public function updateService(Request $request, int $id): JsonResponse
     {
-        $inputs = [
-            'all' => $request->all(),
-            'customer' => $request->only(['namaCustomer', 'noHp', 'bisaWA']),
-            'product' => $request->only(['namaProduk', 'kategori', 'kelengkapan', 'catatan', 'cacatProduk']),
-            'service' => $request->only(['keluhan', 'butuhPersetujuan', 'uangMuka', 'estimasiBiaya'])
-        ];
+        $inputs = $request->all();
         $data = $this->service->updateServiceById($inputs, $id);
         return $this->jsonSuccess('sukses', 200, $data);
     }
 
     public function updateServiceStatus(Request $request, int $id): JsonResponse
     {
-        $inputs = $request->only('status');
+        $inputs = $request->all();
         $data = $this->service->updateServiceStatus($inputs, $id);
         return $this->jsonSuccess('sukses', 200, $data);
     }
@@ -92,7 +82,7 @@ class ServiceController extends Controller implements ServiceControllerContract
 
     public function setConfirmCost(int $id): JsonResponse
     {
-        $data = $this->data->setServiceConfirmCost($id);
+        $data = $this->service->setServiceConfirmCost($id);
         if ($data['success'] === false) {
             return $this->jsonValidationError($data['message']);
         }
@@ -101,14 +91,14 @@ class ServiceController extends Controller implements ServiceControllerContract
 
     public function updateWarranty(Request $request, int $id): JsonResponse
     {
-        $inputs = $request->only('garansi');
+        $inputs = $request->all();
         $data = $this->service->updateServiceWarranty($inputs, $id);
         return $this->jsonSuccess('sukses', 200, $data);
     }
 
     public function setConfirmation(Request $request, int $id): JsonResponse
     {
-        $inputs =  $request->only('disetujui');
+        $inputs =  $request->all();
         $data = $this->service->setServiceConfirmation($inputs, $id);
         if ($data['success'] === false) {
             return $this->jsonValidationError($data['message']);

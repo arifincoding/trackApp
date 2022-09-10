@@ -10,7 +10,7 @@ use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use App\Transformers\ResponbilitiesTransformer;
 
-class ResponbilityService implements ResponbilityServiceContract
+class  ResponbilityService implements ResponbilityServiceContract
 {
     private $responbilityRepository;
     private $userRepository;
