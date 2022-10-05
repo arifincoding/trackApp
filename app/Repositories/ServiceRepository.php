@@ -7,6 +7,7 @@ use App\Repositories\Repository;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\Contracts\ServiceRepoContract;
+use Illuminate\Database\Eloquent\Collection;
 
 class ServiceRepository extends Repository implements ServiceRepoContract
 {
@@ -15,7 +16,7 @@ class ServiceRepository extends Repository implements ServiceRepoContract
         parent::__construct($model);
     }
 
-    public function getListData(array $inputs = [])
+    public function getListData(array $inputs = []): Collection
     {
         $data = $this->model->with('klien', 'produk')->orderByDesc('id');
         // filter status service
@@ -44,21 +45,21 @@ class ServiceRepository extends Repository implements ServiceRepoContract
         return $data->get();
     }
 
-    public function getDataWithRelationById(int $id)
+    public function getDataWithRelationById(int $id): ?Service
     {
         return $this->model->with(['klien', 'produk', 'kerusakan' => function ($q) {
             $q->orderByDesc('id');
         }])->where('id', $id)->first();
     }
-    public function findDataById(int $id)
+    public function findDataById(int $id): ?Service
     {
         return $this->findById($id);
     }
 
-    public function getListDataQueue($responbility, array $inputs)
+    public function getListDataQueue($responbility, array $inputs): Collection
     {
         if ($responbility === null) {
-            return [];
+            return collect([]);
         }
         $resp = [];
         foreach ($responbility as $item) {
@@ -84,7 +85,7 @@ class ServiceRepository extends Repository implements ServiceRepoContract
         return $data->get();
     }
 
-    public function getListDataMyProgress(string $username, array $inputs)
+    public function getListDataMyProgress(string $username, array $inputs): Collection
     {
         $data = $this->model->with('produk')->where('usernameTeknisi', $username)->orderByDesc('id');
         if (isset($inputs['status'])) {
@@ -104,7 +105,7 @@ class ServiceRepository extends Repository implements ServiceRepoContract
         return $data->get();
     }
 
-    public function getDataByCode(string $code)
+    public function getDataByCode(string $code): ?Service
     {
         $data = $this->model->with(['produk', 'kerusakan' => function ($q) {
             $q->orderByDesc('id');

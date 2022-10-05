@@ -6,6 +6,7 @@ use App\Repositories\Repository;
 use App\Models\Broken;
 use App\Helpers\Formatter;
 use App\Repositories\Contracts\BrokenRepoContract;
+use Illuminate\Database\Eloquent\Collection;
 
 class BrokenRepository extends Repository implements BrokenRepoContract
 {
@@ -14,7 +15,7 @@ class BrokenRepository extends Repository implements BrokenRepoContract
         parent::__construct($model);
     }
 
-    function getListDataByIdService(int $idService, array $filter = [])
+    function getListDataByIdService(int $idService, array $filter = []): Collection
     {
         $filters = [
             'where' => [
@@ -42,7 +43,7 @@ class BrokenRepository extends Repository implements BrokenRepoContract
         return $data->toArray();
     }
 
-    function findDataByIdService(int $id, string $filter)
+    function findDataByIdService(int $id, string $filter): ?Broken
     {
         if ($filter === 'biaya') {
             return $this->model->where('idService', $id)->where('biaya', null)->first();

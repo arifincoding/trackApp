@@ -14,7 +14,7 @@ class ProductRepository extends Repository implements ProductRepoContract
         parent::__construct($model);
     }
 
-    public function saveData(array $attributs, int $id = null): int
+    public function saveData(array $attributs, ?int $id): int
     {
         $data = $this->save($attributs, $id);
         return $data->id;

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use App\Repositories\Contracts\UserRepoContract;
+use Illuminate\Database\Eloquent\Collection;
 
 class userRepository extends Repository implements UserRepoContract
 {
@@ -17,7 +18,7 @@ class userRepository extends Repository implements UserRepoContract
         parent::__construct($model);
     }
 
-    function getlistData(array $inputs)
+    function getlistData(array $inputs): Collection
     {
         $filters = [
             'limit' => $inputs['limit'] ?? 0,

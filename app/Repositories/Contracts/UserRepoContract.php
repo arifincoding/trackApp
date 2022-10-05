@@ -2,9 +2,11 @@
 
 namespace App\Repositories\Contracts;
 
+use Illuminate\Database\Eloquent\Collection;
+
 interface UserRepoContract
 {
-    public function getlistData(array $inputs);
+    public function getlistData(array $inputs): Collection;
     public function getDataById(int $id): array;
     public function findByUsername(string $username): array;
     public function create(array $attributs): array;

@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Repositories\Repository;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\Contracts\CategoryRepoContract;
+use Illuminate\Database\Eloquent\Collection;
 
 class CategoryRepository extends Repository implements CategoryRepoContract
 {
@@ -15,7 +16,7 @@ class CategoryRepository extends Repository implements CategoryRepoContract
         parent::__construct($model);
     }
 
-    function saveData(array $attributs = [], int $id = null): array
+    function saveData(array $attributs = [], ?int $id): array
     {
         $data = $this->save($attributs, $id);
         return [
@@ -45,7 +46,7 @@ class CategoryRepository extends Repository implements CategoryRepoContract
         return $data->toArray();
     }
 
-    function getDataNotInResponbility(string $username)
+    function getDataNotInResponbility(string $username): Collection
     {
         $responbilityIdCategory = DB::table('responbilities')->where('username', $username)->pluck('idKategori');
         $data = DB::table('categories')->whereNotIn('id', $responbilityIdCategory)->select('id as idKategori', 'nama')->get();

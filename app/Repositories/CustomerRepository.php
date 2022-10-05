@@ -14,9 +14,9 @@ class CustomerRepository extends Repository implements CustomerRepoContract
         parent::__construct($model);
     }
 
-    public function saveData(array $attributs, int $id = null): int
+    public function saveData(array $attributs, ?int $id): int
     {
-        $data = $this->save($attributs);
+        $data = $this->save($attributs, $id);
         return $data->id;
     }
 

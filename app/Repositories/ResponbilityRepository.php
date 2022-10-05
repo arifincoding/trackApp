@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Responbility;
 use App\Repositories\Repository;
 use App\Repositories\Contracts\ResponbilityRepoContract;
+use Illuminate\Database\Eloquent\Collection;
 
 class ResponbilityRepository extends Repository implements ResponbilityRepoContract
 {
@@ -14,7 +15,7 @@ class ResponbilityRepository extends Repository implements ResponbilityRepoContr
         $this->model = $model;
     }
 
-    function getListDataByUsername(string $username)
+    function getListDataByUsername(string $username): Collection
     {
         $data = $this->model->with('kategori')->where('username', $username)->get();
         if ($data->toArray() == []) {
