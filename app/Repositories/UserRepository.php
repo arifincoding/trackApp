@@ -51,7 +51,7 @@ class userRepository extends Repository implements UserRepoContract
         $attributs = [
             'password' => Hash::make($inputs['sandiBaru']),
         ];
-        $data = $this->save($attributs, $check->id);
+        $this->save($attributs, $check->id);
         return true;
     }
 

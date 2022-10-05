@@ -35,12 +35,11 @@ class ResponbilityRepository extends Repository implements ResponbilityRepoContr
         return true;
     }
 
-    function deleteByUsername(string $username): array
+    function deleteByUsername(string $username): void
     {
         $find = $this->model->where('username', $username)->first();
         if ($find) {
             $this->model->where('username', $username)->delete();
         }
-        return ['sukses' => true];
     }
 }
