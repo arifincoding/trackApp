@@ -57,7 +57,7 @@ class CategoryService implements CategoryServiceContract
 
     public function deleteCategoryById(int $id): string
     {
-        $this->categoryRepository->deleteDataById($id);
+        $this->categoryRepository->delete($id);
         return 'sukses hapus data kategori';
     }
 }

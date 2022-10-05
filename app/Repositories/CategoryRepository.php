@@ -44,12 +44,4 @@ class CategoryRepository extends Repository implements CategoryRepoContract
         $data = DB::table('categories')->whereNotIn('id', $responbilityIdCategory)->select('id as idKategori', 'nama')->get();
         return $data;
     }
-
-    function deleteDataById(int $id): array
-    {
-        $data = $this->delete($id);
-        return [
-            'sukses' => $data
-        ];
-    }
 }

@@ -96,11 +96,13 @@ class ServiceService implements ServiceServiceContract
     {
         $this->serviceValidator->validate($inputs);
         $input = $this->inputsParse($inputs);
-        $input['service']['idCustomer'] = $this->customerRepository->saveData($input['customer']);
-        $input['service']['idProduct'] = $this->productRepository->saveData($input['product']);
-        $saveService = $this->serviceRepository->create($input['service']);
-        $this->serviceRepository->setCodeService($saveService['idService']);
-        return $saveService;
+        $input['service'] += [
+            'idCustomer' => $this->customerRepository->create($input['customer']),
+            'idProduct' => $this->productRepository->create($input['product'])
+        ];
+        $data = $this->serviceRepository->create($input['service']);
+        $this->serviceRepository->setCodeService($data['idService']);
+        return $data;
     }
 
     public function updateServiceById(array $inputs, int $id): array
@@ -108,10 +110,10 @@ class ServiceService implements ServiceServiceContract
         $this->serviceValidator->validate($inputs);
         $find = $this->serviceRepository->findDataById($id);
         $input = $this->inputsParse($inputs);
-        $this->customerRepository->saveData($input['customer'], $find->idCustomer);
-        $this->productRepository->saveData($input['product'], $find->idProduct);
-        $saveService = $this->serviceRepository->update($input['service'], $id);
-        return $saveService;
+        $this->customerRepository->save($input['customer'], $find->idCustomer);
+        $this->productRepository->save($input['product'], $find->idProduct);
+        $data = $this->serviceRepository->save($input['service'], $id);
+        return ['idService' => $data->id];
     }
 
     public function updateServiceStatus(array $inputs, int $id): array
@@ -197,9 +199,9 @@ class ServiceService implements ServiceServiceContract
     public function deleteServiceById(int $id): string
     {
         $find = $this->serviceRepository->findDataById($id);
-        $this->customerRepository->deleteById($find->idCustomer);
-        $this->productRepository->deleteById($find->idProduct);
-        $this->serviceRepository->deleteById($id);
+        $this->customerRepository->delete($find->idCustomer);
+        $this->productRepository->delete($find->idProduct);
+        $this->serviceRepository->delete($id);
         $this->historyRepository->deleteByIdService($id);
         $this->brokenRepository->deleteByIdService($id);
         return 'sukses hapus data service';

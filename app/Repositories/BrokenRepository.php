@@ -54,23 +54,15 @@ class BrokenRepository extends Repository implements BrokenRepoContract
 
     function setCostInNotAgreeToZero(int $idService): bool
     {
-        $data = $this->model->where('idService', $idService)->where('disetujui', 0)->update(['biaya' => 0]);
+        $this->model->where('idService', $idService)->where('disetujui', 0)->update(['biaya' => 0]);
         return true;
-    }
-
-    function deleteById(int $id): array
-    {
-        $data = $this->delete($id);
-        return [
-            'sukses' => $data
-        ];
     }
 
     function deleteByIdService(int $id): array
     {
         $find = $this->model->where('idService', $id)->first();
         if ($find) {
-            $data = $this->model->where('idService', $id)->delete();
+            $this->model->where('idService', $id)->delete();
         }
         return ['sukses' => true];
     }

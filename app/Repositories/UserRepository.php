@@ -45,12 +45,6 @@ class userRepository extends Repository implements UserRepoContract
         return $data->toArray();
     }
 
-    function deleteById(int $id): bool
-    {
-        $data = $this->delete($id);
-        return $data;
-    }
-
     function changePassword(array $inputs, string $username): bool
     {
         $check = $this->model->where('username', $username)->firstOrFail();

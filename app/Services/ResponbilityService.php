@@ -54,7 +54,7 @@ class  ResponbilityService implements ResponbilityServiceContract
 
     public function deleteResponbilityById(int $id): string
     {
-        $this->responbilityRepository->deleteDataById($id);
+        $this->responbilityRepository->delete($id);
         return 'sukses hapus data tanggung jawab';
     }
 }

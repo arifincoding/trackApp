@@ -117,12 +117,14 @@ class ServiceRepository extends Repository implements ServiceRepoContract
 
     public function create(array $attributs): array
     {
-        $attributs['status'] = 'antri';
-        $attributs['konfirmasiBiaya'] = false;
-        $attributs['diambil'] = false;
-        $attributs['disetujui'] = $attributs['butuhPersetujuan'] ? null : true;
-        $attributs['waktuMasuk'] = Carbon::now('GMT+7');
-        $attributs['usernameCS'] =  Auth::payload()->get('username');
+        $attributs += [
+            'status' => 'antri',
+            'konfirmasiBiaya' => false,
+            'diambil' => false,
+            'disetujui' => $attributs['butuhPersetujuan'] ? null : true,
+            'waktuMasuk' => Carbon::now('GMT+7'),
+            'usernameCS' => Auth::payload()->get('username')
+        ];
         $data = $this->save($attributs);
         return ['idService' => $data->id];
     }
@@ -154,11 +156,5 @@ class ServiceRepository extends Repository implements ServiceRepoContract
         return [
             'idService' => $data->id
         ];
-    }
-
-    public function deleteById(int $id): array
-    {
-        $data = $this->delete($id);
-        return ['sukses' => $data];
     }
 }

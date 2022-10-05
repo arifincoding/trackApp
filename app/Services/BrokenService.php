@@ -82,7 +82,7 @@ class BrokenService implements BrokenServiceContract
 
     public function deleteBrokenById(int $id): string
     {
-        $this->brokenRepository->deleteById($id);
+        $this->brokenRepository->delete($id);
         return 'sukses hapus data kerusakan';
     }
 }

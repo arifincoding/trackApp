@@ -31,23 +31,15 @@ class ResponbilityRepository extends Repository implements ResponbilityRepoContr
             $arrAtribut[$key]['username'] = $username;
             $arrAtribut[$key]['idKategori'] = $item;
         }
-        $data = $this->model->insert($arrAtribut);
+        $this->model->insert($arrAtribut);
         return true;
-    }
-
-    function deleteDataById(int $id): array
-    {
-        $data = $this->delete($id);
-        return [
-            'sukses' => $data
-        ];
     }
 
     function deleteByUsername(string $username): array
     {
         $find = $this->model->where('username', $username)->first();
         if ($find) {
-            $data = $this->model->where('username', $username)->delete();
+            $this->model->where('username', $username)->delete();
         }
         return ['sukses' => true];
     }

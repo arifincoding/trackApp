@@ -47,8 +47,8 @@ class WhatsappService implements WhatsappServiceContract
     public function sendMessage(array $inputs, int $id): string
     {
         $findService = $this->serviceRepository->findDataById($id);
-        $findCustomer = $this->customerRepository->findDataById($findService->idCustomer);
-        if ($findCustomer['bisaWA'] === 1) {
+        $findCustomer = $this->customerRepository->getDataById($findService->idCustomer);
+        if ($findCustomer['bisaWA'] === true) {
             if ($this->check() === true) {
                 Http::post('http://127.0.0.1:4000/chats/send', [
                     'id' => 'owner',

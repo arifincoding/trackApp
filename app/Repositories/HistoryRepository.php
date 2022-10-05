@@ -18,7 +18,7 @@ class HistoryRepository extends Repository implements HistoryRepoContract
     {
         $find = $this->model->where('idService', $id)->first();
         if ($find) {
-            $data = $this->delete($id, 'idService');
+            $this->delete($id, 'idService');
         }
         return ['sukses' => true];
     }

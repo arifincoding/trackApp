@@ -120,7 +120,7 @@ class UserService implements UserServiceContract
     public function deleteUserById(int $id): string
     {
         $find = $this->userRepository->getDataById($id);
-        $delete = $this->userRepository->deleteById($id);
+        $delete = $this->userRepository->delete($id);
         if ($delete === true) {
             $this->responbilityRepository->deleteByUsername($find['username']);
         }

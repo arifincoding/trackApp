@@ -84,10 +84,10 @@ class Repository implements RepositoryContract
         return $this->model->findOrFail($id);
     }
 
-    protected function delete(string $filter, string $filterName = 'id')
+    public function delete(string $filter, string $filterName = 'id'): bool
     {
-        $isExist = $this->model->where($filterName, $filter)->firstOrFail();
-        $data = $this->model->where($filterName, $filter)->delete();
+        $this->model->where($filterName, $filter)->firstOrFail();
+        $this->model->where($filterName, $filter)->delete();
         return true;
     }
 }

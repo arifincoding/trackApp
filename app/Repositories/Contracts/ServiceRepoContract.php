@@ -16,5 +16,4 @@ interface ServiceRepoContract
     public function setCodeService(int $id): void;
     public function update(array $attributs, int $id): array;
     public function setDataTake(int $id): array;
-    public function deleteById(int $id): array;
 }
