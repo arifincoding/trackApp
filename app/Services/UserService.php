@@ -68,7 +68,7 @@ class UserService implements UserServiceContract
         $find = $this->userRepository->findByUsername(Auth::payload()->get('username'));
         $this->userValidator->update($find['id']);
         $this->userValidator->validate($inputs);
-        $this->userRepository->update($inputs, $find['id']);
+        $this->userRepository->save($inputs, $find['id']);
         return 'sukses update akun';
     }
 
@@ -100,22 +100,21 @@ class UserService implements UserServiceContract
     {
         $this->userValidator->post();
         $this->userValidator->validate($inputs);
-        $data = $this->userRepository->create($inputs);
-        $register = $this->userRepository->registerUser($data['idPegawai']);
+        $data = $this->userRepository->save($inputs);
+        $register = $this->userRepository->registerUser($data->id);
         // Mail::to($register['email'])->send(new EmployeeMail($register['username'], $register['password']));
-        return $data;
+        return ['idPegawai' => $data->id];
     }
 
     public function updateUserById(array $inputs, int $id): array
     {
         $this->userValidator->post($id);
         $this->userValidator->validate($inputs);
-        $data = $this->userRepository->update($inputs, $id);
+        $data = $this->userRepository->save($inputs, $id);
         if ($inputs['peran'] !== 'teknisi') {
-            $this->responbilityRepository->deleteByUsername($data['username']);
+            $this->responbilityRepository->deleteByUsername($data->username);
         }
-        unset($data['username']);
-        return $data;
+        return ['idPegawai' => $data->id];
     }
 
     public function deleteUserById(int $id): string

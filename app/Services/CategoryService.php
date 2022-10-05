@@ -43,16 +43,16 @@ class CategoryService implements CategoryServiceContract
     {
         $this->categoryValidator->post();
         $this->categoryValidator->validate($inputs);
-        $data = $this->categoryRepository->saveData($inputs);
-        return $data;
+        $data = $this->categoryRepository->save($inputs);
+        return ['idKategori' => $data->id];
     }
 
     public function updateCategoryById(array $inputs, int $id): array
     {
         $this->categoryValidator->post($id);
         $this->categoryValidator->validate($inputs);
-        $data = $this->categoryRepository->saveData($inputs, $id);
-        return $data;
+        $data = $this->categoryRepository->save($inputs, $id);
+        return ['idKategori' => $data->id];
     }
 
     public function deleteCategoryById(int $id): string

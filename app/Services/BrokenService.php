@@ -32,12 +32,20 @@ class BrokenService implements BrokenServiceContract
         return $data;
     }
 
-    public function newBrokenByIdService(array $inputs, int $id): array
+    public function newBrokenByIdService(array $inputs, int $idService): array
     {
         $this->brokenValidator->validate($inputs);
-        $findService = $this->serviceRepository->findDataById($id);
-        $data = $this->brokenRepository->create($inputs, $id, $findService->butuhPersetujuan);
-        return $data;
+        $findService = $this->serviceRepository->findDataById($idService);
+        $confirm = null;
+        if ($findService->butuhPersetujuan === false) {
+            $confirm = true;
+        }
+        $inputs += [
+            'idService' => $idService,
+            'disetujui' => $confirm,
+        ];
+        $data = $this->brokenRepository->save($inputs);
+        return ['idKerusakan' => $data->id];
     }
 
     public function getBrokenById(int $id): array
@@ -49,24 +57,27 @@ class BrokenService implements BrokenServiceContract
     public function updateBroken(array $inputs, int $id): array
     {
         $this->brokenValidator->validate($inputs);
-        $data = $this->brokenRepository->update($inputs, $id);
-        return $data;
+        $data = $this->brokenRepository->save($inputs, $id);
+        return [
+            'idKerusakan' => $data->id,
+            'idService' => $data->idService
+        ];
     }
 
     public function updateBrokenCost(array $inputs, int $id): array
     {
         $this->brokenValidator->cost();
         $this->brokenValidator->validate($inputs);
-        $data = $this->brokenRepository->update($inputs, $id);
-        return $data;
+        $data = $this->brokenRepository->save($inputs, $id);
+        return ['idKerusakan' => $data->id];
     }
 
     public function updateBrokenCofirmation(array $inputs, int $id): array
     {
         $this->brokenValidator->confirm();
         $this->brokenValidator->validate($inputs);
-        $data = $this->brokenRepository->update($inputs, $id);
-        return $data;
+        $data = $this->brokenRepository->save($inputs, $id);
+        return ['idKerusakan' => $data->id];
     }
 
     public function deleteBrokenById(int $id): string

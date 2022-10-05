@@ -52,29 +52,6 @@ class BrokenRepository extends Repository implements BrokenRepoContract
         }
     }
 
-    function create(array $attributs, int $idService, int $confirmed = 0): array
-    {
-        $confirm = null;
-        if ($confirmed === 0) {
-            $confirm = true;
-        }
-        $attributs += [
-            'idService' => $idService,
-            'disetujui' => $confirm,
-        ];
-        $data = $this->save($attributs);
-        return ['idKerusakan' => $data->id];
-    }
-
-    function update(array $attributs, int $id): array
-    {
-        $data = $this->save($attributs, $id);
-        return [
-            'idKerusakan' => $data->id,
-            'idService' => $data->idService
-        ];
-    }
-
     function setCostInNotAgreeToZero(int $idService): bool
     {
         $data = $this->model->where('idService', $idService)->where('disetujui', 0)->update(['biaya' => 0]);

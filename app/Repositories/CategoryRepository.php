@@ -16,14 +16,6 @@ class CategoryRepository extends Repository implements CategoryRepoContract
         parent::__construct($model);
     }
 
-    function saveData(array $attributs = [], ?int $id = null): array
-    {
-        $data = $this->save($attributs, $id);
-        return [
-            'idKategori' => $data->id
-        ];
-    }
-
     function getListData(int $limit = 0, string $search = ''): array
     {
         $filters = [

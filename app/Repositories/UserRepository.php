@@ -45,23 +45,6 @@ class userRepository extends Repository implements UserRepoContract
         return $data->toArray();
     }
 
-    function create(array $attributs): array
-    {
-        $data = $this->save($attributs);
-        return [
-            'idPegawai' => $data->id
-        ];
-    }
-
-    function update(array $attributs, int $id): array
-    {
-        $data = $this->save($attributs, $id);
-        return [
-            'idPegawai' => $data->id,
-            'username' => $data->username
-        ];
-    }
-
     function deleteById(int $id): bool
     {
         $data = $this->delete($id);

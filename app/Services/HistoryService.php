@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Services\Contracts\HistoryServiceContract;
 use App\Validations\HistoryValidation;
 use App\Repositories\HistoryRepository;
+use Illuminate\Support\Carbon;
 
 class HistoryService implements HistoryServiceContract
 {
@@ -20,7 +21,13 @@ class HistoryService implements HistoryServiceContract
     public function newHistory(array $inputs, int $id): array
     {
         $this->historyValidator->validate($inputs);
-        $data = $this->historyRepository->create($inputs,$id);
-        return $data;
+        $inputs += [
+            'idService' => $id,
+            'waktu' => Carbon::now('GMT+7')
+        ];
+        $data = $this->historyRepository->save($inputs);
+        return [
+            'idRiwayat' => $data->id
+        ];
     }
 }
