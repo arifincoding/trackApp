@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -26,19 +27,19 @@ class Handler extends ExceptionHandler
 
     protected array $exceptionMap = [
         NotFoundHttpException::class => [
-            'status'=>404,
-            'message'=>'error 404',
-            'error'=>'permintaan gagal, resource tidak ditemukan'
+            'status' => 404,
+            'message' => 'error 404',
+            'error' => 'permintaan gagal, resource tidak ditemukan'
         ],
         ModelNotFoundException::class => [
-            'status'=>404,
-            'message'=>'error 404',
-            'error'=>'permintaan gagal, data tidak ditemukan'
+            'status' => 404,
+            'message' => 'error 404',
+            'error' => 'permintaan gagal, data tidak ditemukan'
         ],
         ValidationException::class => [
-            'status'=>422,
-            'message'=>'permintaan gagal, kesalahan validasi',
-            'errors'=>'kesalahan dalam input'
+            'status' => 422,
+            'message' => 'permintaan gagal, kesalahan validasi',
+            'errors' => 'kesalahan dalam input'
         ]
     ];
 
@@ -54,7 +55,17 @@ class Handler extends ExceptionHandler
      */
     public function report(Throwable $exception)
     {
-        parent::report($exception);
+        if ($this->shouldntReport($exception)) {
+            return;
+        }
+
+        if (method_exists($exception, 'report')) {
+            if ($exception->report() !== false) {
+                return;
+            }
+        }
+        Log::channel("errorLog")->error($exception->getMessage(), ["at" => $exception->getFile()]);
+        // parent::report($exception);
     }
 
     /**
@@ -70,18 +81,18 @@ class Handler extends ExceptionHandler
     {
         $exceptionClass = get_class($exception);
         $defidation = $this->exceptionMap[$exceptionClass] ?? [
-            'status'=>500,
-            'message'=>'internal server error',
-            'error'=> 'something went wrong'
+            'status' => 500,
+            'message' => 'internal server error',
+            'error' => 'something went wrong'
         ];
-        if($defidation['status']==422){
+        if ($defidation['status'] == 422) {
             $defidation['errors'] = $exception->errors();
         }
-        if(env("APP_DEBUG") === true){
-            if($defidation['status']==500){
+        if (env("APP_DEBUG") === true) {
+            if ($defidation['status'] == 500) {
                 $defidation['error'] = $exception->getMessage();
             }
         }
-        return response()->json($defidation,$defidation['status']);
+        return response()->json($defidation, $defidation['status']);
     }
 }

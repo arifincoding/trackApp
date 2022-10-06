@@ -4,6 +4,7 @@ namespace App\Validations;
 
 use App\Validations\Validation;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserValidation extends Validation{
@@ -44,7 +45,7 @@ class UserValidation extends Validation{
     }
 
     public function changePassword(){
-        $data = User::where('username',auth()->payload()->get('username'))->first();
+        $data = User::where('username',Auth::payload()->get('username'))->first();
         $this->rules = [
             'sandiLama'=>[
                 'required',
@@ -58,5 +59,3 @@ class UserValidation extends Validation{
         ];
     }
 }
-
-?>
