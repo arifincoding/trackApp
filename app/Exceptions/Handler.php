@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
@@ -64,7 +65,12 @@ class Handler extends ExceptionHandler
                 return;
             }
         }
-        Log::channel("errorLog")->error($exception->getMessage(), ["at" => $exception->getFile()]);
+        $exceptionClass = get_class($exception);
+        if ($exceptionClass == QueryException::class) {
+            Log::channel("errorLog")->emergency($exception->getMessage(), ["exception" => $exception]);
+        } else {
+            Log::channel("errorLog")->error($exception->getMessage(), ["at" => $exception->getFile()]);
+        }
         // parent::report($exception);
     }
 
