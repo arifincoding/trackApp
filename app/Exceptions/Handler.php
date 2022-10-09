@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
@@ -56,16 +57,23 @@ class Handler extends ExceptionHandler
      */
     public function report(Throwable $exception)
     {
+        $exceptionClass = get_class($exception);
+
         if ($this->shouldntReport($exception)) {
+            if ($exceptionClass == ValidationException::class) {
+                Log::info($exception->getMessage(), ['errors' => $exception->errors()]);
+            } else if ($exceptionClass == NotFoundHttpException::class) {
+                Log::info("resource tidak ditemukan");
+            } else if ($exceptionClass == ModelNotFoundException::class) {
+                Log::info("data tidak ditemukan didalam database", ['exception' => $exception]);
+            } else if ($exceptionClass == AuthorizationException::class) {
+                Log::warning($exception->getMessage(), ['exception' => $exception]);
+            } else {
+                Log::info($exception->getMessage(), ['exception' => $exception]);
+            }
             return;
         }
 
-        if (method_exists($exception, 'report')) {
-            if ($exception->report() !== false) {
-                return;
-            }
-        }
-        $exceptionClass = get_class($exception);
         if ($exceptionClass == QueryException::class) {
             Log::channel("errorLog")->emergency($exception->getMessage(), ["exception" => $exception]);
         } else {

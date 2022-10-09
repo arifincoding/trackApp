@@ -59,6 +59,7 @@ return [
 
         'daily' => [
             'driver' => 'daily',
+            'tap' => [App\Logging\CustomizeLog::class],
             'path' => storage_path('logs/defaults/lumen.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => 10,
@@ -66,6 +67,7 @@ return [
 
         'errorLog' => [
             'driver' => 'daily',
+            'tap' => [App\Logging\CustomizeLog::class],
             'level' => 'error',
             'path' => storage_path('logs/errors/error.log'),
             'days' => 30,
