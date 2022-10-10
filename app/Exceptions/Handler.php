@@ -61,23 +61,23 @@ class Handler extends ExceptionHandler
 
         if ($this->shouldntReport($exception)) {
             if ($exceptionClass == ValidationException::class) {
-                Log::info($exception->getMessage(), ['errors' => $exception->errors()]);
+                Log::warning($exception->getMessage(), ['errors' => $exception->errors()]);
             } else if ($exceptionClass == NotFoundHttpException::class) {
-                Log::info("resource tidak ditemukan");
+                Log::warning("resource tidak ditemukan");
             } else if ($exceptionClass == ModelNotFoundException::class) {
-                Log::info("data tidak ditemukan didalam database", ['exception' => $exception]);
+                Log::warning("data tidak ditemukan didalam database", ['exception' => $exception]);
             } else if ($exceptionClass == AuthorizationException::class) {
                 Log::warning($exception->getMessage(), ['exception' => $exception]);
             } else {
-                Log::info($exception->getMessage(), ['exception' => $exception]);
+                Log::warning($exception->getMessage(), ['exception' => $exception]);
             }
             return;
         }
 
         if ($exceptionClass == QueryException::class) {
-            Log::channel("errorLog")->emergency($exception->getMessage(), ["exception" => $exception]);
+            Log::stack(["errorLog", "daily"])->emergency($exception->getMessage(), ["exception" => $exception]);
         } else {
-            Log::channel("errorLog")->error($exception->getMessage(), ["at" => $exception->getFile()]);
+            Log::stack(["errorLog", "daily"])->error($exception->getMessage(), ["at" => $exception->getFile()]);
         }
         // parent::report($exception);
     }
