@@ -15,7 +15,7 @@ class ResponbilityRepository extends Repository implements ResponbilityRepoContr
         $this->model = $model;
     }
 
-    function getListDataByUsername(string $username): Collection
+    function getListDataByUsername(string $username): ?Collection
     {
         $data = $this->model->with('kategori')->where('username', $username)->get();
         if ($data->toArray() == []) {

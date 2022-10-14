@@ -9,6 +9,7 @@ use App\Repositories\userRepository;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use App\Transformers\ResponbilitiesTransformer;
+use Illuminate\Support\Facades\Log;
 
 class  ResponbilityService implements ResponbilityServiceContract
 {
@@ -25,27 +26,35 @@ class  ResponbilityService implements ResponbilityServiceContract
 
     public function getAllRespobilities(string $username): array
     {
+        Log::info("trying to access all tecnician responbility data by username", ["username" => $username]);
         $data = [];
         $query = $this->responbilityRepository->getListDataByUsername($username);
         if ($query) {
             $fractal = new Manager();
             $data = $fractal->createData(new Collection($query, new ResponbilitiesTransformer))->toArray();
+            Log::info("user is accessing all tecnician responbility data by username");
+        } else {
+            Log::warning("tecnician responbility data by username not found", ["username" => $username]);
         }
         return $data;
     }
 
-    public function newResponbilities(array $inputs, int $id): array
+    public function newResponbilities(array $inputs, int $idUser): array
     {
-        $this->responbilityValidator->post($id, $inputs);
+        Log::info("User is trying to create responbilities data by id user", ['data' => $inputs]);
+        $this->responbilityValidator->post($idUser, $inputs);
         $this->responbilityValidator->validate($inputs);
-        $findUser = $this->userRepository->getDataById($id);
+        $findUser = $this->userRepository->getDataById($idUser);
+        Log::info("user data found for creating responbilities data by id user", ["data user" => $findUser]);
         if ($findUser['peran'] !== 'teknisi') {
+            Log::warning("responbilities could not be created caused this user role is not tecnician", ["data user" => $findUser]);
             return [
                 'success' => false,
                 'message' => 'gagal tambah tanggung jawab karena pegawai ini bukan teknisi'
             ];
         }
         $this->responbilityRepository->create($inputs, $findUser['peran'], $findUser['username']);
+        Log::info("User create responbilities data by id user successfully");
         return [
             'success' => true,
             'message' => 'sukses tambah tanggung jawab'
@@ -54,7 +63,9 @@ class  ResponbilityService implements ResponbilityServiceContract
 
     public function deleteResponbilityById(int $id): string
     {
+        Log::info("trying to deleting a single responbility data by id responbility", ["id responbility" => $id]);
         $this->responbilityRepository->delete($id);
+        Log::info("User delete a single responbility data by id responbility successfully", ['id responbility' => $id]);
         return 'sukses hapus data tanggung jawab';
     }
 }
