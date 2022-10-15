@@ -43,7 +43,7 @@ class  ResponbilityService implements ResponbilityServiceContract
     {
         Log::info("User is trying to create responbilities data by id user", ['data' => $inputs]);
         $this->responbilityValidator->post($idUser, $inputs);
-        $this->responbilityValidator->validate($inputs);
+        $this->responbilityValidator->validate($inputs, 'create');
         $findUser = $this->userRepository->getDataById($idUser);
         Log::info("user data found for creating responbilities data by id user", ["data user" => $findUser]);
         if ($findUser['peran'] !== 'teknisi') {

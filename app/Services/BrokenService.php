@@ -38,7 +38,7 @@ class BrokenService implements BrokenServiceContract
     public function newBrokenByIdService(array $inputs, int $idService): array
     {
         Log::info("User is trying to create a single broken data by id service", ['id service' => $idService, 'data' => $inputs]);
-        $this->brokenValidator->validate($inputs);
+        $this->brokenValidator->validate($inputs, 'create');
         $findService = $this->serviceRepository->findDataById($idService);
         Log::info("Service data found for creating broken data by id service", ['data service' => $findService]);
         $confirm = null;
@@ -65,7 +65,7 @@ class BrokenService implements BrokenServiceContract
     public function updateBroken(array $inputs, int $id): array
     {
         Log::info("User is trying to update a single broken data by id broken", ["id broken" => $id, "data" => $inputs]);
-        $this->brokenValidator->validate($inputs);
+        $this->brokenValidator->validate($inputs, 'update');
         $data = $this->brokenRepository->save($inputs, $id);
         Log::info("User update a single broken data by id broken successfully", ["id broken" => $data->id]);
         return [
@@ -78,7 +78,7 @@ class BrokenService implements BrokenServiceContract
     {
         Log::info("trying to updating broken cost in the single broken data by id broken", ["id broken" => $id, "data" => $inputs]);
         $this->brokenValidator->cost();
-        $this->brokenValidator->validate($inputs);
+        $this->brokenValidator->validate($inputs, "updateCost");
         $data = $this->brokenRepository->save($inputs, $id);
         Log::info("User update broken cost in the single broken data by id broken successfully", ["id broken" => $data->id]);
         return ['idKerusakan' => $data->id];
@@ -88,7 +88,7 @@ class BrokenService implements BrokenServiceContract
     {
         Log::info("trying to updating broken confirmation in the single broken data by id broken", ['id broken' => $id, 'data' => $inputs]);
         $this->brokenValidator->confirm();
-        $this->brokenValidator->validate($inputs);
+        $this->brokenValidator->validate($inputs, 'updateConfirm');
         $data = $this->brokenRepository->save($inputs, $id);
         Log::info("User update broken confirmation in the single broken data by id broken successfully", ["id broken" => $data->id]);
         return ['idKerusakan' => $data->id];

@@ -22,7 +22,7 @@ class HistoryService implements HistoryServiceContract
     public function newHistory(array $inputs, int $idService): array
     {
         Log::info("User is trying to create a single history data by id service", ["id service" => $idService, 'data' => $inputs]);
-        $this->historyValidator->validate($inputs);
+        $this->historyValidator->validate($inputs, 'create');
         $inputs += [
             'idService' => $idService,
             'waktu' => Carbon::now('GMT+7')

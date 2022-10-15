@@ -114,7 +114,7 @@ class ServiceService implements ServiceServiceContract
     public function newService(array $inputs): array
     {
         Log::info("User is trying to create a single service data", ['data' => $inputs]);
-        $this->serviceValidator->validate($inputs);
+        $this->serviceValidator->validate($inputs, 'create');
         $input = $this->inputsParse($inputs);
         $input['service'] += [
             'idCustomer' => $this->customerRepository->create($input['customer']),
@@ -131,7 +131,7 @@ class ServiceService implements ServiceServiceContract
     public function updateServiceById(array $inputs, int $id): array
     {
         Log::info("user in trying to update a single service data by id service", ["id service" => $id, "data" => $inputs]);
-        $this->serviceValidator->validate($inputs);
+        $this->serviceValidator->validate($inputs, 'update');
         $find = $this->serviceRepository->findDataById($id);
         Log::info("service data found for updating a single service data by id service", ["id service" => $find->id]);
         $input = $this->inputsParse($inputs);
@@ -146,7 +146,7 @@ class ServiceService implements ServiceServiceContract
     {
         Log::info("user trying to update service status in a single service data by id service", ["id service" => $id, "data" => $inputs]);
         $this->serviceValidator->statusService();
-        $this->serviceValidator->validate($inputs);
+        $this->serviceValidator->validate($inputs, 'updateStatus');
         $inputs['usernameTeknisi'] = Auth::payload()->get('username');
         $data = $this->serviceRepository->save($inputs, $id);
         Log::info("User update service status in a single service data by id service successfully", ["id service" => $data->id]);
@@ -207,7 +207,7 @@ class ServiceService implements ServiceServiceContract
     {
         Log::info("User trying to update service warranty in a single service data by id service", ["id service" => $id, "data" => $inputs]);
         $this->serviceValidator->serviceWarranty();
-        $this->serviceValidator->validate($inputs);
+        $this->serviceValidator->validate($inputs, 'updateWarranty');
         $data = $this->serviceRepository->save($inputs, $id);
         Log::info("user update service warranty in a single service data by id service successfully", ["id service" => $data->id]);
         return ["idService" => $data];
@@ -216,7 +216,7 @@ class ServiceService implements ServiceServiceContract
     public function setServiceConfirmation(array $inputs, int $id): array
     {
         $this->serviceValidator->confirmation($inputs);
-        $this->serviceValidator->validate($inputs);
+        $this->serviceValidator->validate($inputs, 'updateConfirmation');
         Log::info("User searching a single broken data by id service and agreed is null for set service confirmation by id service", ['id service' => $id]);
         $find = $this->brokenRepository->findDataByIdService($id, 'disetujui');
         if ($find !== null) {

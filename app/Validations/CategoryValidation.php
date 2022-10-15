@@ -4,21 +4,31 @@ namespace App\Validations;
 
 use App\Validations\Validation;
 
-class CategoryValidation extends Validation{
+class CategoryValidation extends Validation
+{
 
-    function query(){
-        $this->rules = [
-            'limit'=>'filled|numeric',
-            'cari'=>'filled'
+    function __construct()
+    {
+        $this->exceptionMessages = [
+            'categories' => 'could not accessing all categories data caused the given data is invalid',
+            'create' => 'could not create a single category data caused the given data is invalid',
+            'update' => 'could not update a single category data caused the given data is invalid'
         ];
     }
-    function post(string $id = null){
-        $this->rules= [
-            'nama'=>'required|unique:categories,nama'];
-        if($id !== null){
-            $this->rules = ['nama'=>'required|unique:categories,nama,'.$id];
+    function query()
+    {
+        $this->rules = [
+            'limit' => 'filled|numeric',
+            'cari' => 'filled'
+        ];
+    }
+    function post(string $id = null)
+    {
+        $this->rules = [
+            'nama' => 'required|unique:categories,nama'
+        ];
+        if ($id !== null) {
+            $this->rules = ['nama' => 'required|unique:categories,nama,' . $id];
         }
     }
 }
-
-?>

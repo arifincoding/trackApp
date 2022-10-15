@@ -22,7 +22,7 @@ class CategoryService implements CategoryServiceContract
     {
         Log::info("trying to access all categories data", ["query" => $inputs]);
         $this->categoryValidator->query();
-        $this->categoryValidator->validate($inputs);
+        $this->categoryValidator->validate($inputs, 'categories');
         $limit = $inputs['limit'] ?? 0;
         $search = $inputs['cari'] ?? '';
         $data = $this->categoryRepository->getListData($limit, $search);
@@ -50,7 +50,7 @@ class CategoryService implements CategoryServiceContract
     {
         Log::info("User is trying to create a single category data", ['data' => $inputs]);
         $this->categoryValidator->post();
-        $this->categoryValidator->validate($inputs);
+        $this->categoryValidator->validate($inputs, 'create');
         $data = $this->categoryRepository->save($inputs);
         Log::info("User create a single category data successfully", ["id category" => $data->id]);
         return ['idKategori' => $data->id];
@@ -60,7 +60,7 @@ class CategoryService implements CategoryServiceContract
     {
         Log::info("User is trying to update a single category data by id category", ["id category" => $id, "data" => $inputs]);
         $this->categoryValidator->post($id);
-        $this->categoryValidator->validate($inputs);
+        $this->categoryValidator->validate($inputs, 'update');
         $data = $this->categoryRepository->save($inputs, $id);
         Log::info("User update a single category data by id category successfully", ["id category" => $data->id]);
         return ['idKategori' => $data->id];

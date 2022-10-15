@@ -29,9 +29,9 @@ class UserService implements UserServiceContract
 
     public function login(array $inputs): array
     {
-        Log::info("user trying to login in the app", ["username" => $inputs["username"]]);
+        Log::info("user trying to login in the app", ["username" => $inputs['username'] ?? null]);
         $this->userValidator->login();
-        $this->userValidator->validate($inputs);
+        $this->userValidator->validate($inputs, 'login');
         if (!$token = Auth::attempt($inputs)) {
             Log::warning("user login failed caused the password is false");
             return [
@@ -77,7 +77,7 @@ class UserService implements UserServiceContract
         $find = $this->userRepository->findByUsername(Auth::payload()->get('username'));
         Log::info("user data by his username found", ["username" => $find["username"]]);
         $this->userValidator->update($find['id']);
-        $this->userValidator->validate($inputs);
+        $this->userValidator->validate($inputs, 'updateAccount');
         $this->userRepository->save($inputs, $find['id']);
         Log::info("user update his account data successfully");
         return 'sukses update akun';
@@ -87,7 +87,7 @@ class UserService implements UserServiceContract
     {
         Log::info("user trying to change his account password");
         $this->userValidator->changePassword();
-        $this->userValidator->validate($inputs);
+        $this->userValidator->validate($inputs, 'changePassword');
         $this->userRepository->changePassword($inputs, Auth::payload()->get('username'));
         Log::info("user change his account password successfully");
         return 'sukses merubah sandi akun';
@@ -97,7 +97,7 @@ class UserService implements UserServiceContract
     {
         Log::info("user is trying to accessing all user data", ["filters" => $inputs]);
         $this->userValidator->get();
-        $this->userValidator->validate($inputs);
+        $this->userValidator->validate($inputs, 'allUser');
         $query = $this->userRepository->getListData($inputs);
         Log::info("user is accessing all user data");
         $fractal = new Manager();
@@ -117,7 +117,7 @@ class UserService implements UserServiceContract
     {
         Log::info("user is trying to create a single user data", ["data" => $inputs]);
         $this->userValidator->post();
-        $this->userValidator->validate($inputs);
+        $this->userValidator->validate($inputs, 'create');
         $data = $this->userRepository->save($inputs);
         Log::info("user create a single user data successfully", ["id user" => $data->id]);
         Log::info("trying to register account for this user", ["id user" => $data->id]);
@@ -133,7 +133,7 @@ class UserService implements UserServiceContract
     {
         Log::info("user is trying to update a single user data by id user", ["id user" => $id]);
         $this->userValidator->post($id);
-        $this->userValidator->validate($inputs);
+        $this->userValidator->validate($inputs, 'update');
         $data = $this->userRepository->save($inputs, $id);
         Log::info("user update a single user by id successfully", ["id user" => $data->id]);
         if ($inputs['peran'] !== 'teknisi') {

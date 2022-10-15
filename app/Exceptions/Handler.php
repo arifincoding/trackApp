@@ -61,7 +61,7 @@ class Handler extends ExceptionHandler
 
         if ($this->shouldntReport($exception)) {
             if ($exceptionClass == ValidationException::class) {
-                Log::warning($exception->getMessage(), ['errors' => $exception->errors()]);
+                return;
             } else if ($exceptionClass == NotFoundHttpException::class) {
                 Log::warning("resource not found");
             } else if ($exceptionClass == ModelNotFoundException::class) {
