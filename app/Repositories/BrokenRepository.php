@@ -17,14 +17,11 @@ class BrokenRepository extends Repository implements BrokenRepoContract
 
     function getListDataByIdService(int $idService, array $filter = []): Collection
     {
-        $filters = [
-            'where' => [
-                'idService' => $idService,
-                'disetujui' => $filter['disetujui'] ?? null
-            ]
-        ];
-        $data = $this->getWhere(['*'], $filters);
-        return $data;
+        $data = $this->model->where('idService', $idService);
+        if (isset($filter['disetujui'])) {
+            $data->where('disetujui', $filter['disetujui']);
+        }
+        return $data->get();
     }
 
     function getDataById(int $id): Broken
@@ -60,10 +57,7 @@ class BrokenRepository extends Repository implements BrokenRepoContract
 
     function deleteByIdService(int $id): bool
     {
-        $find = $this->model->where('idService', $id)->first();
-        if ($find) {
-            $this->model->where('idService', $id)->delete();
-        }
-        return true;
+        $data = $this->delete($id, 'idService', false);
+        return $data;
     }
 }

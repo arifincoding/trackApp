@@ -16,7 +16,7 @@ class CategoryRepository extends Repository implements CategoryRepoContract
         parent::__construct($model, 'category');
     }
 
-    function getListData(int $limit = 0, string $search = ''): array
+    function getListData(int $limit = 0, string $search = ''): Collection
     {
         $filters = [
             'limit' => $limit
@@ -27,15 +27,15 @@ class CategoryRepository extends Repository implements CategoryRepoContract
             ];
         }
         $attributs = ['id as idKategori', 'nama'];
-        $data = $this->getWhere($attributs, $filters);
-        return $data->toArray();
+        $data = $this->model->select($attributs)->where('nama', 'LIKE', '%' . $search . '%')->take($limit)->get();
+        return $data;
     }
 
-    function getDataById(int $id): array
+    function getDataById(int $id): Category
     {
         $attributs = ['id as idKategori', 'nama'];
         $data = $this->findById($id, $attributs);
-        return $data->toArray();
+        return $data;
     }
 
     function getDataNotInResponbility(string $username): Collection

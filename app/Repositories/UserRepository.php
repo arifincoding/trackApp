@@ -20,29 +20,25 @@ class userRepository extends Repository implements UserRepoContract
 
     function getlistData(array $inputs): Collection
     {
-        $filters = [
-            'limit' => $inputs['limit'] ?? 0,
-            'where' => [
-                'peran' => $inputs['peran'] ?? null
-            ]
-        ];
-        $data = $this->getWhere(['*'], $filters, false);
-        $data->where('peran', '!=', 'pemilik');
-        return $data->get();
+        $data = $this->model->where('peran', '!=', 'pemilik');
+        if (isset($inputs['peran'])) {
+            $data->where('peran', $inputs['peran']);
+        }
+        return $data->take($inputs['limit'] ?? 0)->get();
     }
 
-    function getDataById(int $id): array
+    function getDataById(int $id): User
     {
         $attributs = ['id as idPegawai', 'username', 'namaDepan', 'namaBelakang', 'jenisKelamin', 'noHp', 'peran', 'email', 'alamat'];
         $data = $this->findById($id, $attributs);
-        return $data->toArray();
+        return $data;
     }
 
-    function findByUsername(string $username): array
+    function findByUsername(string $username): User
     {
         $attributs = ['id', 'username', 'namaDepan', 'namaBelakang', 'jenisKelamin', 'noHp', 'peran', 'email', 'alamat'];
         $data = $this->model->select($attributs)->where('username', $username)->first();
-        return $data->toArray();
+        return $data;
     }
 
     function changePassword(array $inputs, string $username): bool

@@ -20,11 +20,11 @@ class CustomerRepository extends Repository implements CustomerRepoContract
         return $data->id;
     }
 
-    public function getDataById(int $id): array
+    public function getDataById(int $id): Customer
     {
         $attributs = ['id as idCustomer', 'nama', 'noHp', 'bisaWA'];
         $data = $this->findById($id, $attributs);
         $data->bisaWA = Formatter::boolval($data->bisaWA);
-        return $data->toArray();
+        return $data;
     }
 }

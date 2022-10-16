@@ -115,7 +115,7 @@ class ServiceRepository extends Repository implements ServiceRepoContract
         return $data;
     }
 
-    public function create(array $attributs): array
+    public function create(array $attributs): int
     {
         $attributs += [
             'status' => 'antri',
@@ -126,7 +126,7 @@ class ServiceRepository extends Repository implements ServiceRepoContract
             'usernameCS' => Auth::payload()->get('username')
         ];
         $data = $this->save($attributs);
-        return ['idService' => $data->id];
+        return $data->id;
     }
 
     public function setCodeService(int $id): void
@@ -135,26 +135,16 @@ class ServiceRepository extends Repository implements ServiceRepoContract
         $attributs = [
             'kode' => $date->format('y') . $date->format('m') . $date->format('d') . sprintf("%03d", $id)
         ];
-        $data = $this->save($attributs, $id);
+        $this->save($attributs, $id);
     }
 
-    public function update(array $attributs, int $id): array
-    {
-        $data = $this->save($attributs, $id);
-        return [
-            'idService' => $data->id
-        ];
-    }
-
-    public function setDataTake(int $id): array
+    public function setDataTake(int $id): int
     {
         $attributs = [
             'diambil' => true,
             'waktuAmbil' => Carbon::now('GMT+7')
         ];
         $data = $this->save($attributs, $id);
-        return [
-            'idService' => $data->id
-        ];
+        return $data->id;
     }
 }

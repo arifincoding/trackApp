@@ -35,66 +35,19 @@ class Repository implements RepositoryContract
         return $data;
     }
 
-    protected function getWhere(array $attributs = ['*'], array $filters = [], bool $withGet = true)
-    {
-        $query = $this->model->select($attributs)->orderByDesc('id');
-        if ($filters !== []) {
-            if (isset($filters['limit'])) {
-                if ($filters['limit'] !== 0) {
-                    $query->take($filters['limit']);
-                }
-            }
-            if (isset($filters['where'])) {
-                foreach ($filters['where'] as $key => $item) {
-                    if ($item !== null) {
-                        $query->where($key, $item);
-                    }
-                }
-            }
-            if (isset($filters['orWhere'])) {
-                $query->where(function ($q) use ($filters) {
-                    foreach ($filters['orWhere'] as $key => $item) {
-                        if (is_array($item)) {
-                            foreach ($item as $val) {
-                                if ($val !== null) {
-                                    $q->orWhere($key, $val);
-                                }
-                            }
-                        } else {
-                            if ($item !== null) {
-                                $q->orWhere($key, $item);
-                            }
-                        }
-                    }
-                });
-            }
-            if (isset($filters['likeWhere'])) {
-                $query->where(function ($q) use ($filters) {
-                    foreach ($filters['likeWhere'] as $keys => $items) {
-                        if ($items !== null) {
-                            $q->orWhere($keys, 'LIKE', '%' . $items . '%');
-                        }
-                    }
-                });
-            }
-        }
-        if ($withGet === true) {
-            return $query->get();
-        }
-        return $query;
-    }
-
-    protected function findById(string $id, array $attributs = ['*'])
+    protected function findById(string $id, array $attributs = ['*'], bool $throwException = true)
     {
         $data = $this->model->select($attributs)->find($id);
         if ($data) {
             return $data;
         }
         Log::warning("$this->modelName data by id $this->modelName not found", ["id $this->modelName" => $id]);
-        throw new ModelNotFoundException();
+        if ($throwException === true) {
+            throw new ModelNotFoundException();
+        }
     }
 
-    public function delete(string $filter, string $filterName = 'id'): bool
+    public function delete(string $filter, string $filterName = 'id', bool $throwException = true): bool
     {
         $find = $this->model->where($filterName, $filter)->first();
         if ($find) {
@@ -102,6 +55,9 @@ class Repository implements RepositoryContract
             return true;
         }
         Log::warning("delete failed caused $this->modelName data by $filterName $this->modelName not found", ["$filterName $this->modelName" => $filter]);
-        throw new ModelNotFoundException();
+        if ($throwException === true) {
+            throw new ModelNotFoundException();
+        }
+        return false;
     }
 }
