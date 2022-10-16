@@ -15,7 +15,7 @@ class userRepository extends Repository implements UserRepoContract
 
     function __construct(User $model)
     {
-        parent::__construct($model);
+        parent::__construct($model, 'user');
     }
 
     function getlistData(array $inputs): Collection

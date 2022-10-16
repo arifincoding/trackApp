@@ -13,7 +13,7 @@ class CategoryRepository extends Repository implements CategoryRepoContract
 
     function __construct(Category $model)
     {
-        parent::__construct($model);
+        parent::__construct($model, 'category');
     }
 
     function getListData(int $limit = 0, string $search = ''): array

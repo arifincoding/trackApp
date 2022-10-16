@@ -11,7 +11,7 @@ class CustomerRepository extends Repository implements CustomerRepoContract
 {
     function __construct(Customer $model)
     {
-        parent::__construct($model);
+        parent::__construct($model, 'customer');
     }
 
     public function create(array $attributs): int

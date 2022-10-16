@@ -13,7 +13,7 @@ class ServiceRepository extends Repository implements ServiceRepoContract
 {
     public function __construct(Service $model)
     {
-        parent::__construct($model);
+        parent::__construct($model, 'service');
     }
 
     public function getListData(array $inputs = []): Collection

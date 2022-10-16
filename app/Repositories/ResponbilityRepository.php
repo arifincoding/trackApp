@@ -12,7 +12,7 @@ class ResponbilityRepository extends Repository implements ResponbilityRepoContr
 
     function __construct(Responbility $model)
     {
-        $this->model = $model;
+        parent::__construct($model, 'responbility');
     }
 
     function getListDataByUsername(string $username): ?Collection

@@ -12,7 +12,7 @@ class BrokenRepository extends Repository implements BrokenRepoContract
 {
     function __construct(Broken $model)
     {
-        parent::__construct($model);
+        parent::__construct($model, 'broken');
     }
 
     function getListDataByIdService(int $idService, array $filter = []): Collection
@@ -27,7 +27,7 @@ class BrokenRepository extends Repository implements BrokenRepoContract
         return $data;
     }
 
-    function getDataById(int $id): array
+    function getDataById(int $id): Broken
     {
         $attributs = [
             'id as idKerusakan',
@@ -40,7 +40,7 @@ class BrokenRepository extends Repository implements BrokenRepoContract
         $data = $this->findById($id, $attributs);
         $data->disetujui = Formatter::boolval($data->disetujui);
         $data->biayaString = Formatter::currency($data->biaya);
-        return $data->toArray();
+        return $data;
     }
 
     function findDataByIdService(int $id, string $filter): ?Broken
@@ -58,12 +58,12 @@ class BrokenRepository extends Repository implements BrokenRepoContract
         return true;
     }
 
-    function deleteByIdService(int $id): array
+    function deleteByIdService(int $id): bool
     {
         $find = $this->model->where('idService', $id)->first();
         if ($find) {
             $this->model->where('idService', $id)->delete();
         }
-        return ['sukses' => true];
+        return true;
     }
 }

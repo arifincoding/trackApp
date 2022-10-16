@@ -4,24 +4,32 @@ namespace App\Repositories;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Repositories\Contracts\RepositoryContract;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Log;
 
 class Repository implements RepositoryContract
 {
 
     protected $model;
+    protected string $modelName = "model";
 
-    function __construct(Model $model)
+    function __construct(Model $model, String $name)
     {
         $this->model = $model;
+        $this->modelName = $name;
     }
 
     public function save(array $attribut, ?string $filter = null, string $filterName = 'id'): Model
     {
         if ($filter !== null) {
-            $this->model->where($filterName, $filter)->firstOrFail();
+            $find = $this->model->where($filterName, $filter)->first();
+            if (!$find) {
+                Log::warning("update failed caused $this->modelName data by $filterName $this->modelName not found", [$filterName => $filter]);
+                throw new ModelNotFoundException();
+            }
         }
         $data = ($filter === null) ? $this->model->create($attribut) : $this->model->where($filterName, $filter)->update($attribut);
-        if ($filter !== null) {
+        if ($filter) {
             return $this->model->where($filterName, $filter)->first();
         }
         return $data;
@@ -76,18 +84,24 @@ class Repository implements RepositoryContract
         return $query;
     }
 
-    protected function findById(string $id, array $attributs = [])
+    protected function findById(string $id, array $attributs = ['*'])
     {
-        if ($attributs !== []) {
-            return $this->model->select($attributs)->findOrFail($id);
+        $data = $this->model->select($attributs)->find($id);
+        if ($data) {
+            return $data;
         }
-        return $this->model->findOrFail($id);
+        Log::warning("$this->modelName data by id $this->modelName not found", ["id $this->modelName" => $id]);
+        throw new ModelNotFoundException();
     }
 
     public function delete(string $filter, string $filterName = 'id'): bool
     {
-        $this->model->where($filterName, $filter)->firstOrFail();
-        $this->model->where($filterName, $filter)->delete();
-        return true;
+        $find = $this->model->where($filterName, $filter)->first();
+        if ($find) {
+            $this->model->where($filterName, $filter)->delete();
+            return true;
+        }
+        Log::warning("delete failed caused $this->modelName data by $filterName $this->modelName not found", ["$filterName $this->modelName" => $filter]);
+        throw new ModelNotFoundException();
     }
 }

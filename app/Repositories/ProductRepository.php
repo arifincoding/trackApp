@@ -11,7 +11,7 @@ class ProductRepository extends Repository implements ProductRepoContract
 
     public function __construct(Product $model)
     {
-        parent::__construct($model);
+        parent::__construct($model, 'product');
     }
 
     public function create(array $attributs): int

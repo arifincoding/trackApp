@@ -65,7 +65,7 @@ class Handler extends ExceptionHandler
             } else if ($exceptionClass == NotFoundHttpException::class) {
                 Log::warning("resource not found");
             } else if ($exceptionClass == ModelNotFoundException::class) {
-                Log::warning("data not found in database", ['exception' => $exception]);
+                return;
             } else if ($exceptionClass == AuthorizationException::class) {
                 Log::warning($exception->getMessage(), ['exception' => $exception]);
             } else {
