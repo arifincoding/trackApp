@@ -19,12 +19,4 @@ class CustomerRepository extends Repository implements CustomerRepoContract
         $data = $this->save($attributs);
         return $data->id;
     }
-
-    public function getDataById(int $id): Customer
-    {
-        $attributs = ['id as idCustomer', 'nama', 'noHp', 'bisaWA'];
-        $data = $this->findById($id, $attributs);
-        $data->bisaWA = Formatter::boolval($data->bisaWA);
-        return $data;
-    }
 }

@@ -51,10 +51,6 @@ class ServiceRepository extends Repository implements ServiceRepoContract
             $q->orderByDesc('id');
         }])->where('id', $id)->first();
     }
-    public function findDataById(int $id): ?Service
-    {
-        return $this->findById($id);
-    }
 
     public function getListDataQueue($responbility, array $inputs): Collection
     {
