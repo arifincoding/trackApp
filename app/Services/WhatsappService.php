@@ -52,24 +52,24 @@ class WhatsappService implements WhatsappServiceContract
     public function sendMessage(array $inputs, int $id): string
     {
         Log::info("user trying to send a whatsapp message to customer by id service", ["id service" => $id, "data" => $inputs]);
-        $findService = $this->serviceRepository->findDataById($id);
+        $findService = $this->serviceRepository->findById($id);
         Log::info("data service found for sending a whatsapp message to customer", ["id  service" => $findService->id]);
-        $findCustomer = $this->customerRepository->getDataById($findService->idCustomer);
-        Log::info("data customer found for sending a whatsapp message to customer", ["id  customer" => $findCustomer->idCustomer]);
-        if ($findCustomer['bisaWA'] === true) {
+        $findCustomer = $this->customerRepository->findById($findService->idCustomer);
+        Log::info("data customer found for sending a whatsapp message to customer", ["id  customer" => $findCustomer->id]);
+        if ($findCustomer->bisaWA === true) {
             if ($this->check() === true) {
                 Http::post('http://127.0.0.1:4000/chats/send', [
                     'id' => 'owner',
                     'receiver' => $findCustomer->noHp,
                     'message' => urldecode($inputs['pesan'])
                 ]);
-                Log::info("user send a whatsapp message to customer successfully", ["id customer" => $findCustomer->idCustomer]);
+                Log::info("user send a whatsapp message to customer successfully", ["id customer" => $findCustomer->id]);
                 return 'sukses mengirim pesan whatsapp';
             }
             Log::warning("user send a whatsapp message to customer failed caused whatsapp sign in session in this app is expired");
             return 'session kedaluarsa harap scan ulang kode qr';
         }
-        Log::warning("user send a whatsapp message to customer failed caused this user is not have whatsapp", ["id customer" => $findCustomer->idCustomer]);
+        Log::warning("user send a whatsapp message to customer failed caused this user is not have whatsapp", ["id customer" => $findCustomer->id]);
         return 'customer tidak memiliki whatsapp';
     }
 }

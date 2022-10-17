@@ -132,7 +132,7 @@ class ServiceService implements ServiceServiceContract
     {
         Log::info("user in trying to update a single service data by id service", ["id service" => $id, "data" => $inputs]);
         $this->serviceValidator->validate($inputs, 'update');
-        $find = $this->serviceRepository->findDataById($id);
+        $find = $this->serviceRepository->findById($id);
         Log::info("service data found for updating a single service data by id service", ["id service" => $find->id]);
         $input = $this->inputsParse($inputs);
         $this->customerRepository->save($input['customer'], $find->idCustomer);
@@ -156,7 +156,7 @@ class ServiceService implements ServiceServiceContract
     public function setServiceTake(int $id): array
     {
         Log::info("user is trying to set taking service in a single service data by id service", ["id service" => $id]);
-        $find = $this->serviceRepository->findDataById($id);
+        $find = $this->serviceRepository->findById($id);
         Log::info("service data found for set a taking data in the single service data by id service", ["id service" => $find->id]);
         if ($find->garansi === null) {
             Log::warning("cannot set a taking data caused a warranty data in this service data is not set");
@@ -251,7 +251,7 @@ class ServiceService implements ServiceServiceContract
     public function deleteServiceById(int $id): string
     {
         Log::info("user trying to delete a single service data by id service", ["id service" => $id]);
-        $find = $this->serviceRepository->findDataById($id);
+        $find = $this->serviceRepository->findById($id);
         $this->customerRepository->delete($find->idCustomer);
         $this->productRepository->delete($find->idProduct);
         $this->serviceRepository->delete($id);

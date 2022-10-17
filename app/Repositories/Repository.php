@@ -35,7 +35,7 @@ class Repository implements RepositoryContract
         return $data;
     }
 
-    protected function findById(string $id, array $attributs = ['*'], bool $throwException = true)
+    public function findById(string $id, array $attributs = ['*'], bool $throwException = true)
     {
         $data = $this->model->select($attributs)->find($id);
         if ($data) {

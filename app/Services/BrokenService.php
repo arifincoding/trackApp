@@ -39,7 +39,7 @@ class BrokenService implements BrokenServiceContract
     {
         Log::info("User is trying to create a single broken data by id service", ['id service' => $idService, 'data' => $inputs]);
         $this->brokenValidator->validate($inputs, 'create');
-        $findService = $this->serviceRepository->findDataById($idService);
+        $findService = $this->serviceRepository->findById($idService);
         Log::info("Service data found for creating broken data by id service", ['id service' => $findService->id]);
         $confirm = null;
         if ($findService->butuhPersetujuan === false) {

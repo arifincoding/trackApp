@@ -147,7 +147,7 @@ class UserService implements UserServiceContract
     public function deleteUserById(int $id): string
     {
         Log::info("user trying to delete a single user data by id user", ["id user" => $id]);
-        $find = $this->userRepository->getDataById($id);
+        $find = $this->userRepository->findById($id);
         $delete = $this->userRepository->delete($id);
         Log::info("user delete a single user data by id user successfully", ["id user" => $id]);
         if ($delete === true) {
