@@ -45,15 +45,15 @@ class  ResponbilityService implements ResponbilityServiceContract
         $this->responbilityValidator->post($idUser, $inputs);
         $this->responbilityValidator->validate($inputs, 'create');
         $findUser = $this->userRepository->getDataById($idUser);
-        Log::info("user data found for creating responbilities data by id user", ["data user" => $findUser]);
-        if ($findUser['peran'] !== 'teknisi') {
-            Log::warning("responbilities could not be created caused this user role is not tecnician", ["data user" => $findUser]);
+        Log::info("user data found for creating responbilities data by id user", ["id user" => $findUser->idPegawai]);
+        if ($findUser->peran !== 'teknisi') {
+            Log::warning("responbilities could not be created caused this user role is not tecnician", ["id user" => $findUser->idPegawai]);
             return [
                 'success' => false,
                 'message' => 'gagal tambah tanggung jawab karena pegawai ini bukan teknisi'
             ];
         }
-        $this->responbilityRepository->create($inputs, $findUser['peran'], $findUser['username']);
+        $this->responbilityRepository->create($inputs, $findUser->peran, $findUser->username);
         Log::info("User create responbilities data by id user successfully");
         return [
             'success' => true,

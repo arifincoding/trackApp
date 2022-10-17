@@ -55,21 +55,21 @@ class WhatsappService implements WhatsappServiceContract
         $findService = $this->serviceRepository->findDataById($id);
         Log::info("data service found for sending a whatsapp message to customer", ["id  service" => $findService->id]);
         $findCustomer = $this->customerRepository->getDataById($findService->idCustomer);
-        Log::info("data customer found for sending a whatsapp message to customer", ["id  customer" => $findCustomer['idCustomer']]);
+        Log::info("data customer found for sending a whatsapp message to customer", ["id  customer" => $findCustomer->idCustomer]);
         if ($findCustomer['bisaWA'] === true) {
             if ($this->check() === true) {
                 Http::post('http://127.0.0.1:4000/chats/send', [
                     'id' => 'owner',
-                    'receiver' => $findCustomer['noHp'],
+                    'receiver' => $findCustomer->noHp,
                     'message' => urldecode($inputs['pesan'])
                 ]);
-                Log::info("user send a whatsapp message to customer successfully", ["noHp" => $findCustomer['noHp']]);
+                Log::info("user send a whatsapp message to customer successfully", ["id customer" => $findCustomer->idCustomer]);
                 return 'sukses mengirim pesan whatsapp';
             }
             Log::warning("user send a whatsapp message to customer failed caused whatsapp sign in session in this app is expired");
             return 'session kedaluarsa harap scan ulang kode qr';
         }
-        Log::warning("user send a whatsapp message to customer failed caused this user is not have whatsapp", ["noHp" => $findCustomer['noHp']]);
+        Log::warning("user send a whatsapp message to customer failed caused this user is not have whatsapp", ["id customer" => $findCustomer->idCustomer]);
         return 'customer tidak memiliki whatsapp';
     }
 }

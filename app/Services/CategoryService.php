@@ -27,15 +27,15 @@ class CategoryService implements CategoryServiceContract
         $search = $inputs['cari'] ?? '';
         $data = $this->categoryRepository->getListData($limit, $search);
         Log::info("user is accessing all categories data");
-        return $data;
+        return $data->toArray();
     }
 
     public function getCategoryById(int $id): array
     {
         Log::info("User trying to accessing a single category data by id category", ['id category' => $id]);
         $data = $this->categoryRepository->getDataById($id);
-        Log::info("User is accessing a single category data", ["id category" => $data["idKategori"]]);
-        return $data;
+        Log::info("User is accessing a single category data", ["id category" => $data->idKategori]);
+        return $data->toArray();
     }
 
     public function getCategoryNotInResponbility(string $id): array

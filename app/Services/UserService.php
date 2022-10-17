@@ -68,7 +68,7 @@ class UserService implements UserServiceContract
         Log::info("User is trying to accessing his account data");
         $data = $this->userRepository->findByUsername(Auth::payload()->get('username'));
         Log::info("user is accessing his account data");
-        return $data;
+        return $data->toArray();
     }
 
     public function updateMyAccount(array $inputs): string
@@ -110,7 +110,7 @@ class UserService implements UserServiceContract
         Log::info("user is trying to accessing a single user data by id user", ["id user" => $id]);
         $data = $this->userRepository->getDataById($id);
         Log::info("user is accessing a single user data by id user", ["id user" => $data["idPegawai"]]);
-        return $data;
+        return $data->toArray();
     }
 
     public function newUser(array $inputs): array
@@ -151,9 +151,9 @@ class UserService implements UserServiceContract
         $delete = $this->userRepository->delete($id);
         Log::info("user delete a single user data by id user successfully", ["id user" => $id]);
         if ($delete === true) {
-            Log::info("trying to delete responbility data by username", ["username" => $find['username'], "id user" => $id]);
-            $this->responbilityRepository->deleteByUsername($find['username']);
-            Log::info("deleting responbility data by username successfully", ["username" => $find['username']]);
+            Log::info("trying to delete responbility data by username", ["username" => $find->username, "id user" => $id]);
+            $this->responbilityRepository->deleteByUsername($find->username);
+            Log::info("deleting responbility data by username successfully", ["username" => $find->username]);
         }
         return 'sukses hapus data pegawai';
     }
