@@ -30,9 +30,10 @@ return [
     |
     */
 
+    'deprecations' => env('LOG_DEPRECATIONS_CHANNEL', 'null'),
     // 'deprecations' => [
-    //     'channel' => env('LOG_DEPRECATIONS_CHANNEL', null),
-    //     'trace' => false,
+    // 'channel' => env('LOG_DEPRECATIONS_CHANNEL', 'null'),
+    // 'trace' => true,
     // ],
 
     /*
@@ -73,12 +74,6 @@ return [
             'days' => 30,
         ],
 
-        'single' => [
-            'driver' => 'single',
-            'path' => storage_path('logs/lumen.log'),
-            'level' => env('LOG_LEVEL', 'debug'),
-        ],
-
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),
@@ -86,31 +81,12 @@ return [
             'emoji' => ':boom:',
             'level' => env('LOG_LEVEL', 'critical'),
         ],
-
-        'papertrail' => [
+        'null' => [
             'driver' => 'monolog',
-            'level' => env('LOG_LEVEL', 'debug'),
-            'handler' => env('LOG_PAPERTRAIL_HANDLER', SyslogUdpHandler::class),
-            'handler_with' => [
-                'host' => env('PAPERTRAIL_URL'),
-                'port' => env('PAPERTRAIL_PORT'),
-                'connectionString' => 'tls://' . env('PAPERTRAIL_URL') . ':' . env('PAPERTRAIL_PORT'),
-            ],
+            'handler' => NullHandler::class,
         ],
-
-        'stderr' => [
-            'driver' => 'monolog',
-            'level' => env('LOG_LEVEL', 'debug'),
-            'handler' => StreamHandler::class,
-            'formatter' => env('LOG_STDERR_FORMATTER'),
-            'with' => [
-                'stream' => 'php://stderr',
-            ],
-        ],
-
-        'syslog' => [
-            'driver' => 'syslog',
-            'level' => env('LOG_LEVEL', 'debug'),
+        'emergency' => [
+            'path' => storage_path('logs/lumen.log'),
         ],
     ],
 

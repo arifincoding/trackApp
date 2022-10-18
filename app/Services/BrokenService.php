@@ -76,7 +76,7 @@ class BrokenService implements BrokenServiceContract
 
     public function updateBrokenCost(array $inputs, int $id): array
     {
-        Log::info("trying to updating broken cost in the single broken data by id broken", ["id broken" => $id, "data" => $inputs]);
+        Log::info("user is trying to updating broken cost in the single broken data by id broken", ["id broken" => $id, "data" => $inputs]);
         $this->brokenValidator->cost();
         $this->brokenValidator->validate($inputs, "updateCost");
         $data = $this->brokenRepository->save($inputs, $id);
@@ -86,7 +86,7 @@ class BrokenService implements BrokenServiceContract
 
     public function updateBrokenCofirmation(array $inputs, int $id): array
     {
-        Log::info("trying to updating broken confirmation in the single broken data by id broken", ['id broken' => $id, 'data' => $inputs]);
+        Log::info("user is trying to updating broken confirmation in the single broken data by id broken", ['id broken' => $id, 'data' => $inputs]);
         $this->brokenValidator->confirm();
         $this->brokenValidator->validate($inputs, 'updateConfirm');
         $data = $this->brokenRepository->save($inputs, $id);
@@ -96,7 +96,7 @@ class BrokenService implements BrokenServiceContract
 
     public function deleteBrokenById(int $id): string
     {
-        Log::info("trying to deleting a single broken data by id broken", ["id broken" => $id]);
+        Log::info("user is trying to deleting a single broken data by id broken", ["id broken" => $id]);
         $this->brokenRepository->delete($id);
         Log::info("User delete a single broken data by id broken successfully", ['id broken' => $id]);
         return 'sukses hapus data kerusakan';
