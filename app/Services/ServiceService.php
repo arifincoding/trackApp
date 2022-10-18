@@ -76,6 +76,8 @@ class ServiceService implements ServiceServiceContract
             Log::info("User is accessing all service queue data by technician responbility");
             $fractal = new Manager();
             $data = $fractal->createData(new Collection($query, new ServicequeueTransformer))->toArray();
+        } else {
+            Log::warning("User accessing all service queue data failed caused list responbilities data for this username not found", ['username' => $username]);
         }
         return $data;
     }
@@ -85,7 +87,7 @@ class ServiceService implements ServiceServiceContract
         Log::info("user trying to accessing all service progres data by username technician", ["username" => $username, "filters" => $inputs]);
         $data = [];
         $query = $this->serviceRepository->getListDataMyProgress($username, $inputs);
-        Log::info("User is accessing all service progres data by tecnician responbility");
+        Log::info("User is accessing all service progres data by username technician");
         $fractal = new Manager();
         $data = $fractal->createData(new Collection($query, new ServicequeueTransformer))->toArray();
         return $data;
@@ -122,15 +124,15 @@ class ServiceService implements ServiceServiceContract
         ];
         $data = $this->serviceRepository->create($input['service']);
         Log::info("User create a single service data successfully", ['id service' => $data]);
-        Log::info("User is trying to set a code in the single service data by id service", ['id service' => $data]);
+        Log::info("trying to set a code in the single service data by id service", ['id service' => $data]);
         $this->serviceRepository->setCodeService($data);
-        Log::info("User set a code in the single service data by id service successfully");
+        Log::info("set a code in the single service data by id service successfully");
         return ['idService' => $data];
     }
 
     public function updateServiceById(array $inputs, int $id): array
     {
-        Log::info("user in trying to update a single service data by id service", ["id service" => $id, "data" => $inputs]);
+        Log::info("user is trying to update a single service data by id service", ["id service" => $id, "data" => $inputs]);
         $this->serviceValidator->validate($inputs, 'update');
         $find = $this->serviceRepository->findById($id);
         Log::info("service data found for updating a single service data by id service", ["id service" => $find->id]);
@@ -175,25 +177,23 @@ class ServiceService implements ServiceServiceContract
 
     public function setServiceConfirmCost(int $id): array
     {
-        Log::info("User searching a single broken data by id service and cost is null for set service confirmation cost by id service", ['id service' => $id]);
+        Log::info("User trying to set service confirmation cost in a single service data by id service", ["id service" => $id]);
         $find = $this->brokenRepository->findDataByIdService($id, 'biaya');
         if ($find !== null) {
-            Log::info("a single broken data found", ["id broken" => $find->id]);
+            Log::warning("a single broken data by id service and cost is null found", ["id service" => $id, "id broken" => $find->id]);
             Log::warning("cannot set service confirmation cost caused cost in the broken data by this id service is null", ['id broken' => $find->id]);
             return [
                 'success' => false,
                 'message' => 'data kerusakan masih ada yang belum diberi biaya'
             ];
         }
-        Log::info("cannot found a single broken data");
-        Log::info("User is trying to accessing all broken data by id service", ["id service" => $id]);
+        Log::info("a single broken data by id service and cost is null not found");
         $brokens = $this->brokenRepository->getListDataByIdService($id);
-        Log::info("User is accessing all broken data by id service");
+        Log::info("list broken data by id service found", ['id service' => $id]);
         $total = 0;
         foreach ($brokens as $item) {
             $total += $item->biaya;
         }
-        Log::info("User trying to set service confirmation cost in a single service data by id service", ["id service" => $id]);
         $inputs = ['konfirmasibiaya' => true, 'totalBiaya' => $total];
         $data = $this->serviceRepository->save($inputs, $id);
         Log::info("user set confirmation cost in a single service data by id service successfully", ["id service" => $data->id]);
@@ -215,33 +215,30 @@ class ServiceService implements ServiceServiceContract
 
     public function setServiceConfirmation(array $inputs, int $id): array
     {
+        Log::info("User trying to set service confirmation by id service", ["id service" => $id, 'data' => $inputs]);
         $this->serviceValidator->confirmation($inputs);
         $this->serviceValidator->validate($inputs, 'updateConfirmation');
-        Log::info("User searching a single broken data by id service and agreed is null for set service confirmation by id service", ['id service' => $id]);
         $find = $this->brokenRepository->findDataByIdService($id, 'disetujui');
         if ($find !== null) {
-            Log::info("a single broken data found", ["id broken" => $find->id]);
+            Log::info("a single broken data by id service and agreed is null found", ['id service' => $id, "id broken" => $find->id]);
             Log::warning("cannot set service confirmation caused agreed in the broken data by this id service is null", ['id broken' => $find->id]);
             return [
                 'success' => false,
                 'message' => 'data kerusakan masih ada yang belum diberi persetujuan'
             ];
         }
-        Log::info("cannot found a single broken data");
-        Log::info("User is trying to accessing all broken data by id service and agreed is true", ["id service" => $id]);
+        Log::info("a single broken data by id service and agreed is null not found", ['id service' => $id]);
         $brokens = $this->brokenRepository->getListDataByIdService($id, ['disetujui' => 1]);
-        Log::info("User is accessing all broken data by id service and agreed is true");
+        Log::info("list broken data by id service and agreed is true found", ["id service" => $id]);
         $total = 0;
         foreach ($brokens as $item) {
             $total += $item->biaya;
         }
         $inputs['totalBiaya'] = $total;
-        Log::info("User trying to set service confirmation by id service", ["id service" => $id, 'data' => $inputs]);
         $data = $this->serviceRepository->save($inputs, $id);
         Log::info("user set a taking data in a single service data by id service successfully");
-        Log::info("user trying to set all cost in broken data by this id service with agreed false to zero", ["id service" => $id]);
         $this->brokenRepository->setCostInNotAgreeToZero($id);
-        Log::info("user set all cost in broken data by id service successfully", ["id service" => $id]);
+        Log::info("user set all cost in broken data by id service and agreed false to zero successfully", ["id service" => $id]);
         return [
             'success' => true,
             'data' => ["idService" => $data->id]

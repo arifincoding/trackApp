@@ -23,7 +23,7 @@ class WhatsappService implements WhatsappServiceContract
     {
         Log::info("user is trying to accessing whatsapp qr code");
         if ($this->check() === true) {
-            Log::info("trying deleting oldest signing whatsapp account session in this app");
+            Log::warning("oldest signing whatsapp account session in this app found");
             $this->delete();
             Log::info("deleting oldest signing whatsapp account session in this app successfully");
         }
