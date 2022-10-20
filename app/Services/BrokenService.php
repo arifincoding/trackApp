@@ -25,10 +25,10 @@ class BrokenService implements BrokenServiceContract
         $this->brokenValidator = $validator;
     }
 
-    public function getListBrokenByIdService(int $id): array
+    public function getListBrokenByIdService(int $idService): array
     {
-        Log::info("User is trying to accessing all broken data by id service", ['id service' => $id]);
-        $query = $this->brokenRepository->getListDataByIdService($id);
+        Log::info("User is trying to accessing all broken data by id service", ['id service' => $idService]);
+        $query = $this->brokenRepository->getListDataByIdService($idService);
         Log::info("User is accessing all broken data by id Service");
         $fractal = new Manager();
         $data = $fractal->createData(new Collection($query, new BrokensTransformer))->toArray();
