@@ -118,14 +118,14 @@ class ServiceService implements ServiceServiceContract
         $this->serviceValidator->validate($inputs, 'create');
         $input = $this->inputsParse($inputs);
         $input['service'] += [
-            'idCustomer' => $this->customerRepository->create($input['customer']),
+            'idCustomer' => $this->customerRepository->save($input['customer']),
             'idProduct' => $this->productRepository->create($input['product'])
         ];
         $data = $this->serviceRepository->create($input['service']);
-        Log::info("User create a single service data successfully", ['id service' => $data]);
-        $this->serviceRepository->setCodeService($data);
-        Log::info("set code in the single service data by id service successfully", ['id service' => $data]);
-        return ['idService' => $data];
+        Log::info("User create a single service data successfully", ['id service' => $data->id]);
+        $this->serviceRepository->setCodeService($data->id);
+        Log::info("set code in the single service data by id service successfully", ['id service' => $data->id]);
+        return ['idService' => $data->id];
     }
 
     public function updateServiceById(array $inputs, int $id): array
@@ -166,10 +166,10 @@ class ServiceService implements ServiceServiceContract
             ];
         }
         $data = $this->serviceRepository->setDataTake($id);
-        Log::info("user set taking service in a single service data by id service successfully", ['id service' => $data]);
+        Log::info("user set taking service in a single service data by id service successfully", ['id service' => $data->id]);
         return [
             'success' => true,
-            'data' => ['idService' => $data]
+            'data' => ['idService' => $data->id]
         ];
     }
 

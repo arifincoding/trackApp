@@ -35,8 +35,9 @@ class ResponbilityRepository extends Repository implements ResponbilityRepoContr
         return true;
     }
 
-    function deleteByUsername(string $username): void
+    function deleteByUsername(string $username): bool
     {
         $data = $this->delete($username, 'username', false);
+        return $data;
     }
 }

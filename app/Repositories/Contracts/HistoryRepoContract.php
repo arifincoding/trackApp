@@ -4,5 +4,5 @@ namespace App\Repositories\Contracts;
 
 interface HistoryRepoContract
 {
-    public function deleteByIdService(int $id): void;
+    public function deleteByIdService(int $id): bool;
 }

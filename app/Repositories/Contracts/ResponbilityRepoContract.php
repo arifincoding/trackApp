@@ -8,5 +8,5 @@ interface ResponbilityRepoContract
 {
     public function getListDataByUsername(string $username): ?Collection;
     public function create(array $inputs, string $role, string $username): bool;
-    public function deleteByUsername(string $username): void;
+    public function deleteByUsername(string $username): bool;
 }

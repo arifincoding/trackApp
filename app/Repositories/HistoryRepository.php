@@ -14,11 +14,9 @@ class HistoryRepository extends Repository implements HistoryRepoContract
         parent::__construct($model, 'history');
     }
 
-    function deleteByIdService(int $id): void
+    function deleteByIdService(int $id): bool
     {
-        $find = $this->model->where('idService', $id)->first();
-        if ($find) {
-            $this->delete($id, 'idService');
-        }
+        $data = $this->delete($id, 'idService', false);
+        return $data;
     }
 }

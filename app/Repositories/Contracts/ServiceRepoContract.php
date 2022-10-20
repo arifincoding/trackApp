@@ -12,7 +12,7 @@ interface ServiceRepoContract
     public function getListDataQueue($responbility, array $inputs): Collection;
     public function getListDataMyProgress(string $username, array $inputs): Collection;
     public function getDataByCode(string $code): ?Service;
-    public function create(array $attributs): int;
-    public function setCodeService(int $id): void;
-    public function setDataTake(int $id): int;
+    public function create(array $attributs): Service;
+    public function setCodeService(int $id): bool;
+    public function setDataTake(int $id): Service;
 }

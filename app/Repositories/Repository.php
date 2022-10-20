@@ -35,7 +35,7 @@ class Repository implements RepositoryContract
         return $data;
     }
 
-    public function findById(string $id, array $attributs = ['*'], bool $throwException = true)
+    public function findById(string $id, array $attributs = ['*'], bool $throwException = true): ?Model
     {
         $data = $this->model->select($attributs)->find($id);
         if ($data) {
@@ -45,6 +45,7 @@ class Repository implements RepositoryContract
         if ($throwException === true) {
             throw new ModelNotFoundException();
         }
+        return null;
     }
 
     public function delete(string $filter, string $filterName = 'id', bool $throwException = true): bool
