@@ -9,7 +9,7 @@ interface BrokenRepoContract
 {
     public function getListDataByIdService(int $idService, array $filter = []): Collection;
     public function getDataById(int $id): Broken;
-    public function findDataByIdService(int $id, string $filter): ?Broken;
+    public function findOneDataByWhere(array $filters): ?Broken;
     public function setCostInNotAgreeToZero(int $idService): bool;
     public function deleteByIdService(int $id): bool;
 }

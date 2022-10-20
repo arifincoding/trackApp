@@ -176,7 +176,7 @@ class ServiceService implements ServiceServiceContract
     public function setServiceConfirmCost(int $id): array
     {
         Log::info("User trying to set service confirmation cost in a single service data by id service", ["id service" => $id]);
-        $find = $this->brokenRepository->findDataByIdService($id, 'biaya');
+        $find = $this->brokenRepository->findOneDataByWhere(['idService' => $id, 'biaya' => null]);
         if ($find !== null) {
             Log::warning("cannot set service confirmation cost caused a single broken data by id service and cost is null found", ["id service" => $id, 'id broken' => $find->id]);
             return [
@@ -216,7 +216,7 @@ class ServiceService implements ServiceServiceContract
         Log::info("User trying to set service confirmation by id service", ["id service" => $id, 'data' => $inputs]);
         $this->serviceValidator->confirmation($inputs);
         $this->serviceValidator->validate($inputs, 'updateConfirmation');
-        $find = $this->brokenRepository->findDataByIdService($id, 'disetujui');
+        $find = $this->brokenRepository->findOneDataByWhere(['idService' => $id, 'disetujui' => null]);
         if ($find !== null) {
             Log::warning("cannot set service confirmation caused a single broken data by id service and agreed is null found", ['id broken' => $find->id]);
             return [

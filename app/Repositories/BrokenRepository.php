@@ -40,13 +40,13 @@ class BrokenRepository extends Repository implements BrokenRepoContract
         return $data;
     }
 
-    function findDataByIdService(int $id, string $filter): ?Broken
+    function findOneDataByWhere(array $filters = []): ?Broken
     {
-        if ($filter === 'biaya') {
-            return $this->model->where('idService', $id)->where('biaya', null)->first();
-        } else if ($filter === 'disetujui') {
-            return $this->model->where('idService', $id)->where('disetujui', null)->first();
+        $data = $this->model;
+        foreach ($filters as $key => $filter) {
+            $data->where($key, $filter);
         }
+        return $data->first();
     }
 
     function setCostInNotAgreeToZero(int $idService): bool
