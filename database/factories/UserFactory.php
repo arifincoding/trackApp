@@ -25,10 +25,10 @@ class UserFactory extends Factory
         return [
             'username' => $this->faker->name,
             'password' => Hash::make('secret'),
-            'namaDepan'=>'coba',
-            'namaBelakang'=>'ini',
-            'peran'=>'pemilik',
-            'jenisKelamin'=>'pria',
+            'namaDepan' => 'coba',
+            'namaBelakang' => 'ini',
+            'peran' => 'pemilik',
+            'jenisKelamin' => 'pria',
             'email' => $this->faker->unique()->safeEmail,
         ];
     }
