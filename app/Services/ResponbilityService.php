@@ -53,7 +53,7 @@ class  ResponbilityService implements ResponbilityServiceContract
                 'message' => 'gagal tambah tanggung jawab karena pegawai ini bukan teknisi'
             ];
         }
-        $this->responbilityRepository->create($inputs, $findUser->peran, $findUser->username);
+        $this->responbilityRepository->create($inputs, $findUser->username);
         Log::info("User create responbilities data by id user successfully");
         return [
             'success' => true,

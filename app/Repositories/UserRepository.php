@@ -18,13 +18,16 @@ class userRepository extends Repository implements UserRepoContract
         parent::__construct($model, 'user');
     }
 
-    function getlistData(array $inputs): Collection
+    function getlistData(array $inputs = ['peran' => null, 'limit' => null]): Collection
     {
         $data = $this->model->where('peran', '!=', 'pemilik');
-        if (isset($inputs['peran'])) {
+        if ($inputs['peran']) {
             $data->where('peran', $inputs['peran']);
         }
-        return $data->take($inputs['limit'] ?? 0)->get();
+        if ($inputs['limit']) {
+            $data->take($inputs['limit']);
+        }
+        return $data->get();
     }
 
     function getDataById(int $id): User

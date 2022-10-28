@@ -12,7 +12,7 @@ class CategoryFactory extends Factory
     public function definition()
     {
         return [
-            'nama' => $this->faker->name
+            'nama' => $this->faker->word()
         ];
     }
 }

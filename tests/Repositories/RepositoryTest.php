@@ -9,6 +9,9 @@ class RepositoryTest extends TestCase
 
     use DatabaseMigrations;
 
+    private $repository;
+    private $category;
+
     public function setUp(): void
     {
         parent::setUp();

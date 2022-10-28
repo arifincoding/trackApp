@@ -2,9 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Service extends Model{
+
+    use HasFactory;
+
     protected $fillable = [
         'kode','keluhan','uangMuka','status','estimasiBiaya','idCustomer','idProduct','butuhPersetujuan','disetujui','konfirmasiBiaya','diambil','waktuMasuk','waktuAmbil','usernameCS','usernameTeknisi','totalBiaya','garansi'
     ];
@@ -26,5 +30,3 @@ class Service extends Model{
         return $this->hasMany(History::class,'idService');
     }
 }
-
-?>

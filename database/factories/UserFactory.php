@@ -23,13 +23,33 @@ class UserFactory extends Factory
     public function definition()
     {
         return [
-            'username' => $this->faker->name,
-            'password' => Hash::make('secret'),
-            'namaDepan' => 'coba',
-            'namaBelakang' => 'ini',
+            'username' => $this->faker->randomNumber(7, true),
+            'password' => Hash::make($this->faker->password()),
+            'namaDepan' => $this->faker->firstNameMale(),
+            'namaBelakang' => $this->faker->lastName(),
             'peran' => 'pemilik',
             'jenisKelamin' => 'pria',
             'email' => $this->faker->unique()->safeEmail,
+            'noHp' => $this->faker->numerify('628##########'),
+            'alamat' => $this->faker->address()
         ];
+    }
+
+    public function tecnician()
+    {
+        return $this->state(function (array $attributs) {
+            return [
+                'peran' => 'teknisi'
+            ];
+        });
+    }
+
+    public function cs()
+    {
+        return $this->state(function (array $attributs) {
+            return [
+                'peran' => 'customer service'
+            ];
+        });
     }
 }

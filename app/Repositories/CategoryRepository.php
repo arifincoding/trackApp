@@ -16,19 +16,17 @@ class CategoryRepository extends Repository implements CategoryRepoContract
         parent::__construct($model, 'category');
     }
 
-    function getListData(int $limit = 0, string $search = ''): Collection
+    function getListData(?int $limit = null, ?string $search = null): Collection
     {
-        $filters = [
-            'limit' => $limit
-        ];
-        if ($search !== '') {
-            $filters['likeWhere'] = [
-                'nama' => $search
-            ];
-        }
         $attributs = ['id as idKategori', 'nama'];
-        $data = $this->model->select($attributs)->where('nama', 'LIKE', '%' . $search . '%')->take($limit)->get();
-        return $data;
+        $data = $this->model->select($attributs);
+        if ($search) {
+            $data->where('nama', 'LIKE', '%' . $search . '%');
+        }
+        if ($limit) {
+            $data->take($limit);
+        }
+        return $data->get();
     }
 
     function getDataById(int $id): Category

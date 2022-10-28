@@ -24,7 +24,7 @@ class ResponbilityRepository extends Repository implements ResponbilityRepoContr
         return $data;
     }
 
-    function create(array $inputs, string $role, string $username): bool
+    function create(array $inputs, string $username): bool
     {
         $arrAtribut = [];
         foreach ($inputs['idKategori'] as $key => $item) {
