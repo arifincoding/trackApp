@@ -9,10 +9,8 @@ interface ServiceRepoContract
 {
     public function getListData(array $inputs): Collection;
     public function getDataWithRelationById(int $id): ?Service;
-    public function getListDataQueue($responbility, array $inputs): Collection;
+    public function getListDataQueue(?array $responbility, array $inputs): Collection;
     public function getListDataMyProgress(string $username, array $inputs): Collection;
     public function getDataByCode(string $code): ?Service;
-    public function create(array $attributs): Service;
     public function setCodeService(int $id): bool;
-    public function setDataTake(int $id): Service;
 }

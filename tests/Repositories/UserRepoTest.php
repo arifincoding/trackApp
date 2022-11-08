@@ -32,10 +32,10 @@ class UserRepotest extends TestCase
     {
         User::factory()->create();
         $user = User::factory()->create([
-            'username' => '221028002'
+            'username' => '2210002'
         ]);
         User::factory()->cs()->create();
-        $result = $this->repository->findByUsername('221028002');
+        $result = $this->repository->findByUsername('2210002');
         $this->assertEquals($user->toArray(), $result->toArray());
     }
 
@@ -43,10 +43,10 @@ class UserRepotest extends TestCase
     {
         User::factory()->create();
         User::factory()->cs()->create([
-            'username' => '221028002'
+            'username' => '2210002'
         ]);
         User::factory()->cs()->create();
-        $result = $this->repository->changePassword(['sandiBaru' => 'rahasia'], '221028002');
+        $result = $this->repository->changePassword(['sandiBaru' => 'rahasia'], '2210002');
         $this->assertEquals(true, $result);
     }
 

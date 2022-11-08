@@ -6,7 +6,7 @@ use App\Models\Responbility;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 
-class ResponbilityRepoTest extends Factory
+class ResponbilityFactory extends Factory
 {
 
     protected $model = Responbility::class;

@@ -5,7 +5,6 @@ namespace App\Repositories;
 use App\Models\Service;
 use App\Repositories\Repository;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
 use App\Repositories\Contracts\ServiceRepoContract;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -52,20 +51,18 @@ class ServiceRepository extends Repository implements ServiceRepoContract
         }])->where('id', $id)->first();
     }
 
-    public function getListDataQueue($responbility, array $inputs): Collection
+    public function getListDataQueue(?array $responbility = null, array $inputs = []): Collection
     {
         if ($responbility === null) {
             return collect([]);
         }
         $resp = [];
-        foreach ($responbility as $item) {
-            array_push($resp, $item->kategori->nama);
+        foreach ($responbility['kategori'] as $item) {
+            array_push($resp, $item['nama']);
         }
         $data = $this->model->with('produk')->where('status', 'antri')->orderByDesc('id');
         $data->whereHas('produk', function ($q) use ($resp) {
-            foreach ($resp as $item) {
-                $q->orWhere('kategori', $item);
-            }
+            $q->whereIn('kategori', $resp);
         });
         if (isset($inputs['kategori'])) {
             $data->whereHas('produk', function ($q) use ($inputs) {
@@ -81,7 +78,7 @@ class ServiceRepository extends Repository implements ServiceRepoContract
         return $data->get();
     }
 
-    public function getListDataMyProgress(string $username, array $inputs): Collection
+    public function getListDataMyProgress(string $username, array $inputs = []): Collection
     {
         $data = $this->model->with('produk')->where('usernameTeknisi', $username)->orderByDesc('id');
         if (isset($inputs['status'])) {
@@ -111,20 +108,6 @@ class ServiceRepository extends Repository implements ServiceRepoContract
         return $data;
     }
 
-    public function create(array $attributs): Service
-    {
-        $attributs += [
-            'status' => 'antri',
-            'konfirmasiBiaya' => false,
-            'diambil' => false,
-            'disetujui' => $attributs['butuhPersetujuan'] ? null : true,
-            'waktuMasuk' => Carbon::now('GMT+7'),
-            'usernameCS' => Auth::payload()->get('username')
-        ];
-        $data = $this->save($attributs);
-        return $data;
-    }
-
     public function setCodeService(int $id): bool
     {
         $date = Carbon::now('GMT+7');
@@ -133,15 +116,5 @@ class ServiceRepository extends Repository implements ServiceRepoContract
         ];
         $this->save($attributs, $id);
         return true;
-    }
-
-    public function setDataTake(int $id): Service
-    {
-        $attributs = [
-            'diambil' => true,
-            'waktuAmbil' => Carbon::now('GMT+7')
-        ];
-        $data = $this->save($attributs, $id);
-        return $data;
     }
 }

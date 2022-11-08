@@ -16,7 +16,7 @@ class BrokenFactory extends Factory
             'judul' => $this->faker->sentence(3),
             'disetujui' => null,
             'deskripsi' => $this->faker->paragraph(2),
-            'idService' => $this->faker->randomDigitNotNull(),
+            'idService' => $this->faker->randomNumber(2, false),
             'biaya' => $this->faker->numberBetween(25000, 1000000)
         ];
     }

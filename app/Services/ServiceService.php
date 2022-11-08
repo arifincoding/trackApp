@@ -19,6 +19,7 @@ use App\Transformers\ServicedetailTransformer;
 use App\Transformers\ServicetrackTransformer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Carbon;
 
 class ServiceService implements ServiceServiceContract
 {
@@ -71,7 +72,7 @@ class ServiceService implements ServiceServiceContract
         $data = [];
         if ($resp) {
             Log::info("list responbility data by username found for accessing service queue data by technician responbility", ['username' => $username, 'filters' => $inputs]);
-            $query = $this->serviceRepository->getListDataQueue($resp, $inputs);
+            $query = $this->serviceRepository->getListDataQueue($resp->toArray(), $inputs);
             Log::info("User is accessing all service queue data by technician responbility");
             $fractal = new Manager();
             $data = $fractal->createData(new Collection($query, new ServicequeueTransformer))->toArray();
@@ -116,12 +117,12 @@ class ServiceService implements ServiceServiceContract
     {
         Log::info("User is trying to create a single service data", ['data' => $inputs]);
         $this->serviceValidator->validate($inputs, 'create');
-        $input = $this->inputsParse($inputs);
+        $input = $this->inputsParse($inputs, true);
         $input['service'] += [
             'idCustomer' => $this->customerRepository->save($input['customer']),
-            'idProduct' => $this->productRepository->create($input['product'])
+            'idProduct' => $this->productRepository->create($input['product']),
         ];
-        $data = $this->serviceRepository->create($input['service']);
+        $data = $this->serviceRepository->save($input['service']);
         Log::info("User create a single service data successfully", ['id service' => $data->id]);
         $this->serviceRepository->setCodeService($data->id);
         Log::info("set code in the single service data by id service successfully", ['id service' => $data->id]);
@@ -165,11 +166,15 @@ class ServiceService implements ServiceServiceContract
                 'message' => 'garansi perbaikan belum di tentukan'
             ];
         }
-        $data = $this->serviceRepository->setDataTake($id);
-        Log::info("user set taking service in a single service data by id service successfully", ['id service' => $data->id]);
+        $attributs = [
+            'diambil' => true,
+            'waktuAmbil' => Carbon::now('GMT+7')
+        ];
+        $this->serviceRepository->save($attributs, $id);
+        Log::info("user set taking service in a single service data by id service successfully", ['id service' => $id]);
         return [
             'success' => true,
-            'data' => ['idService' => $data->id]
+            'data' => ['idService' => $id]
         ];
     }
 
@@ -256,14 +261,14 @@ class ServiceService implements ServiceServiceContract
         return 'sukses hapus data service';
     }
 
-    private function inputsParse(array $inputs): array
+    private function inputsParse(array $inputs, bool $new = false): array
     {
         $noHp = $inputs['noHp'] ?? null;
         $wa = $inputs['bisaWA'];
         if ($noHp === null) {
             $wa = false;
         }
-        return [
+        $data = [
             'customer' => [
                 'nama' => $inputs['namaCustomer'],
                 'noHp' => $inputs['noHp'],
@@ -283,5 +288,16 @@ class ServiceService implements ServiceServiceContract
                 'estimasiBiaya' => $inputs['estimasiBiaya']
             ]
         ];
+        if ($new) {
+            $data['service'] += [
+                'status' => 'antri',
+                'konfirmasiBiaya' => false,
+                'diambil' => false,
+                'disetujui' => $inputs['butuhPersetujuan'] ? null : true,
+                'waktuMasuk' => Carbon::now('GMT+7'),
+                'usernameCS' => Auth::payload()->get('username')
+            ];
+        }
+        return $data;
     }
 }
