@@ -38,10 +38,10 @@ class CategoryService implements CategoryServiceContract
         return $data->toArray();
     }
 
-    public function getCategoryNotInResponbility(string $id): array
+    public function getCategoryNotInResponbility(string $username): array
     {
-        Log::info("trying to accessing all categories data not in tecnicion responbility by username", ["username" => $id]);
-        $data = $this->categoryRepository->getDataNotInResponbility($id);
+        Log::info("trying to accessing all categories data not in tecnicion responbility by username", ["username" => $username]);
+        $data = $this->categoryRepository->getDataNotInResponbility($username);
         Log::info("User is accessing all categories data not in tecnicion responbility by username");
         return $data->toArray();
     }

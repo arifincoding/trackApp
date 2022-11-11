@@ -109,7 +109,7 @@ class UserService implements UserServiceContract
     {
         Log::info("user is trying to accessing a single user data by id user", ["id user" => $id]);
         $data = $this->userRepository->getDataById($id);
-        Log::info("user is accessing a single user data by id user", ["id user" => $data["idPegawai"]]);
+        Log::info("user is accessing a single user data by id user", ["id user" => $data->idPegawai]);
         return $data->toArray();
     }
 
