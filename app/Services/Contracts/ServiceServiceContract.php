@@ -5,9 +5,9 @@ namespace App\Services\Contracts;
 interface ServiceServiceContract
 {
     public function getListService(array $inputs): array;
-    public function getServiceById(array $inputs, int $id): array;
-    public function getServiceQueue(array $inputs, string $username): array;
-    public function getProgressService(array $inputs, string $username): array;
+    public function getServiceById(int $id, array $inputs): array;
+    public function getServiceQueue(string $username, array $inputs): array;
+    public function getProgressService(string $username, array $inputs): array;
     public function getServiceTrack(string $code): array;
     public function newService(array $inputs): array;
     public function updateServiceById(array $inputs, int $id): array;

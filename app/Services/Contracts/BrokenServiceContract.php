@@ -9,6 +9,6 @@ interface BrokenServiceContract
     public function getBrokenById(int $id): array;
     public function updateBroken(array $inputs, int $id): array;
     public function updateBrokenCost(array $inputs, int $id): array;
-    public function updateBrokenCofirmation(array $inputs, int $id): array;
+    public function updateBrokenConfirmation(array $inputs, int $id): array;
     public function deleteBrokenById(int $id): string;
 }

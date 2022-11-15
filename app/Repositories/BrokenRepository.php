@@ -18,8 +18,8 @@ class BrokenRepository extends Repository implements BrokenRepoContract
     function getListDataByIdService(int $idService, array $filter = []): Collection
     {
         $data = $this->model->where('idService', $idService);
-        if ($filter['disetujui'] ?? null) {
-            $data->where('disetujui', $filter['disetujui']);
+        if ($agreed = $filter['disetujui'] ?? null) {
+            $data->where('disetujui', $agreed);
         }
         return $data->get();
     }

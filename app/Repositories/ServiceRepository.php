@@ -44,11 +44,11 @@ class ServiceRepository extends Repository implements ServiceRepoContract
         return $data->get();
     }
 
-    public function getDataWithRelationById(int $id): ?Service
+    public function getDataWithRelationById(int $id): Service
     {
         return $this->model->with(['klien', 'produk', 'kerusakan' => function ($q) {
             $q->orderByDesc('id');
-        }])->where('id', $id)->first();
+        }])->where('id', $id)->firstOrFail();
     }
 
     public function getListDataQueue(?array $responbility = null, array $inputs = []): Collection

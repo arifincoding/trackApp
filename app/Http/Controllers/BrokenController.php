@@ -53,7 +53,7 @@ class BrokenController extends Controller implements BrokenControllerContract
     public function updateCofirmation(Request $request, int $id): JsonResponse
     {
         $inputs = $request->only('disetujui');
-        $data = $this->brokenService->updateBrokenCofirmation($inputs, $id);
+        $data = $this->brokenService->updateBrokenConfirmation($inputs, $id);
         return $this->jsonSuccess('sukses', 200, $data);
     }
 

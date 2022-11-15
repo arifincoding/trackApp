@@ -26,21 +26,21 @@ class ServiceController extends Controller implements ServiceControllerContract
 
     function getServiceById(Request $request, int $id): JsonResponse
     {
-        $data = $this->service->getServiceById($request->all(), $id);
+        $data = $this->service->getServiceById($id, $request->all());
         return $this->jsonSuccess('sukses', 200, $data);
     }
 
     function getServiceQueue(Request $request, string $id): JsonResponse
     {
         $inputs = $request->only('kategori', 'cari');
-        $data = $this->service->getServiceQueue($inputs, $id);
+        $data = $this->service->getServiceQueue($id, $inputs);
         return $this->jsonSuccess('sukses', 200, $data);
     }
 
     function getProgressService(Request $request, string $id): JsonResponse
     {
         $inputs = $request->only('status', 'kategori', 'cari');
-        $data = $this->service->getProgressService($inputs, $id);
+        $data = $this->service->getProgressService($id, $inputs);
         return $this->jsonSuccess('sukses', 200, $data);
     }
 

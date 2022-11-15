@@ -42,7 +42,7 @@ class ServiceService implements ServiceServiceContract
         $this->serviceValidator = $validator;
     }
 
-    public function getListService(array $inputs): array
+    public function getListService(array $inputs = []): array
     {
         Log::info("trying to access all service data", ["query" => $inputs]);
         $query = $this->serviceRepository->getListData($inputs);
@@ -52,7 +52,7 @@ class ServiceService implements ServiceServiceContract
         return $data;
     }
 
-    public function getServiceById(array $inputs, int $id): array
+    public function getServiceById(int $id, array $inputs = []): array
     {
         Log::info("User trying to accessing a single service data by id service", ['id service' => $id, "with" => $inputs]);
         $query = $this->serviceRepository->getDataWithRelationById($id);
@@ -65,7 +65,7 @@ class ServiceService implements ServiceServiceContract
         return $data;
     }
 
-    public function getServiceQueue(array $inputs, string $username): array
+    public function getServiceQueue(string $username, array $inputs = []): array
     {
         Log::info("User is trying to access alli service queue data by technician responbility");
         $resp = $this->responbilityRepository->getListDataByUsername($username);
@@ -82,7 +82,7 @@ class ServiceService implements ServiceServiceContract
         return $data;
     }
 
-    public function getProgressService(array $inputs, string $username): array
+    public function getProgressService(string $username, array $inputs = []): array
     {
         Log::info("user trying to accessing all service progres data by technician username", ["username" => $username, "filters" => $inputs]);
         $data = [];
@@ -119,7 +119,7 @@ class ServiceService implements ServiceServiceContract
         $this->serviceValidator->validate($inputs, 'create');
         $input = $this->inputsParse($inputs, true);
         $input['service'] += [
-            'idCustomer' => $this->customerRepository->save($input['customer']),
+            'idCustomer' => $this->customerRepository->create($input['customer']),
             'idProduct' => $this->productRepository->create($input['product']),
         ];
         $data = $this->serviceRepository->save($input['service']);

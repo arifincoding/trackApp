@@ -84,7 +84,7 @@ class BrokenService implements BrokenServiceContract
         return ['idKerusakan' => $data->id];
     }
 
-    public function updateBrokenCofirmation(array $inputs, int $id): array
+    public function updateBrokenConfirmation(array $inputs, int $id): array
     {
         Log::info("user is trying to updating broken confirmation in the single broken data by id broken", ['id broken' => $id, 'data' => $inputs]);
         $this->brokenValidator->confirm();

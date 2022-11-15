@@ -10,7 +10,7 @@ use Illuminate\Support\Carbon;
 use App\Repositories\Contracts\UserRepoContract;
 use Illuminate\Database\Eloquent\Collection;
 
-class userRepository extends Repository implements UserRepoContract
+class UserRepository extends Repository implements UserRepoContract
 {
 
     function __construct(User $model)

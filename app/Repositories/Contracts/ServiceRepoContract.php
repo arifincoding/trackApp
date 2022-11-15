@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 interface ServiceRepoContract
 {
     public function getListData(array $inputs): Collection;
-    public function getDataWithRelationById(int $id): ?Service;
+    public function getDataWithRelationById(int $id): Service;
     public function getListDataQueue(?array $responbility, array $inputs): Collection;
     public function getListDataMyProgress(string $username, array $inputs): Collection;
     public function getDataByCode(string $code): ?Service;
