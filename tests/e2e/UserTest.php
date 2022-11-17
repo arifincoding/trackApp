@@ -52,5 +52,3 @@ class UserTest extends TestCase{
         ]);
     }
 }
-
-?>

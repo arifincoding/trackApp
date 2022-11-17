@@ -1,11 +1,13 @@
 <?php
 
-class AuthTest extends TestCase {
+class AuthTest extends TestCase
+{
 
     // login and get token
-    public function testShouldReturnLoginToken(){
-        $parameters = ['username'=>'2206001', 'password'=>'pzH5Rjro'];
-        $response = $this->post('/user/login',$parameters);
+    public function testShouldReturnLoginToken()
+    {
+        $parameters = ['username' => '2206001', 'password' => 'pzH5Rjro'];
+        $response = $this->post('/user/login', $parameters);
         $this->seeStatusCode(200);
         $this->seeJsonStructure(
             [
@@ -17,9 +19,10 @@ class AuthTest extends TestCase {
     }
 
     // get refresh token
-    public function testShouldRefreshToken(){
-        $header = ['Authorization'=>'Bearer '.$this->owner()];
-        $this->post('/user/refresh',[],$header);
+    public function testShouldRefreshToken()
+    {
+        $header = ['Authorization' => 'Bearer ' . $this->owner()];
+        $this->post('/user/refresh', [], $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'token',
@@ -29,9 +32,10 @@ class AuthTest extends TestCase {
     }
 
     // logout and delete token
-    public function testShouldLogout(){
-        $header = ['Authorization'=>'Bearer '.$this->owner()];
-        $this->post('/user/logout',[],$header);
+    public function testShouldLogout()
+    {
+        $header = ['Authorization' => 'Bearer ' . $this->owner()];
+        $this->post('/user/logout', [], $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',

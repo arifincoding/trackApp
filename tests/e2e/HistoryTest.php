@@ -25,5 +25,3 @@ class HistoryTest extends TestCase{
         History::where('id',$history->id)->delete();
     }
 }
-
-?>

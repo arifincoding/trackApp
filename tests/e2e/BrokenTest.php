@@ -3,75 +3,80 @@
 use App\Models\Service;
 use App\Models\Broken;
 
-class BrokenTest extends TestCase{
+class BrokenTest extends TestCase
+{
 
     // create broken by id service
-    public function testShouldCreateBroken(){
+    public function testShouldCreateBroken()
+    {
         $data = Service::orderByDesc('id')->first();
         $parameters = [
-            'judul'=>'ganti testing',
-            'deskripsi'=>'ini adalah testing'
+            'judul' => 'ganti testing',
+            'deskripsi' => 'ini adalah testing'
         ];
-        $header = ['Authorization'=>'Bearer '.$this->teknisi()];
-        $this->post('/services/'.$data->id.'/brokens',$parameters,$header);
+        $header = ['Authorization' => 'Bearer ' . $this->teknisi()];
+        $this->post('/services/' . $data->id . '/brokens', $parameters, $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
             'message',
-            'data'=>[
+            'data' => [
                 'idKerusakan'
             ]
-            ]);
+        ]);
     }
 
     // get all brokens by id service
-    public function testShouldReturnAllBroken(){
+    public function testShouldReturnAllBroken()
+    {
         $data = Service::orderByDesc('id')->first();
-        $header = ['Authorization'=>'Bearer '.$this->teknisi()];
-        $this->get('/services/'.$data->id.'/brokens',$header);
+        $header = ['Authorization' => 'Bearer ' . $this->teknisi()];
+        $this->get('/services/' . $data->id . '/brokens', $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
             'message',
-            'data'=>['*'=>[
+            'data' => ['*' => [
                 'id',
                 'judul',
                 'biaya',
                 'disetujui'
             ]]
-            ]);
+        ]);
     }
 
     // update broken by id
-    public function testShouldUpdateBroken(){
+    public function testShouldUpdateBroken()
+    {
         $data = Broken::orderByDesc('id')->first();
         $parameters = [
-            'judul'=>'ganti coba',
-            'deskripsi'=>'ini adalah coba testing'
+            'judul' => 'ganti coba',
+            'deskripsi' => 'ini adalah coba testing'
         ];
-        $header = ['Authorization'=>'Bearer '.$this->teknisi()];
-        $this->put('/services/brokens/'.$data->id,$parameters,$header);
+        $header = ['Authorization' => 'Bearer ' . $this->teknisi()];
+        $this->put('/services/brokens/' . $data->id, $parameters, $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
             'message',
-            'data'=>[
+            'data' => [
                 'idKerusakan',
                 'idService'
             ]
-            ]);
+        ]);
     }
 
     // get brokens by id
-    public function testShouldReturnBroken(){
+    public function testShouldReturnBroken()
+    {
         $data = Broken::orderByDesc('id')->first();
-        $header = ['Authorization'=>'Bearer '.$this->teknisi()];
-        $this->get('/services/brokens/'.$data->id,$header);
+        $header = ['Authorization' => 'Bearer ' . $this->teknisi()];
+        $this->get('/services/brokens/' . $data->id, $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
             'message',
-            'data'=>[
+            'data' => [
                 'idKerusakan',
                 'idService',
                 'judul',
@@ -79,50 +84,53 @@ class BrokenTest extends TestCase{
                 'biaya',
                 'disetujui'
             ]
-            ]);
+        ]);
     }
 
     // update broken cost
-    public function testShouldUpdateBrokenCost(){
+    public function testShouldUpdateBrokenCost()
+    {
         $data = Broken::orderByDesc('id')->first();
         $parameters = [
-            'biaya'=>'3000'
+            'biaya' => '3000'
         ];
-        $header = ['Authorization'=>'Bearer '.$this->owner()];
-        $this->put('/services/brokens/'.$data->id.'/cost',$parameters,$header);
+        $header = ['Authorization' => 'Bearer ' . $this->owner()];
+        $this->put('/services/brokens/' . $data->id . '/cost', $parameters, $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
             'message',
-            'data'=>[
+            'data' => [
                 'idKerusakan'
             ]
         ]);
     }
 
     // update broken confirmation
-    public function testShouldUpdateBrokenConfirmation(){
+    public function testShouldUpdateBrokenConfirmation()
+    {
         $data = Broken::orderByDesc('id')->first();
         $parameters = [
-            'disetujui'=>true,
+            'disetujui' => true,
         ];
-        $header = ['Authorization'=>'Bearer '.$this->owner()];
-        $this->put('/services/brokens/'.$data->id.'/confirm',$parameters,$header);
+        $header = ['Authorization' => 'Bearer ' . $this->owner()];
+        $this->put('/services/brokens/' . $data->id . '/confirm', $parameters, $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
             'message',
-            'data'=>[
+            'data' => [
                 'idKerusakan'
             ]
-            ]);
+        ]);
     }
 
     // delete broken
-    public function testShouldDeleteBroken(){
+    public function testShouldDeleteBroken()
+    {
         $data = Broken::orderByDesc('id')->first();
-        $header = ['Authorization'=>'Bearer '.$this->teknisi()];
-        $this->delete('/services/brokens/'.$data->id,$header);
+        $header = ['Authorization' => 'Bearer ' . $this->teknisi()];
+        $this->delete('/services/brokens/' . $data->id, $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
