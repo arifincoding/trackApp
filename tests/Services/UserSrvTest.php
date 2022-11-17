@@ -6,6 +6,8 @@ use App\Repositories\UserRepository;
 use App\Services\UserService;
 use App\Transformers\UsersTransformer;
 use App\Validations\UserValidation;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
@@ -17,43 +19,84 @@ class UserSrvTest extends TestCase
     private UserRepository $userRepository;
     private ResponbilityRepository $responbilityRepository;
     private UserService $service;
+    private UserValidation $validator;
 
     public function setUp(): void
     {
         parent::setUp();
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->responbilityRepository = $this->createMock(ResponbilityRepository::class);
-        $this->service = new UserService($this->userRepository, $this->responbilityRepository, new UserValidation());
+        $this->validator = $this->createMock(UserValidation::class);
+        $this->service = new UserService($this->userRepository, $this->responbilityRepository, $this->validator);
     }
 
     public function testUserShouldLoginToTheApp()
     {
-        $this->markTestSkipped("fitur ini ada static methodnya");
+        User::factory()->create(['username' => '2211001', 'password' => Hash::make('rahasia')]);
+        $this->validator->expects($this->once())->method('login');
+        $this->validator->expects($this->once())->method('validate')->willReturn(true);
+        $result = $this->service->login(['username' => '2211001', 'password' => 'rahasia']);
+        $this->assertEquals(true, $result['success']);
+        $this->assertNotEquals(null, $result['token']);
+        $this->assertNotEquals(null, Auth::user());
+        Auth::logout();
     }
 
     public function testShoudCreateRefreshToken()
     {
         $this->markTestSkipped("fitur ini bingung ngetestnya");
+        Auth::attempt(['username' => '2211001', 'password' => 'rahasia']);
+        Auth::logout();
     }
 
     public function testShouldLogOutUserAuthenticad()
     {
-        $this->markTestSkipped("fitur ini ada static methodnya");
+        User::factory()->create(['username' => '2211001', 'password' => Hash::make('rahasia')]);
+        Auth::attempt(['username' => '2211001', 'password' => 'rahasia']);
+        $this->assertNotEquals(null, Auth::user());
+        $result = $this->service->logout();
+        $this->assertEquals(null, Auth::user());
+        $this->assertEquals('sukses logout', $result);
     }
 
     public function testShouldGetUserAuthenticatedAccountInfo()
     {
-        $this->markTestSkipped("fitur ini ada static methodnya");
+        $user = User::factory()->create(['username' => '2211001', 'password' => Hash::make('rahasia')]);
+        Auth::attempt(['username' => '2211001', 'password' => 'rahasia']);
+        $this->userRepository->expects($this->once())->method('findByUsername')->willReturn($user);
+        $result = $this->service->getMyAccount('2211001');
+        $this->assertEquals($user->toArray(), $result);
+        Auth::logout();
     }
 
     public function testShoulUpdateAuthenticatedUserAccount()
     {
-        $this->markTestSkipped("fitur ini ada static methodnya");
+        $user = User::factory()->create(['username' => '2211001', 'password' => Hash::make('rahasia')]);
+        Auth::attempt(['username' => '2211001', 'password' => 'rahasia']);
+        $this->userRepository->expects($this->once())->method('findByUsername')->willReturn($user);
+        $this->validator->expects($this->once())->method('update');
+        $this->validator->expects($this->once())->method('validate');
+        $this->userRepository->expects($this->once())->method('save')->willReturn($user);
+        $input = [
+            'noHp' => $user->noHp,
+            'email' => $user->email,
+            'alamat' => $user->alamat
+        ];
+        $result = $this->service->updateMyAccount($input);
+        $this->assertEquals('sukses update akun', $result);
+        Auth::logout();
     }
 
     public function testShouldChangePasswordAuthenticatedUserAccount()
     {
-        $this->markTestSkipped("fitur ini ada static methodnya");
+        User::factory()->create(['username' => '2211001', 'password' => Hash::make('rahasia')]);
+        Auth::attempt(['username' => '2211001', 'password' => 'rahasia']);
+        $this->validator->expects($this->once())->method('changePassword');
+        $this->validator->expects($this->once())->method('validate')->willReturn(true);
+        $this->userRepository->expects($this->once())->method('changePassword')->willReturn(true);
+        $result = $this->service->changePassword(['sandiLama' => 'public', 'sandiBaru' => 'rahasia']);
+        $this->assertEquals('sukses merubah sandi akun', $result);
+        Auth::logout();
     }
 
     public function testShouldGetListUser()

@@ -7,6 +7,7 @@ use App\Models\History;
 use App\Models\Product;
 use App\Models\Responbility;
 use App\Models\Service;
+use App\Models\User;
 use App\Repositories\BrokenRepository;
 use App\Repositories\CustomerRepository;
 use App\Repositories\HistoryRepository;
@@ -21,6 +22,8 @@ use App\Transformers\ServicetrackTransformer;
 use App\Validations\ServiceValidation;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
@@ -112,7 +115,8 @@ class ServiceSrvTest extends TestCase
 
     public function testShouldNewSingleServiceData()
     {
-        $this->markTestIncomplete('ada static methodnya');
+        User::factory()->create(['username' => '2211001', 'password' => Hash::make('rahasia')]);
+        Auth::attempt(['username' => '2211001', 'password' => 'rahasia']);
         $product = Product::factory()->create();
         $customer = Customer::factory()->create();
         $service = Service::factory()->for($product, 'produk')->for($customer, 'klien')->create();
@@ -137,6 +141,7 @@ class ServiceSrvTest extends TestCase
         $this->serviceRepository->expects($this->once())->method('setCodeService')->willReturn(true);
         $result = $this->service->newService($input);
         $this->assertEquals(['idService' => 1], $result);
+        Auth::logout();
     }
 
     public function testShouldUpdateSingleServiceDataById()
@@ -169,7 +174,8 @@ class ServiceSrvTest extends TestCase
 
     public function testShouldUpdateStatusInSingleServiceById()
     {
-        $this->markTestIncomplete("ada static functionnya");
+        User::factory()->create(['username' => '2211001', 'password' => Hash::make('rahasia')]);
+        Auth::attempt(['username' => '2211001', 'password' => 'rahasia']);
         $input = ['status' => 'selesai', 'id' => 1];
         $service = Service::factory()->make($input);
         unset($input['id']);
@@ -178,6 +184,7 @@ class ServiceSrvTest extends TestCase
         $this->serviceRepository->expects($this->once())->method('save')->willReturn($service);
         $result =  $this->service->updateServiceStatus($input, 1);
         $this->assertEquals(['idService' => 1], $result);
+        Auth::logout();
     }
 
     public function testShouldSetServiceTakeInSingleServiceDataById()
