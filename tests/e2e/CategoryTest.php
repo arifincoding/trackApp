@@ -1,13 +1,20 @@
 <?php
 
 use App\Models\Category;
+use Laravel\Lumen\Testing\DatabaseMigrations;
 
 class CategoryTest extends TestCase
 {
+    use DatabaseMigrations;
     // getAll
+    public function setUp(): void
+    {
+        parent::setUp();
+        Category::factory()->count(3)->create();
+    }
     public function testShouldReturnAllCategories()
     {
-        $this->get('/categories', ['Authorization' => 'Bearer ' . $this->owner()]);
+        $this->get('/categories', ['Authorization' => 'Bearer ' . $this->getToken('pemilik')]);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -22,8 +29,7 @@ class CategoryTest extends TestCase
     // getById
     public function testShouldReturnCategory()
     {
-        $data = Category::first();
-        $this->get('/categories/' . $data->id, ['Authorization' => 'Bearer ' . $this->owner()]);
+        $this->get('/categories/1', ['Authorization' => 'Bearer ' . $this->getToken('pemilik')]);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -38,7 +44,7 @@ class CategoryTest extends TestCase
     // create
     public function testShouldCreateCategory()
     {
-        $this->post('/categories', ['nama' => 'testing'], ['Authorization' => 'Bearer ' . $this->owner()]);
+        $this->post('/categories', ['nama' => 'testing'], ['Authorization' => 'Bearer ' . $this->getToken('pemilik')]);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -52,8 +58,7 @@ class CategoryTest extends TestCase
     // update
     public function testShouldUpdateCategory()
     {
-        $data = Category::orderByDesc('id')->first();
-        $this->put('/categories/' . $data->id, ['nama' => 'php test'], ['Authorization' => 'Bearer ' . $this->owner()]);
+        $this->put('/categories/1', ['nama' => 'php test'], ['Authorization' => 'Bearer ' . $this->getToken('pemilik')]);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -67,8 +72,7 @@ class CategoryTest extends TestCase
     // delete
     public function testShouldDeleteCategory()
     {
-        $data = Category::orderByDesc('id')->first();
-        $this->delete('/categories/' . $data->id, ['Authorization' => 'Bearer ' . $this->owner()]);
+        $this->delete('/categories/1', ['Authorization' => 'Bearer ' . $this->getToken('pemilik')]);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',

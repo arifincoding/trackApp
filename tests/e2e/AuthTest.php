@@ -1,13 +1,18 @@
 <?php
 
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Laravel\Lumen\Testing\DatabaseMigrations;
+
 class AuthTest extends TestCase
 {
-
+    use DatabaseMigrations;
     // login and get token
     public function testShouldReturnLoginToken()
     {
-        $parameters = ['username' => '2206001', 'password' => 'pzH5Rjro'];
-        $response = $this->post('/user/login', $parameters);
+        User::factory()->create(['username' => '2211001', 'password' => Hash::make('rahasia')]);
+        $parameters = ['username' => '2211001', 'password' => 'rahasia'];
+        $this->post('/user/login', $parameters);
         $this->seeStatusCode(200);
         $this->seeJsonStructure(
             [
@@ -21,7 +26,7 @@ class AuthTest extends TestCase
     // get refresh token
     public function testShouldRefreshToken()
     {
-        $header = ['Authorization' => 'Bearer ' . $this->owner()];
+        $header = ['Authorization' => 'Bearer ' . $this->getToken('pemilik')];
         $this->post('/user/refresh', [], $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
@@ -34,7 +39,7 @@ class AuthTest extends TestCase
     // logout and delete token
     public function testShouldLogout()
     {
-        $header = ['Authorization' => 'Bearer ' . $this->owner()];
+        $header = ['Authorization' => 'Bearer ' . $this->getToken('pemilik')];
         $this->post('/user/logout', [], $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([

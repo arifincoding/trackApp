@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Services\Contracts\ResponbilityServiceContract;
 use App\Repositories\ResponbilityRepository;
 use App\Validations\ResponbilityValidation;
-use App\Repositories\userRepository;
+use App\Repositories\UserRepository;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use App\Transformers\ResponbilitiesTransformer;

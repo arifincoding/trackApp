@@ -3,21 +3,29 @@
 use App\Models\User;
 use App\Models\Responbility;
 use App\Models\Category;
+use Illuminate\Database\Eloquent\Factories\Sequence;
+use Laravel\Lumen\Testing\DatabaseMigrations;
 
 class ResponbilityTest extends TestCase
 {
 
+    use DatabaseMigrations;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+    }
+
     // create responbility
     public function testShouldCreateResponbility()
     {
-        Category::create(['nama' => 'ujicobatest']);
-        $user = User::where('peran', 'teknisi')->orderByDesc('id')->first();
-        $category = Category::orderByDesc('id')->first();
+        User::factory()->create(['peran' => 'teknisi', 'username' => '2211002']);
+        Category::factory()->create();
         $parameters = [
-            'idKategori' => [$category->id]
+            'idKategori' => [1]
         ];
-        $header = ['Authorization' => 'Bearer ' . $this->owner()];
-        $this->post('/employes/' . $user->id . '/technician/responbilities', $parameters, $header);
+        $header = ['Authorization' => 'Bearer ' . $this->getToken('pemilik')];
+        $this->post('/employes/1/technician/responbilities', $parameters, $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -28,9 +36,11 @@ class ResponbilityTest extends TestCase
     // get all responbility by username
     public function testShouldReturnAllRespobilityByUsername()
     {
-        $data = User::where('peran', 'teknisi')->orderByDesc('id')->first();
-        $header = ['Authorization' => 'Bearer ' . $this->owner()];
-        $this->get('/employes/' . $data->username . '/technician/responbilities', $header);
+        User::factory()->create(['peran' => 'teknisi', 'username' => '2211002']);
+        Category::factory()->count(3)->create();
+        Responbility::factory()->count(3)->sequence(fn ($sequence) => ['idKategori' => $sequence->index + 1])->create(['username' => '2211002']);
+        $header = ['Authorization' => 'Bearer ' . $this->getToken('pemilik')];
+        $this->get('/employes/2211002/technician/responbilities', $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -47,14 +57,13 @@ class ResponbilityTest extends TestCase
     // delete responbility
     public function testShouldDeleteResponbility()
     {
-        $data = Responbility::orderByDesc('id')->first();
-        $header = ['Authorization' => 'Bearer ' . $this->owner()];
-        $this->delete('/employes/technician/responbilities/' . $data->id, $header);
+        Responbility::factory()->create();
+        $header = ['Authorization' => 'Bearer ' . $this->getToken('pemilik')];
+        $this->delete('/employes/technician/responbilities/1', $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
             'message'
         ]);
-        Category::where('id', $data->idKategori)->delete();
     }
 }

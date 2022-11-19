@@ -3,9 +3,11 @@
 use App\Models\Service;
 use App\Models\Customer;
 use Illuminate\Support\Carbon;
+use Laravel\Lumen\Testing\DatabaseMigrations;
 
 class whatsappTest extends TestCase
 {
+    use DatabaseMigrations;
     // send message
     private function create()
     {
@@ -32,7 +34,7 @@ class whatsappTest extends TestCase
     {
         $this->markTestSkipped();
         $data = $this->create();
-        $header = ['Authorization' => 'Bearer ' . $this->owner()];
+        $header = ['Authorization' => 'Bearer ' . $this->getToken('pemilik')];
         $parameters = ['pesan' => 'uji coba'];
         $this->post('/services/' . $data->id . '/chat', $parameters, $header);
         $this->seeStatusCode(200);

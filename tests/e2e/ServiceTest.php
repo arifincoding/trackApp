@@ -5,21 +5,27 @@ use App\Models\User;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Broken;
+use App\Models\Category;
 use App\Models\History;
+use App\Models\Responbility;
 use Illuminate\Support\Carbon;
+use Laravel\Lumen\Testing\DatabaseMigrations;
 
 class ServiceTest extends TestCase
 {
 
+    use DatabaseMigrations;
+
     // create
     public function testShouldCreateService()
     {
+        Category::factory()->create(['nama' => 'test']);
         $parameters = [
             'namaCustomer' => 'saitama',
             'noHp' => '085235690084',
             'bisaWA' => false,
             'namaProduk' => 'laptop testing',
-            'kategori' => 'notebook',
+            'kategori' => 'test',
             'keluhan' => 'lagi ditesting',
             'butuhPersetujuan' => false,
             'kelengkapan' => 'baterai',
@@ -28,7 +34,7 @@ class ServiceTest extends TestCase
             'estimasiBiaya' => '2000',
             'cacatProduk' => 'baret'
         ];
-        $this->post('/services', $parameters, ['Authorization' => 'Bearer ' . $this->cs()]);
+        $this->post('/services', $parameters, ['Authorization' => 'Bearer ' . $this->getToken('customer service')]);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -42,13 +48,16 @@ class ServiceTest extends TestCase
     // update
     public function testShouldUpdateService()
     {
-        $data = Service::orderByDesc('id')->first();
+        Category::factory()->create(['nama' => 'test']);
+        Product::factory()->create(['kategori' => 'test']);
+        Customer::factory()->create();
+        Service::factory()->create(['idProduct' => 1, 'idCustomer' => 1]);
         $parameters = [
             'namaCustomer' => 'goku',
             'noHp' => '085235690023',
             'bisaWA' => true,
             'namaProduk' => 'hp testing',
-            'kategori' => 'hp',
+            'kategori' => 'test',
             'keluhan' => 'lagi ditest',
             'butuhPersetujuan' => true,
             'kelengkapan' => 'tas',
@@ -57,7 +66,7 @@ class ServiceTest extends TestCase
             'estimasiBiaya' => '7000',
             'cacatProduk' => 'mulus'
         ];
-        $this->put('/services/' . $data->id, $parameters, ['Authorization' => 'Bearer ' . $this->cs()]);
+        $this->put('/services/1', $parameters, ['Authorization' => 'Bearer ' . $this->getToken('customer service')]);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -71,7 +80,10 @@ class ServiceTest extends TestCase
     // get all
     public function testShouldReturnAllService()
     {
-        $this->get('/services', ['Authorization' => 'Bearer ' . $this->cs()]);
+        Customer::factory()->count(3)->create();
+        Product::factory()->count(3)->create();
+        Service::factory()->count(3)->sequence(fn ($sequence) => ['idCustomer' => $sequence->index + 1, 'idProduct' => $sequence->index + 1])->create();
+        $this->get('/services', ['Authorization' => 'Bearer ' . $this->getToken('customer service')]);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -99,10 +111,16 @@ class ServiceTest extends TestCase
     // get service queue
     public function testShouldReturnAllServiceQueue()
     {
-
-        $data = User::where('peran', 'teknisi')->first();
-        $header = ['Authorization' => 'Bearer ' . $this->teknisi()];
-        $this->get('/services/' . $data->username . '/queue', $header);
+        $token = $this->getToken('teknisi');
+        $category = Category::factory()->count(3)->create();
+        $categoryArr = $category->toArray();
+        Responbility::factory()->count(3)->sequence(fn ($sequence) => ['idKategori' => $sequence->index + 1])->create(['username' => '2211001']);
+        Product::factory()->count(3)->sequence(function ($sequence) use ($categoryArr) {
+            return ['kategori' => $categoryArr[$sequence->index]['nama']];
+        })->create();
+        Service::factory()->count(3)->sequence(fn ($sequence) => ['idProduct' => $sequence->index + 1])->create(['status' => 'antri', 'usernameTeknisi' => null]);
+        $header = ['Authorization' => 'Bearer ' . $token];
+        $this->get('/services/2211001/queue', $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -124,10 +142,11 @@ class ServiceTest extends TestCase
     // get service progress
     public function testShouldReturnAllServiceProgress()
     {
-
-        $data = User::where('peran', 'teknisi')->first();
-        $header = ['Authorization' => 'Bearer ' . $this->teknisi()];
-        $this->get('/services/' . $data->username . '/progress', $header);
+        $token = $this->getToken('teknisi');
+        Product::factory()->count(3)->create();
+        Service::factory()->count(3)->sequence(fn ($sequence) => ['idProduct' => $sequence->index + 1])->create(['usernameTeknisi' => '2211001']);
+        $header = ['Authorization' => 'Bearer ' . $token];
+        $this->get('/services/2211001/progress', $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -149,10 +168,10 @@ class ServiceTest extends TestCase
     // update service status
     public function testShouldUpdateServiceStatus()
     {
-        $data = Service::orderByDesc('id')->first();
+        Service::factory()->count(3)->create(['status' => 'antri']);
         $parameters = ['status' => 'mulai diagnosa'];
-        $header = ['Authorization' => 'Bearer ' . $this->teknisi()];
-        $this->put('/services/' . $data->id . '/status', $parameters, $header);
+        $header = ['Authorization' => 'Bearer ' . $this->getToken('teknisi')];
+        $this->put('/services/1/status', $parameters, $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -166,9 +185,9 @@ class ServiceTest extends TestCase
     // set confirmation cost
     public function testShouldSetConfirmCost()
     {
-        $data = Service::orderByDesc('id')->first();
-        $header = ['Authorization' => 'Bearer ' . $this->owner()];
-        $this->put('/services/' . $data->id . '/confirm-cost', [], $header);
+        Service::factory()->count(3)->create();
+        $header = ['Authorization' => 'Bearer ' . $this->getToken('pemilik')];
+        $this->put('/services/1/confirm-cost', [], $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -182,10 +201,10 @@ class ServiceTest extends TestCase
     // update warranty
     public function testShouldUpdateServiceWarranty()
     {
-        $data = Service::orderByDesc('id')->first();
+        Service::factory()->count(3)->create();
         $parameters = ['garansi' => '1 bulan'];
-        $header = ['Authorization' => 'Bearer ' . $this->owner()];
-        $this->put('/services/' . $data->id . '/warranty', $parameters, $header);
+        $header = ['Authorization' => 'Bearer ' . $this->getToken('pemilik')];
+        $this->put('/services/1/warranty', $parameters, $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -199,10 +218,10 @@ class ServiceTest extends TestCase
     // set service confirmation
     public function testShouldSetServiceConfirmation()
     {
-        $data = Service::orderByDesc('id')->first();
+        Service::factory()->count(3)->create();
         $parameters = ['disetujui' => true];
-        $header = ['Authorization' => 'Bearer ' . $this->owner()];
-        $this->put('/services/' . $data->id . '/confirmation', $parameters, $header);
+        $header = ['Authorization' => 'Bearer ' . $this->getToken('pemilik')];
+        $this->put('/services/1/confirmation', $parameters, $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -216,9 +235,9 @@ class ServiceTest extends TestCase
     // set service taking
     public function testShouldSetServiceTake()
     {
-        $data = Service::orderByDesc('id')->first();
-        $header = ['Authorization' => 'Bearer ' . $this->cs()];
-        $this->put('/services/' . $data->id . '/take', [], $header);
+        Service::factory()->count(3)->create(['garansi' => '1 bulan']);
+        $header = ['Authorization' => 'Bearer ' . $this->getToken('customer service')];
+        $this->put('/services/1/take', [], $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -232,9 +251,9 @@ class ServiceTest extends TestCase
     // delete service
     public function testShouldDeleteService()
     {
-        $data = Service::orderByDesc('id')->first();
-        $header = ['Authorization' => 'Bearer ' . $this->owner()];
-        $this->delete('/services/' . $data->id, $header);
+        Service::factory()->for(Customer::factory(), 'klien')->for(Product::factory(), 'produk')->has(Broken::factory()->count(3), 'kerusakan')->has(History::factory()->count(3), 'riwayat')->create();
+        $header = ['Authorization' => 'Bearer ' . $this->getToken('pemilik')];
+        $this->delete('/services/1', $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -242,51 +261,12 @@ class ServiceTest extends TestCase
         ]);
     }
 
-    private function create()
-    {
-        $customer = Customer::create([
-            'nama' => 'ujiCoba',
-            'noHp' => '6285715463861',
-            'bisaWA' => true
-        ]);
-        $product = Product::create([
-            'nama' => 'testing',
-            'kategori' => 'hp'
-        ]);
-        $service = Service::create([
-            'kode' => '123456789',
-            'keluhan' => 'testing',
-            'status' => 'antri',
-            'idCustomer' => $customer->id,
-            'idProduct' => $product->id,
-            'butuhPersetujuan' => true,
-            'disetujui' => true,
-            'konfirmasiBiaya' => false,
-            'diambil' => false,
-            'waktuMasuk' => Carbon::now('GMT+7'),
-            'usernameCS' => '2206003',
-            'usernameTeknisi' => '2206002'
-        ]);
-        $broken = Broken::create([
-            'judul' => 'lagi dicoba',
-            'deskripsi' => 'in test mode',
-            'idService' => $service->id
-        ]);
-        $history = History::create([
-            'idService' => $service->id,
-            'status' => 'antri',
-            'pesan' => 'antrinya dicoba',
-            'waktu' => Carbon::now('GMT+7')
-        ]);
-    }
-
     // get service by id with brokens,customer and product
     public function testShouldreturnServiceWithAllRelation()
     {
-        $this->create();
-        $data = Service::orderByDesc('id')->first();
-        $header = ['Authorization' => 'Bearer ' . $this->cs()];
-        $this->get('/services/' . $data->id . '/detail?include=klien,produk,kerusakan', $header);
+        Service::factory()->for(Customer::factory(), 'klien')->for(Product::factory(), 'produk')->has(Broken::factory()->count(3), 'kerusakan')->create();
+        $header = ['Authorization' => 'Bearer ' . $this->getToken('customer service')];
+        $this->get('/services/1/detail?include=klien,produk,kerusakan', $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -314,9 +294,9 @@ class ServiceTest extends TestCase
 
     public function testShouldreturnServiceWithKlien()
     {
-        $data = Service::orderByDesc('id')->first();
-        $header = ['Authorization' => 'Bearer ' . $this->cs()];
-        $this->get('/services/' . $data->id . '/detail?include=klien', $header);
+        Service::factory()->for(Customer::factory(), 'klien')->for(Product::factory(), 'produk')->has(Broken::factory()->count(3), 'kerusakan')->create();
+        $header = ['Authorization' => 'Bearer ' . $this->getToken('customer service')];
+        $this->get('/services/1/detail?include=klien', $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -333,9 +313,9 @@ class ServiceTest extends TestCase
 
     public function testShouldreturnServiceWithProduk()
     {
-        $data = Service::orderByDesc('id')->first();
-        $header = ['Authorization' => 'Bearer ' . $this->cs()];
-        $this->get('/services/' . $data->id . '/detail?include=produk', $header);
+        Service::factory()->for(Customer::factory(), 'klien')->for(Product::factory(), 'produk')->has(Broken::factory()->count(3), 'kerusakan')->create();
+        $header = ['Authorization' => 'Bearer ' . $this->getToken('customer service')];
+        $this->get('/services/1/detail?include=produk', $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -354,9 +334,9 @@ class ServiceTest extends TestCase
 
     public function testShouldreturnServiceWithKerusakan()
     {
-        $data = Service::orderByDesc('id')->first();
-        $header = ['Authorization' => 'Bearer ' . $this->cs()];
-        $this->get('/services/' . $data->id . '/detail?include=kerusakan', $header);
+        Service::factory()->for(Customer::factory(), 'klien')->for(Product::factory(), 'produk')->has(Broken::factory()->count(3), 'kerusakan')->create();
+        $header = ['Authorization' => 'Bearer ' . $this->getToken('customer service')];
+        $this->get('/services/1/detail?include=kerusakan', $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -375,9 +355,9 @@ class ServiceTest extends TestCase
     // get service by id
     public function testShouldReturnService()
     {
-        $data = Service::orderByDesc('id')->first();
-        $header = ['Authorization' => 'Bearer ' . $this->cs()];
-        $this->get('/services/' . $data->id . '/detail', $header);
+        Service::factory()->for(Customer::factory(), 'klien')->for(Product::factory(), 'produk')->has(Broken::factory()->count(3), 'kerusakan')->create();
+        $header = ['Authorization' => 'Bearer ' . $this->getToken('customer service')];
+        $this->get('/services/1/detail', $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -391,6 +371,7 @@ class ServiceTest extends TestCase
     // track
     public function testShouldReturnTrackingInfo()
     {
+        Service::factory()->for(Customer::factory(), 'klien')->for(Product::factory(), 'produk')->has(Broken::factory()->count(3), 'kerusakan')->has(History::factory()->count(3), 'riwayat')->create();
         $data = Service::orderByDesc('id')->first();
         $this->get('/services/' . $data->kode . '/track');
         $this->seeStatusCode(200);
@@ -420,11 +401,5 @@ class ServiceTest extends TestCase
                 ]]
             ]
         ]);
-
-        Customer::where('id', $data->idCustomer)->delete();
-        Product::where('id', $data->idProduct)->delete();
-        Broken::where('idService', $data->id)->delete();
-        History::where('idService', $data->id)->delete();
-        Service::where('id', $data->id)->delete();
     }
 }

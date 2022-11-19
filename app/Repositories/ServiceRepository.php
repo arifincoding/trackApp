@@ -57,8 +57,8 @@ class ServiceRepository extends Repository implements ServiceRepoContract
             return collect([]);
         }
         $resp = [];
-        foreach ($responbility['kategori'] as $item) {
-            array_push($resp, $item['nama']);
+        foreach ($responbility as $item) {
+            array_push($resp, $item['kategori']['nama']);
         }
         $data = $this->model->with('produk')->where('status', 'antri')->orderByDesc('id');
         $data->whereHas('produk', function ($q) use ($resp) {

@@ -27,6 +27,7 @@ class BrokenService implements BrokenServiceContract
 
     public function getListBrokenByIdService(int $idService): array
     {
+        $this->serviceRepository->findById($idService);
         Log::info("User is trying to accessing all broken data by id service", ['id service' => $idService]);
         $query = $this->brokenRepository->getListDataByIdService($idService);
         Log::info("User is accessing all broken data by id Service");

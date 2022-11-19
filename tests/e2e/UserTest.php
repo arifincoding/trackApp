@@ -1,10 +1,15 @@
 <?php
 
-class UserTest extends TestCase{
-    
+use Laravel\Lumen\Testing\DatabaseMigrations;
+
+class UserTest extends TestCase
+{
+
+    use DatabaseMigrations;
     // get by id
-    public function testShouldReturnAccount(){
-        $this->get('/user/account',['Authorization'=>'Bearer '.$this->cs()]);
+    public function testShouldReturnAccount()
+    {
+        $this->get('/user/account', ['Authorization' => 'Bearer ' . $this->getToken('customer service')]);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -20,17 +25,18 @@ class UserTest extends TestCase{
                 'email',
                 'alamat'
             ]
-            ]);
+        ]);
     }
 
     // update
-    public function testShouldUpdateAccount(){
+    public function testShouldUpdateAccount()
+    {
         $params = [
-            'email'=>'mark@yahoo.com',
-            'noHp'=>'085235690084',
-            'alamat'=>'pojok kampung'
+            'email' => 'mark@yahoo.com',
+            'noHp' => '085235690084',
+            'alamat' => 'pojok kampung'
         ];
-        $this->put('/user/account',$params,['Authorization'=>'Bearer '.$this->cs()]);
+        $this->put('/user/account', $params, ['Authorization' => 'Bearer ' . $this->getToken('customer service')]);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -39,12 +45,13 @@ class UserTest extends TestCase{
     }
 
     // update password
-    public function testShouldChangePassword(){
+    public function testShouldChangePassword()
+    {
         $params = [
-            'sandiLama'=>'GuBjhG6I',
-            'sandiBaru'=>'GuBjhG6I'
+            'sandiLama' => 'rahasia',
+            'sandiBaru' => 'GuBjhG6I'
         ];
-        $this->put('/user/change-password',$params,['Authorization'=>'Bearer '.$this->cs()]);
+        $this->put('/user/change-password', $params, ['Authorization' => 'Bearer ' . $this->getToken('customer service')]);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',

@@ -1,10 +1,18 @@
 <?php
 
 use App\Models\User;
+use Laravel\Lumen\Testing\DatabaseMigrations;
 
 class EmployeeTest extends TestCase
 {
 
+    use DatabaseMigrations;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        User::factory()->count(2)->create(['peran' => 'teknisi']);
+    }
     // create employee
     public function testShouldCreateEmployee()
     {
@@ -17,7 +25,7 @@ class EmployeeTest extends TestCase
             'peran' => 'teknisi',
             'email' => 'pikachu@yahoo.com'
         ];
-        $header = ['Authorization' => 'Bearer ' . $this->owner()];
+        $header = ['Authorization' => 'Bearer ' . $this->getToken('pemilik')];
 
         $this->post('/employes', $parameters, $header);
         $this->seeStatusCode(200);
@@ -33,7 +41,7 @@ class EmployeeTest extends TestCase
     // get all employee
     public function testShouldReturnAllEmployee()
     {
-        $header = ['Authorization' => 'Bearer ' . $this->owner()];
+        $header = ['Authorization' => 'Bearer ' . $this->getToken('pemilik')];
         $this->get('/employes', $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
@@ -52,7 +60,6 @@ class EmployeeTest extends TestCase
     // update employee
     public function testShouldUpdateEmployee()
     {
-        $data = User::orderByDesc('id')->first();
         $parameters = [
             'namaDepan' => 'saitama',
             'namaBelakang' => 'coba testing',
@@ -62,9 +69,9 @@ class EmployeeTest extends TestCase
             'peran' => 'teknisi',
             'email' => 'saitama@gmail.com'
         ];
-        $header = ['Authorization' => 'Bearer ' . $this->owner()];
+        $header = ['Authorization' => 'Bearer ' . $this->getToken('pemilik')];
 
-        $this->put('/employes/' . $data->id, $parameters, $header);
+        $this->put('/employes/1', $parameters, $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -78,9 +85,8 @@ class EmployeeTest extends TestCase
     // get employee by id
     public function testShouldReturnEmployee()
     {
-        $data = User::orderByDesc('id')->first();
-        $header = ['Authorization' => 'Bearer ' . $this->owner()];
-        $this->get('/employes/' . $data->id, $header);
+        $header = ['Authorization' => 'Bearer ' . $this->getToken('pemilik')];
+        $this->get('/employes/1', $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -102,9 +108,8 @@ class EmployeeTest extends TestCase
     // delete employee
     public function testShouldDeleteEmployee()
     {
-        $data = User::orderByDesc('id')->first();
-        $header = ['Authorization' => 'Bearer ' . $this->owner()];
-        $this->delete('/employes/' . $data->id, $header);
+        $header = ['Authorization' => 'Bearer ' . $this->getToken('pemilik')];
+        $this->delete('/employes/1', $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',

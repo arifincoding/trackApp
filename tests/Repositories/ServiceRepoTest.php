@@ -5,7 +5,6 @@ use App\Models\Category;
 use App\Models\Customer;
 use App\Models\History;
 use App\Models\Product;
-use App\Models\Responbility;
 use App\Models\Service;
 use Illuminate\Support\Carbon;
 use Laravel\Lumen\Testing\DatabaseMigrations;
@@ -57,19 +56,19 @@ class ServiceRepoTest extends TestCase
 
     public function testShouldGetListServiceQueue()
     {
-        $category = Category::factory()->count(5)->create();
-        $status = ['proses', 'antri', 'antri', 'antri', 'selesai'];
-        $product = Product::factory()->create(['kategori' => 'wortel']);
-        Service::factory()->for($product, 'produk')->create(['status' => 'antri']);
-        foreach ($category as $key => $item) {
-            $product = Product::factory()->create(['kategori' => $item->nama]);
-            Service::factory()->for($product, 'produk')->create([
-                'status' => $status[$key]
-            ]);
-            $responbility['kategori'][$key] = $item->toArray();
+        $category = Category::factory()->count(7)->create();
+        $status = ['antri', 'proses', 'antri', 'antri', 'antri', 'selesai', 'antri'];
+        Product::factory()->count(7)->sequence(function ($sequence) use ($category) {
+            return ['kategori' => $category[$sequence->index]->nama];
+        })->create();
+        Service::factory()->count(7)->sequence(function ($sequence) use ($status) {
+            return ['idProduct' => $sequence->index + 1, 'status' => $status[$sequence->index]];
+        });
+        $responbility = [];
+        $j = 0;
+        for ($i = 2; $i < 5; $i++) {
+            $responbility[$j++]['kategori'] = ['nama' => $category[$i]->id];
         }
-        $product = Product::factory()->create(['kategori' => 'bayam']);
-        Service::factory()->for($product, 'produk')->create(['status' => 'antri']);
         $service = Service::with('produk')->whereIn('id', [3, 4, 5])->orderByDesc('id')->get();
         $result = $this->repository->getListDataQueue($responbility);
         $this->assertEquals($service->toArray(), $result->toArray());

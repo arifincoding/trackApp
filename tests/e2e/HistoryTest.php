@@ -2,17 +2,21 @@
 
 use App\Models\History;
 use App\Models\Service;
+use Laravel\Lumen\Testing\DatabaseMigrations;
 
-class HistoryTest extends TestCase{
-    
+class HistoryTest extends TestCase
+{
+
+    use DatabaseMigrations;
+
     // create
-    public function testShouldCreateHistory(){
-        $data = Service::orderByDesc('id')->first();
+    public function testShouldCreateHistory()
+    {
         $params = [
-            'status'=>'perbaikan selesai',
-            'pesan'=>'perbaikan selesai cuy'
+            'status' => 'perbaikan selesai',
+            'pesan' => 'perbaikan selesai cuy'
         ];
-        $this->post('/services/'.$data->id.'/history',$params,['Authorization'=>'Bearer '.$this->teknisi()]);
+        $this->post('/services/1/history', $params, ['Authorization' => 'Bearer ' . $this->getToken('teknisi')]);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
@@ -20,8 +24,6 @@ class HistoryTest extends TestCase{
             'data' => [
                 'idRiwayat'
             ]
-            ]);
-        $history = History::where('idService',$data->id)->orderByDesc('id')->first();
-        History::where('id',$history->id)->delete();
+        ]);
     }
 }
