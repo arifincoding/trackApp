@@ -10,19 +10,19 @@ use Illuminate\Support\Facades\Log;
 class CategoryService implements CategoryServiceContract
 {
     private $categoryRepository;
-    private $categoryValidator;
+    private $validator;
 
     public function __construct(CategoryRepository $category, CategoryValidation $validator)
     {
         $this->categoryRepository = $category;
-        $this->categoryValidator = $validator;
+        $this->validator = $validator;
     }
 
     public function getAllCategory(array $inputs): array
     {
         Log::info("trying to access all categories data", ["query" => $inputs]);
-        $this->categoryValidator->query();
-        $this->categoryValidator->validate($inputs, 'categories');
+        $this->validator->query();
+        $this->validator->validate($inputs, 'categories');
         $limit = $inputs['limit'] ?? 0;
         $search = $inputs['cari'] ?? '';
         $data = $this->categoryRepository->getListData($limit, $search);
@@ -49,8 +49,8 @@ class CategoryService implements CategoryServiceContract
     public function newCategory(array $inputs): array
     {
         Log::info("User is trying to create a single category data", ['data' => $inputs]);
-        $this->categoryValidator->post();
-        $this->categoryValidator->validate($inputs, 'create');
+        $this->validator->post();
+        $this->validator->validate($inputs, 'create');
         $data = $this->categoryRepository->save($inputs);
         Log::info("User create a single category data successfully", ["id category" => $data->id]);
         return ['idKategori' => $data->id];
@@ -59,8 +59,8 @@ class CategoryService implements CategoryServiceContract
     public function updateCategoryById(array $inputs, int $id): array
     {
         Log::info("User is trying to update a single category data by id category", ["id category" => $id, "data" => $inputs]);
-        $this->categoryValidator->post($id);
-        $this->categoryValidator->validate($inputs, 'update');
+        $this->validator->post($id);
+        $this->validator->validate($inputs, 'update');
         $data = $this->categoryRepository->save($inputs, $id);
         Log::info("User update a single category data by id category successfully", ["id category" => $data->id]);
         return ['idKategori' => $data->id];

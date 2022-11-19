@@ -15,13 +15,13 @@ class  ResponbilityService implements ResponbilityServiceContract
 {
     private $responbilityRepository;
     private $userRepository;
-    private $responbilityValidator;
+    private $validator;
 
     public function __construct(ResponbilityRepository $responbility, UserRepository $user, ResponbilityValidation $validator)
     {
         $this->responbilityRepository = $responbility;
         $this->userRepository = $user;
-        $this->responbilityValidator = $validator;
+        $this->validator = $validator;
     }
 
     public function getAllRespobilities(string $username): array
@@ -42,8 +42,8 @@ class  ResponbilityService implements ResponbilityServiceContract
     public function newResponbilities(array $inputs, int $idUser): array
     {
         Log::info("User is trying to create responbilities data by id user", ['data' => $inputs]);
-        $this->responbilityValidator->post($idUser, $inputs);
-        $this->responbilityValidator->validate($inputs, 'create');
+        $this->validator->post($idUser, $inputs);
+        $this->validator->validate($inputs, 'create');
         $findUser = $this->userRepository->findById($idUser);
         Log::info("user data found for creating responbilities data by id user", ["id user" => $findUser->id]);
         if ($findUser->peran !== 'teknisi') {

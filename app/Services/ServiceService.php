@@ -29,7 +29,7 @@ class ServiceService implements ServiceServiceContract
     private $customerRepository;
     private $brokenRepository;
     private $productRepository;
-    private $serviceValidator;
+    private $validator;
 
     public function __construct(ServiceRepository $service, HistoryRepository $history, ResponbilityRepository $responbility, CustomerRepository $customer, BrokenRepository $broken, ProductRepository $product, ServiceValidation $validator)
     {
@@ -39,7 +39,7 @@ class ServiceService implements ServiceServiceContract
         $this->customerRepository = $customer;
         $this->brokenRepository = $broken;
         $this->productRepository = $product;
-        $this->serviceValidator = $validator;
+        $this->validator = $validator;
     }
 
     public function getListService(array $inputs = []): array
@@ -116,7 +116,7 @@ class ServiceService implements ServiceServiceContract
     public function newService(array $inputs): array
     {
         Log::info("User is trying to create a single service data", ['data' => $inputs]);
-        $this->serviceValidator->validate($inputs, 'create');
+        $this->validator->validate($inputs, 'create');
         $input = $this->inputsParse($inputs, true);
         $input['service'] += [
             'idCustomer' => $this->customerRepository->create($input['customer']),
@@ -132,7 +132,7 @@ class ServiceService implements ServiceServiceContract
     public function updateServiceById(array $inputs, int $id): array
     {
         Log::info("user is trying to update a single service data by id service", ["id service" => $id, "data" => $inputs]);
-        $this->serviceValidator->validate($inputs, 'update');
+        $this->validator->validate($inputs, 'update');
         $find = $this->serviceRepository->findById($id);
         Log::info("service data found for updating a single service data by id service", ["id service" => $find->id]);
         $input = $this->inputsParse($inputs);
@@ -146,8 +146,8 @@ class ServiceService implements ServiceServiceContract
     public function updateServiceStatus(array $inputs, int $id): array
     {
         Log::info("user trying to update service status in a single service data by id service", ["id service" => $id, "data" => $inputs]);
-        $this->serviceValidator->statusService();
-        $this->serviceValidator->validate($inputs, 'updateStatus');
+        $this->validator->statusService();
+        $this->validator->validate($inputs, 'updateStatus');
         $inputs['usernameTeknisi'] = Auth::payload()->get('username');
         $data = $this->serviceRepository->save($inputs, $id);
         Log::info("User update service status in a single service data by id service successfully", ["id service" => $data->id]);
@@ -209,8 +209,8 @@ class ServiceService implements ServiceServiceContract
     public function updateServiceWarranty(array $inputs, int $id): array
     {
         Log::info("User trying to update service warranty in a single service data by id service", ["id service" => $id, "data" => $inputs]);
-        $this->serviceValidator->serviceWarranty();
-        $this->serviceValidator->validate($inputs, 'updateWarranty');
+        $this->validator->serviceWarranty();
+        $this->validator->validate($inputs, 'updateWarranty');
         $data = $this->serviceRepository->save($inputs, $id);
         Log::info("user update service warranty in a single service data by id service successfully", ["id service" => $data->id]);
         return ["idService" => $data->id];
@@ -219,8 +219,8 @@ class ServiceService implements ServiceServiceContract
     public function setServiceConfirmation(array $inputs, int $id): array
     {
         Log::info("User trying to set service confirmation by id service", ["id service" => $id, 'data' => $inputs]);
-        $this->serviceValidator->confirmation($inputs);
-        $this->serviceValidator->validate($inputs, 'updateConfirmation');
+        $this->validator->confirmation($inputs);
+        $this->validator->validate($inputs, 'updateConfirmation');
         $find = $this->brokenRepository->findOneDataByWhere(['idService' => $id, 'disetujui' => null]);
         if ($find !== null) {
             Log::warning("cannot set service confirmation caused a single broken data by id service and agreed is null found", ['id broken' => $find->id]);
