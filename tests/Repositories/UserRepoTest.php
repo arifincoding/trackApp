@@ -3,7 +3,7 @@
 use App\Models\User;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
-class UserRepotest extends TestCase
+class UserRepoTest extends TestCase
 {
     use DatabaseMigrations;
 

@@ -6,7 +6,7 @@ use App\Services\CategoryService;
 use App\Validations\CategoryValidation;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
-class CategorySrvtest extends TestCase
+class CategorySrvTest extends TestCase
 {
 
     use DatabaseMigrations;
