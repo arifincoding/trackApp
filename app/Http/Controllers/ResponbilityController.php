@@ -10,7 +10,7 @@ use App\Http\Controllers\Contracts\ResponbilityControllerContract;
 class ResponbilityController extends Controller implements ResponbilityControllerContract
 {
 
-    private $service;
+    private ResponbilityService $service;
 
     public function __construct(ResponbilityService $service)
     {

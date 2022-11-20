@@ -10,7 +10,7 @@ use App\Http\Controllers\Contracts\BrokenControllerContract;
 class BrokenController extends Controller implements BrokenControllerContract
 {
 
-    protected $brokenService;
+    protected BrokenService $brokenService;
 
     public function __construct(BrokenService $broken)
     {

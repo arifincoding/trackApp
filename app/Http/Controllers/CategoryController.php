@@ -10,7 +10,7 @@ use App\Http\Controllers\Contracts\CategoryControllerContract;
 class CategoryController extends Controller implements CategoryControllerContract
 {
 
-    private $service;
+    private CategoryService $service;
 
     function __construct(CategoryService $service)
     {

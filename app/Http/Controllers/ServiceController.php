@@ -10,7 +10,7 @@ use App\Http\Controllers\Contracts\ServiceControllerContract;
 class ServiceController extends Controller implements ServiceControllerContract
 {
 
-    private $service;
+    private ServiceService $service;
 
     function __construct(ServiceService $service)
     {

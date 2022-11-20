@@ -10,7 +10,7 @@ use App\Http\Controllers\Contracts\HistoryControllerContract;
 class HistoryController extends Controller implements HistoryControllerContract
 {
 
-    private $service;
+    private HistoryService $service;
 
     public function __construct(HistoryService $service)
     {

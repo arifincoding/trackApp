@@ -23,13 +23,13 @@ use Illuminate\Support\Carbon;
 
 class ServiceService implements ServiceServiceContract
 {
-    private $serviceRepository;
-    private $historyRepository;
-    private $responbilityRepository;
-    private $customerRepository;
-    private $brokenRepository;
-    private $productRepository;
-    private $validator;
+    private ServiceRepository $serviceRepository;
+    private HistoryRepository $historyRepository;
+    private ResponbilityRepository $responbilityRepository;
+    private CustomerRepository $customerRepository;
+    private BrokenRepository $brokenRepository;
+    private ProductRepository $productRepository;
+    private ServiceValidation $validator;
 
     public function __construct(ServiceRepository $service, HistoryRepository $history, ResponbilityRepository $responbility, CustomerRepository $customer, BrokenRepository $broken, ProductRepository $product, ServiceValidation $validator)
     {

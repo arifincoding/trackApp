@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 class Repository implements RepositoryContract
 {
 
-    protected $model;
+    protected Model $model;
     protected string $modelName = "model";
 
     function __construct(Model $model, String $name)

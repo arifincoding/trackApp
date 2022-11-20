@@ -14,9 +14,9 @@ use Illuminate\Support\Facades\Log;
 class BrokenService implements BrokenServiceContract
 {
 
-    private $brokenRepository;
-    private $serviceRepository;
-    private $validator;
+    private BrokenRepository $brokenRepository;
+    private ServiceRepository $serviceRepository;
+    private BrokenValidation $validator;
 
     public function __construct(BrokenRepository $broken, ServiceRepository $service, BrokenValidation $validator)
     {

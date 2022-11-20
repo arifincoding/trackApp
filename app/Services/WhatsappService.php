@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\Log;
 
 class WhatsappService implements WhatsappServiceContract
 {
-    private $serviceRepository;
-    private $customerRepository;
+    private ServiceRepository $serviceRepository;
+    private CustomerRepository $customerRepository;
 
     public function __construct(CustomerRepository $customer, ServiceRepository $service)
     {

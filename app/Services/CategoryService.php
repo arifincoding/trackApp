@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Log;
 
 class CategoryService implements CategoryServiceContract
 {
-    private $categoryRepository;
-    private $validator;
+    private CategoryRepository $categoryRepository;
+    private CategoryValidation $validator;
 
     public function __construct(CategoryRepository $category, CategoryValidation $validator)
     {

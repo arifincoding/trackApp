@@ -10,7 +10,7 @@ use App\Http\Controllers\Contracts\WhatsappControllerContract;
 class WhatsappController extends Controller implements WhatsappControllerContract
 {
 
-    private $service;
+    private WhatsappService $service;
 
     public function __construct(WhatsappService $service)
     {

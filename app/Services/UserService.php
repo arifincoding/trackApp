@@ -16,9 +16,9 @@ use Illuminate\Support\Facades\Log;
 
 class UserService implements UserServiceContract
 {
-    private $userRepository;
-    private $responbilityRepository;
-    private $validator;
+    private UserRepository $userRepository;
+    private ResponbilityRepository $responbilityRepository;
+    private UserValidation $validator;
 
     public function __construct(UserRepository $user, ResponbilityRepository $responbility, UserValidation $validator)
     {

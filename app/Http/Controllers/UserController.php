@@ -10,7 +10,7 @@ use App\Http\Controllers\Contracts\UserControllerContract;
 class UserController extends Controller implements UserControllerContract
 {
 
-    private $service;
+    private UserService $service;
 
     function __construct(UserService $service)
     {

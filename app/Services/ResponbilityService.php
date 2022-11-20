@@ -13,9 +13,9 @@ use Illuminate\Support\Facades\Log;
 
 class  ResponbilityService implements ResponbilityServiceContract
 {
-    private $responbilityRepository;
-    private $userRepository;
-    private $validator;
+    private ResponbilityRepository $responbilityRepository;
+    private UserRepository $userRepository;
+    private ResponbilityValidation $validator;
 
     public function __construct(ResponbilityRepository $responbility, UserRepository $user, ResponbilityValidation $validator)
     {

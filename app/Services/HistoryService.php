@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\Log;
 
 class HistoryService implements HistoryServiceContract
 {
-    private $historyRepository;
-    private $validator;
+    private HistoryRepository $historyRepository;
+    private HistoryValidation $validator;
 
     public function __construct(HistoryRepository $history, HistoryValidation $validator)
     {
