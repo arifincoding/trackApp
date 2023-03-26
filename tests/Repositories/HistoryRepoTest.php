@@ -18,15 +18,10 @@ class HistoryRepoTest extends TestCase
 
     public function testShouldDeleteListHistoryByIdService()
     {
-        History::factory()->count(2)->create([
-            'idService' => 1
-        ]);
-        History::factory()->count(3)->create([
-            'idService' => 2
-        ]);
-        History::factory()->create([
-            'idService' => 3
-        ]);
+        $id = [1, 1, 2, 2, 2, 3];
+        History::factory()->count(6)->sequence(function ($sequence) use ($id) {
+            return  ['idService' => $id[$sequence->index]];
+        })->create();
         $result = $this->repository->deleteByIdService(2);
         $this->assertEquals(true, $result);
     }
