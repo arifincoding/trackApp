@@ -15,8 +15,8 @@ class CreateTableResponbilities extends Migration
     {
         Schema::create('responbilities', function (Blueprint $table) {
             $table->id();
-            $table->string('username',50);
-            $table->string('idKategori',30);
+            $table->string('username', 50);
+            $table->foreignId('category_id')->constrained();
         });
     }
 

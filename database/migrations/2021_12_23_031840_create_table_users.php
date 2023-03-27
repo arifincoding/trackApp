@@ -15,14 +15,14 @@ class CreateTableUsers extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('username',50)->unique()->nullable();
+            $table->string('username', 70)->unique()->nullable();
             $table->string('password')->nullable();
-            $table->string('namaDepan',30);
-            $table->string('namaBelakang',50);
-            $table->string('noHp',20)->nullable();
-            $table->string('peran',20);
-            $table->string('jenisKelamin',15);
-            $table->string('alamat')->nullable();
+            $table->string('firstname', 70);
+            $table->string('lastname', 70);
+            $table->unsignedDecimal('telp', 14, 0)->nullable();
+            $table->enum('role', ['pemilik', 'teknisi', 'customer service']);
+            $table->enum('gender', ['pria', 'wanita']);
+            $table->string('address')->nullable();
             $table->string('email')->unique();
         });
     }

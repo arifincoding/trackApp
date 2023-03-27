@@ -15,11 +15,11 @@ class CreateTableBrokens extends Migration
     {
         Schema::create('brokens', function (Blueprint $table) {
             $table->id();
-            $table->string('judul',100);
-            $table->text('deskripsi');
-            $table->bigInteger('idService')->unsigned();
-            $table->boolean('disetujui')->nullable();
-            $table->string('biaya',20)->nullable();
+            $table->string('title', 100);
+            $table->text('description');
+            $table->foreignId('service_id')->constrained();
+            $table->boolean('is_approved')->nullable();
+            $table->unsignedInteger('cost')->nullable();
         });
     }
 

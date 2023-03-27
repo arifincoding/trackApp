@@ -15,11 +15,11 @@ class CreateTableProduct extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('nama',60);
-            $table->string('kategori',30);
-            $table->string('cacatProduk')->nullable();
-            $table->string('kelengkapan',60)->nullable();
-            $table->string('catatan',100)->nullable();
+            $table->string('name', 100);
+            $table->foreignId('category_id')->constrained();
+            $table->string('product_defects')->nullable();
+            $table->string('completeness')->nullable();
+            $table->string('note')->nullable();
         });
     }
 

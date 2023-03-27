@@ -15,10 +15,10 @@ class CreateTableHistories extends Migration
     {
         Schema::create('histories', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('idService')->unsigned();
-            $table->string('status',40);
-            $table->string('pesan');
-            $table->dateTime('waktu');
+            $table->foreignId('service_id')->constrained();
+            $table->string('status', 40);
+            $table->string('message');
+            $table->timestamp('created_at');
         });
     }
 
