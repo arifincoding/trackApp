@@ -20,7 +20,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var array
      */
     protected $fillable = [
-        'username', 'password','namaDepan','namaBelakang','noHp','alamat','peran','jenisKelamin','email'
+        'username', 'password', 'firstname', 'lastname', 'telp', 'address', 'role', 'gender', 'email'
     ];
     public $timestamps = false;
 
@@ -31,12 +31,13 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         return $this->getKey();
     }
 
-    public function getJWTCustomClaims(){
+    public function getJWTCustomClaims()
+    {
         return [
-            'username'=>$this->username,
-            'role'=>$this->peran,
-            'name'=>$this->namaDepan
-        ];   
+            'username' => $this->username,
+            'role' => $this->role,
+            'name' => $this->firstname
+        ];
     }
 
     /**

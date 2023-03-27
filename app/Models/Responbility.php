@@ -10,7 +10,7 @@ class Responbility extends Model
 
     use HasFactory;
 
-    protected $fillable = ['username', 'idKategori'];
+    protected $fillable = ['username', 'category_id'];
     public $timestamps = false;
 
     public function kategori()

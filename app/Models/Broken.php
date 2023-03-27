@@ -10,6 +10,6 @@ class Broken extends Model
 
     use HasFactory;
 
-    protected $fillable = ['judul', 'disetujui', 'deskripsi', 'idService', 'biaya'];
+    protected $fillable = ['title', 'is_approved', 'description', 'service_id', 'cost'];
     public $timestamps = false;
 }

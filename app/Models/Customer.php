@@ -11,7 +11,7 @@ class Customer extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nama', 'noHp', 'bisaWA'
+        'name', 'telp', 'is_whatsapp'
     ];
     public $timestamps = false;
 }

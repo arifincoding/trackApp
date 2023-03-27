@@ -10,6 +10,6 @@ class Product extends Model
 
     use HasFactory;
 
-    protected $fillable = ['nama', 'kategori', 'cacatProduk', 'kelengkapan', 'catatan'];
+    protected $fillable = ['name', 'category_id', 'product_defects', 'completeness', 'note'];
     public $timestamps = false;
 }

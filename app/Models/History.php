@@ -11,7 +11,7 @@ class History extends Model
     use HasFactory;
 
     protected $fillable = [
-        'idService', 'status', 'pesan', 'waktu'
+        'service_id', 'status', 'message', 'created_at'
     ];
     public $timestamps = false;
 }
