@@ -19,7 +19,7 @@ class CreateTableBrokens extends Migration
             $table->text('description');
             $table->foreignId('service_id')->constrained();
             $table->boolean('is_approved')->nullable();
-            $table->unsignedInteger('cost')->nullable();
+            $table->unsignedInteger('cost')->default(0);
         });
     }
 

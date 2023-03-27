@@ -17,10 +17,10 @@ class CreateTableServices extends Migration
             $table->id();
             $table->string('code', 30)->nullable();
             $table->string('complaint');
-            $table->unsignedInteger('down_payment')->nullable();
+            $table->unsignedInteger('down_payment')->default(0);
             $table->string('status', 30);
-            $table->unsignedInteger('estimated_cost')->nullable();
-            $table->unsignedInteger('total_cost')->nullable();
+            $table->unsignedInteger('estimated_cost')->default(0);
+            $table->unsignedInteger('total_cost')->default(0);
             $table->string('warranty', 20)->nullable();
             $table->foreignId('customer_id')->constrained();
             $table->foreignId('product_id')->constrained();
