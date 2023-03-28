@@ -20,6 +20,7 @@ class CreateTableProduct extends Migration
             $table->string('product_defects')->nullable();
             $table->string('completeness')->nullable();
             $table->string('note')->nullable();
+            $table->fulltext('name');
         });
     }
 
