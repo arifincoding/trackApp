@@ -17,7 +17,7 @@ class ResponbilityRepository extends Repository implements ResponbilityRepoContr
 
     function getListDataByUsername(string $username): ?Collection
     {
-        $data = $this->model->with('kategori')->where('username', $username)->get();
+        $data = $this->model->with('category')->where('username', $username)->get();
         if ($data->toArray() == []) {
             return null;
         }
@@ -27,9 +27,9 @@ class ResponbilityRepository extends Repository implements ResponbilityRepoContr
     function create(array $inputs, string $username): bool
     {
         $arrAtribut = [];
-        foreach ($inputs['idKategori'] as $key => $item) {
+        foreach ($inputs['category_id'] as $key => $item) {
             $arrAtribut[$key]['username'] = $username;
-            $arrAtribut[$key]['idKategori'] = $item;
+            $arrAtribut[$key]['category_id'] = $item;
         }
         $this->model->insert($arrAtribut);
         return true;

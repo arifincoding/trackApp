@@ -17,28 +17,28 @@ class ServiceRepository extends Repository implements ServiceRepoContract
 
     public function getListData(array $inputs = []): Collection
     {
-        $data = $this->model->with('klien', 'produk')->orderByDesc('id');
+        $data = $this->model->with('client', 'product')->orderByDesc('id');
         // filter status service
         if (isset($inputs['status'])) {
             $data->where('status', $inputs['status']);
         }
         // filter kategori produk
-        if (isset($inputs['kategori'])) {
-            $data->whereHas('produk', function ($q) use ($inputs) {
-                $q->where('kategori', $inputs['kategori']);
+        if (isset($inputs['category'])) {
+            $data->whereHas('product', function ($q) use ($inputs) {
+                $q->where('name', $inputs['category']);
             });
         }
         //filter cari
-        if (isset($inputs['cari'])) {
+        if (isset($inputs['search'])) {
             $data->where(function ($q) use ($inputs) {
-                $q->orWhere('kode', 'LIKE', '%' . $inputs['cari'] . '%');
+                $q->orWhere('code', 'LIKE', '%' . $inputs['search'] . '%');
             });
-            $data->orWhereHas('klien', function ($q) use ($inputs) {
-                $q->where('nama', 'LIKE', '%' . $inputs['cari'] . '%');
-                $q->orWhere('noHp', 'LIKE', '%' . $inputs['cari'] . '%');
+            $data->orWhereHas('client', function ($q) use ($inputs) {
+                $q->where('name', 'LIKE', '%' . $inputs['search'] . '%');
+                $q->orWhere('telp', 'LIKE', '%' . $inputs['search'] . '%');
             });
-            $data->orWhereHas('produk', function ($q) use ($inputs) {
-                $q->where('nama', 'LIKE', '%' . $inputs['cari'] . '%');
+            $data->orWhereHas('product', function ($q) use ($inputs) {
+                $q->where('name', 'LIKE', '%' . $inputs['search'] . '%');
             });
         }
         return $data->get();
@@ -46,7 +46,7 @@ class ServiceRepository extends Repository implements ServiceRepoContract
 
     public function getDataWithRelationById(int $id): Service
     {
-        return $this->model->with(['klien', 'produk', 'kerusakan' => function ($q) {
+        return $this->model->with(['client', 'product', 'broken' => function ($q) {
             $q->orderByDesc('id');
         }])->where('id', $id)->firstOrFail();
     }
@@ -58,21 +58,21 @@ class ServiceRepository extends Repository implements ServiceRepoContract
         }
         $resp = [];
         foreach ($responbility as $item) {
-            array_push($resp, $item['kategori']['nama']);
+            array_push($resp, $item['category']['name']);
         }
-        $data = $this->model->with('produk')->where('status', 'antri')->orderByDesc('id');
-        $data->whereHas('produk', function ($q) use ($resp) {
-            $q->whereIn('kategori', $resp);
+        $data = $this->model->with('product')->where('status', 'antri')->orderByDesc('id');
+        $data->whereHas('product', function ($q) use ($resp) {
+            $q->whereIn('name', $resp);
         });
-        if (isset($inputs['kategori'])) {
-            $data->whereHas('produk', function ($q) use ($inputs) {
-                $q->where('kategori', $inputs['kategori']);
+        if (isset($inputs['category'])) {
+            $data->whereHas('product', function ($q) use ($inputs) {
+                $q->where('name', $inputs['category']);
             });
         }
-        if (isset($inputs['cari'])) {
-            $data->where('kode', 'LIKE', '%' . $inputs['cari'] . '%');
-            $data->orWhereHas('produk', function ($q) use ($inputs) {
-                $q->where('nama', 'LIKE', '%' . $inputs['cari'] . '%');
+        if (isset($inputs['search'])) {
+            $data->where('code', 'LIKE', '%' . $inputs['search'] . '%');
+            $data->orWhereHas('product', function ($q) use ($inputs) {
+                $q->where('name', 'LIKE', '%' . $inputs['search'] . '%');
             });
         }
         return $data->get();
@@ -80,19 +80,19 @@ class ServiceRepository extends Repository implements ServiceRepoContract
 
     public function getListDataMyProgress(string $username, array $inputs = []): Collection
     {
-        $data = $this->model->with('produk')->where('usernameTeknisi', $username)->orderByDesc('id');
+        $data = $this->model->with('product')->where('tecnicion_username', $username)->orderByDesc('id');
         if (isset($inputs['status'])) {
             $data->where('status', $inputs['status']);
         }
-        if (isset($inputs['kategori'])) {
-            $data->whereHas('produk', function ($q) use ($inputs) {
-                $q->where('kategori', $inputs['kategori']);
+        if (isset($inputs['category'])) {
+            $data->whereHas('product', function ($q) use ($inputs) {
+                $q->where('name', $inputs['category']);
             });
         }
-        if (isset($inputs['cari'])) {
-            $data->where('kode', 'LIKE', '%' . $inputs['cari'] . '%');
-            $data->orWhereHas('produk', function ($q) use ($inputs) {
-                $q->where('nama', 'LIKE', '%' . $inputs['cari'] . '%');
+        if (isset($inputs['search'])) {
+            $data->where('code', 'LIKE', '%' . $inputs['search'] . '%');
+            $data->orWhereHas('product', function ($q) use ($inputs) {
+                $q->where('name', 'LIKE', '%' . $inputs['search'] . '%');
             });
         }
         return $data->get();
@@ -100,11 +100,11 @@ class ServiceRepository extends Repository implements ServiceRepoContract
 
     public function getDataByCode(string $code): ?Service
     {
-        $data = $this->model->with(['produk', 'kerusakan' => function ($q) {
+        $data = $this->model->with(['product', 'broken' => function ($q) {
             $q->orderByDesc('id');
-        }, 'riwayat' => function ($q) {
+        }, 'history' => function ($q) {
             $q->orderByDesc('id');
-        }])->where('kode', $code)->first();
+        }])->where('code', $code)->first();
         return $data;
     }
 
@@ -112,7 +112,7 @@ class ServiceRepository extends Repository implements ServiceRepoContract
     {
         $date = Carbon::now('GMT+7');
         $attributs = [
-            'kode' => $date->format('y') . $date->format('m') . $date->format('d') . sprintf("%03d", $id)
+            'code' => $date->format('y') . $date->format('m') . $date->format('d') . sprintf("%03d", $id)
         ];
         $this->save($attributs, $id);
         return true;

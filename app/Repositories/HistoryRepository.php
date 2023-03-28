@@ -16,7 +16,7 @@ class HistoryRepository extends Repository implements HistoryRepoContract
 
     function deleteByIdService(int $id): bool
     {
-        $data = $this->delete($id, 'idService', false);
+        $data = $this->delete($id, 'service_id', false);
         return $data;
     }
 }

@@ -15,11 +15,13 @@ class BrokenRepository extends Repository implements BrokenRepoContract
         parent::__construct($model, 'broken');
     }
 
-    function getListDataByIdService(int $idService, array $filter = []): Collection
+    function getListDataByIdService(int $idService, array $whereFilter = []): Collection
     {
-        $data = $this->model->where('idService', $idService);
-        if ($agreed = $filter['disetujui'] ?? null) {
-            $data->where('disetujui', $agreed);
+        $data = $this->model->where('service_id', $idService);
+        if (sizeof($whereFilter) > 0) {
+            foreach ($whereFilter as $key => $where) {
+                $data->where($key, $where);
+            }
         }
         return $data->get();
     }
@@ -27,16 +29,16 @@ class BrokenRepository extends Repository implements BrokenRepoContract
     function getDataById(int $id): Broken
     {
         $attributs = [
-            'id as idKerusakan',
-            'idService',
-            'judul',
-            'deskripsi',
-            'biaya',
-            'disetujui'
+            'id as broken_id',
+            'service_id',
+            'title',
+            'description',
+            'cost',
+            'is_approved'
         ];
         $data = $this->findById($id, $attributs);
-        $data->disetujui = Formatter::boolval($data->disetujui);
-        $data->biayaString = Formatter::currency($data->biaya);
+        $data->is_approved = Formatter::boolval($data->is_approved);
+        $data->costString = Formatter::currency($data->cost);
         return $data;
     }
 
@@ -51,13 +53,13 @@ class BrokenRepository extends Repository implements BrokenRepoContract
 
     function setCostInNotAgreeToZero(int $idService): bool
     {
-        $this->model->where('idService', $idService)->where('disetujui', 0)->update(['biaya' => 0]);
+        $this->model->where('service_id', $idService)->where('is_approved', 0)->update(['cost' => 0]);
         return true;
     }
 
     function deleteByIdService(int $id): bool
     {
-        $data = $this->delete($id, 'idService', false);
+        $data = $this->delete($id, 'service_id', false);
         return $data;
     }
 }

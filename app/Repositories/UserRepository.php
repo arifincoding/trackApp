@@ -20,9 +20,9 @@ class UserRepository extends Repository implements UserRepoContract
 
     function getlistData(array $inputs = []): Collection
     {
-        $data = $this->model->where('peran', '!=', 'pemilik');
-        if ($peran = $inputs['peran'] ?? null) {
-            $data->where('peran', $peran);
+        $data = $this->model->where('role', '!=', 'pemilik');
+        if ($peran = $inputs['role'] ?? null) {
+            $data->where('role', $peran);
         }
         if ($limit = $inputs['limit'] ?? null) {
             $data->take($limit);
@@ -32,14 +32,14 @@ class UserRepository extends Repository implements UserRepoContract
 
     function getDataById(int $id): User
     {
-        $attributs = ['id as idPegawai', 'username', 'namaDepan', 'namaBelakang', 'jenisKelamin', 'noHp', 'peran', 'email', 'alamat'];
+        $attributs = ['id as employee_id', 'username', 'firstname', 'lastname', 'gender', 'telp', 'role', 'email', 'address'];
         $data = $this->findById($id, $attributs);
         return $data;
     }
 
     function findByUsername(string $username): User
     {
-        $attributs = ['id', 'username', 'namaDepan', 'namaBelakang', 'jenisKelamin', 'noHp', 'peran', 'email', 'alamat'];
+        $attributs = ['id', 'username', 'firstname', 'lastname', 'gender', 'telp', 'role', 'email', 'address'];
         $data = $this->model->select($attributs)->where('username', $username)->first();
         return $data;
     }
@@ -48,7 +48,7 @@ class UserRepository extends Repository implements UserRepoContract
     {
         $check = $this->model->where('username', $username)->firstOrFail();
         $attributs = [
-            'password' => Hash::make($inputs['sandiBaru']),
+            'password' => Hash::make($inputs['new_password']),
         ];
         $this->save($attributs, $check->id);
         return true;
