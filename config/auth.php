@@ -2,21 +2,26 @@
 
 return [
     'defaults' => [
-        'guard'=>'api',
-        'passwords'=>'users',
+        'guard' => 'api',
+        'passwords' => 'users',
     ],
-    'guards'=>[
-        'api'=>[
-            'driver'=>'jwt',
-            'provider'=>'users',
+
+    'guards' => [
+        'web' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+
+        'api' => [
+            'driver' => 'token',
+            'provider' => 'users',
+            'hash' => false,
         ],
     ],
-    'providers'=>[
-        'users'=>[
-            'driver'=>'eloquent',
-            'model'=> \App\Models\User::class
+    'providers' => [
+        'users' => [
+            'driver' => 'eloquent',
+            'model' => \App\Models\User::class
         ]
     ]
 ];
-
-?>
