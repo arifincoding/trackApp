@@ -117,7 +117,7 @@ return [
     ],
     'mysql' => [
         'mode' => 'NATURAL_LANGUAGE',
-        'model_directories' => [app()->basePath('models')],
+        'model_directories' => [app()->basePath('app')],
         'min_search_length' => 0,
         'min_fulltext_search_length' => 4,
         'min_fulltext_search_fallback' => 'LIKE',

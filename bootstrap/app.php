@@ -123,5 +123,5 @@ $app->router->group([
 ], function ($router) {
     require __DIR__ . '/../routes/web.php';
 });
-
+$app->instance('path.config', app()->basePath() . DIRECTORY_SEPARATOR . 'config');
 return $app;
