@@ -14,10 +14,10 @@ class HistoryFactory extends Factory
     public function definition()
     {
         return [
-            'idService' => $this->faker->randomNumber(2, false),
+            'service_id' => $this->faker->randomNumber(2, false),
             'status' => 'antri',
-            'pesan' => $this->faker->sentence(4),
-            'waktu' => Carbon::now('GMT+7')
+            'message' => $this->faker->sentence(4),
+            'created_at' => Carbon::now('GMT+7')
         ];
     }
 }

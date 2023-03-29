@@ -15,7 +15,7 @@ class ResponbilityFactory extends Factory
     {
         return [
             'username' => $this->faker->randomNumber(7, true),
-            'idKategori' => $this->faker->randomNumber(2, false)
+            'category_id' => $this->faker->randomNumber(2, false)
         ];
     }
 }

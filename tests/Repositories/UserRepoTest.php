@@ -1,12 +1,13 @@
 <?php
 
 use App\Models\User;
-use Laravel\Lumen\Testing\DatabaseMigrations;
+use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class UserRepoTest extends TestCase
 {
-    use DatabaseMigrations;
+    use DatabaseTransactions;
 
+    private $repository;
     public function setUp(): void
     {
         parent::setUp();
@@ -23,7 +24,7 @@ class UserRepoTest extends TestCase
     public function testShouldGetSingleDataById()
     {
         User::factory()->count(3)->cs()->create();
-        $user = User::select(['id as idPegawai', 'username', 'namaDepan', 'namaBelakang', 'jenisKelamin', 'noHp', 'peran', 'email', 'alamat'])->where('id', 2)->first();
+        $user = User::select(['id as employee_id', 'username', 'firstname', 'lastname', 'gender', 'telp', 'role', 'email', 'address'])->where('id', 2)->first();
         $result = $this->repository->getDataById(2);
         $this->assertEquals($result, $user);
     }
@@ -46,7 +47,7 @@ class UserRepoTest extends TestCase
             'username' => '2210002'
         ]);
         User::factory()->cs()->create();
-        $result = $this->repository->changePassword(['sandiBaru' => 'rahasia'], '2210002');
+        $result = $this->repository->changePassword(['new_password' => 'rahasia'], '2210002');
         $this->assertEquals(true, $result);
     }
 

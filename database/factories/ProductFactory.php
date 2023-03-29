@@ -12,11 +12,11 @@ class ProductFactory extends Factory
     public function definition()
     {
         return [
-            'nama' => $this->faker->word(),
-            'kategori' => $this->faker->word(),
-            'cacatProduk' => $this->faker->paragraph(3, false),
-            'kelengkapan' => $this->faker->sentence(3, false),
-            'catatan' => $this->faker->paragraph(3, false)
+            'name' => $this->faker->word(),
+            'category_id' => $this->faker->word(),
+            'product_defects' => $this->faker->paragraph(3, false),
+            'completeness' => $this->faker->sentence(3, false),
+            'note' => $this->faker->paragraph(3, false)
         ];
     }
 }

@@ -1,12 +1,12 @@
 <?php
 
 use App\Models\History;
-use Laravel\Lumen\Testing\DatabaseMigrations;
+use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class HistoryRepoTest extends TestCase
 {
 
-    use DatabaseMigrations;
+    use DatabaseTransactions;
 
     private $repository;
 
@@ -20,7 +20,7 @@ class HistoryRepoTest extends TestCase
     {
         $id = [1, 1, 2, 2, 2, 3];
         History::factory()->count(6)->sequence(function ($sequence) use ($id) {
-            return  ['idService' => $id[$sequence->index]];
+            return  ['service_id' => $id[$sequence->index]];
         })->create();
         $result = $this->repository->deleteByIdService(2);
         $this->assertEquals(true, $result);
@@ -29,7 +29,7 @@ class HistoryRepoTest extends TestCase
     public function testDeleteListHistoryByIdServiceShouldReturnFalse()
     {
         History::factory()->count(3)->create([
-            'idService' => 1
+            'service_id' => 1
         ]);
         $result = $this->repository->deleteByIdService(2);
         $this->assertEquals(false, $result);

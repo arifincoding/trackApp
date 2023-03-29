@@ -7,12 +7,12 @@ use App\Models\History;
 use App\Models\Product;
 use App\Models\Service;
 use Illuminate\Support\Carbon;
-use Laravel\Lumen\Testing\DatabaseMigrations;
+use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class ServiceRepoTest extends TestCase
 {
 
-    use DatabaseMigrations;
+    use DatabaseTransactions;
 
     private $repository;
 
@@ -27,13 +27,13 @@ class ServiceRepoTest extends TestCase
         $customer = Customer::factory()->count(3)->create();
         $product = Product::factory()->count(3)->create();
         foreach ($product as $key => $item) {
-            Service::factory()->count($key + 1)->for($customer[$key], 'klien')->for($product[$key], 'produk')->create();
+            Service::factory()->count($key + 1)->for($customer[$key], 'client')->for($product[$key], 'product')->create();
         }
         $result = $this->repository->getListData();
-        $service = Service::with('klien', 'produk')->orderByDesc('id')->get();
+        $service = Service::with('client', 'product')->orderByDesc('id')->get();
         $this->assertEquals($service->toArray(), $result->toArray());
-        $this->assertEquals($service[0]->klien->toArray(), $result[0]->klien->toArray());
-        $this->assertEquals($service[0]->produk->toArray(), $result[0]->produk->toArray());
+        $this->assertEquals($service[0]->client->toArray(), $result[0]->client->toArray());
+        $this->assertEquals($service[0]->product->toArray(), $result[0]->product->toArray());
     }
 
     public function testShouldGetSingleServiceByIdWithCustomerProductAndBrokens()
@@ -42,16 +42,16 @@ class ServiceRepoTest extends TestCase
         $product = Product::factory()->count(3)->create();
         $i = 1;
         foreach ($customer as $key => $item) {
-            Service::factory()->for($customer[$key], 'klien')->for($product[$key], 'produk')->has(Broken::factory()->count($i++), 'kerusakan')->create();
+            Service::factory()->for($customer[$key], 'client')->for($product[$key], 'product')->has(Broken::factory()->count($i++), 'broken')->create();
         }
-        $service = Service::with(['klien', 'produk', 'kerusakan' => function ($q) {
+        $service = Service::with(['client', 'product', 'broken' => function ($q) {
             $q->orderByDesc('id');
         }])->where('id', 2)->first();
         $result = $this->repository->getDataWithRelationById(2);
         $this->assertEquals($service->toArray(), $result->toArray());
-        $this->assertEquals($service->klien->toArray(), $result->klien->toArray());
-        $this->assertEquals($service->produk->toArray(), $result->produk->toArray());
-        $this->assertEquals($service->kerusakan->toArray(), $result->kerusakan->toArray());
+        $this->assertEquals($service->client->toArray(), $result->client->toArray());
+        $this->assertEquals($service->product->toArray(), $result->product->toArray());
+        $this->assertEquals($service->broken->toArray(), $result->broken->toArray());
     }
 
     public function testShouldGetListServiceQueue()
@@ -59,17 +59,17 @@ class ServiceRepoTest extends TestCase
         $category = Category::factory()->count(7)->create();
         $status = ['antri', 'proses', 'antri', 'antri', 'antri', 'selesai', 'antri'];
         Product::factory()->count(7)->sequence(function ($sequence) use ($category) {
-            return ['kategori' => $category[$sequence->index]->nama];
+            return ['category' => $category[$sequence->index]->name];
         })->create();
         Service::factory()->count(7)->sequence(function ($sequence) use ($status) {
-            return ['idProduct' => $sequence->index + 1, 'status' => $status[$sequence->index]];
+            return ['product_id' => $sequence->index + 1, 'status' => $status[$sequence->index]];
         });
         $responbility = [];
         $j = 0;
         for ($i = 2; $i < 5; $i++) {
-            $responbility[$j++]['kategori'] = ['nama' => $category[$i]->id];
+            $responbility[$j++]['category'] = ['name' => $category[$i]->id];
         }
-        $service = Service::with('produk')->whereIn('id', [3, 4, 5])->orderByDesc('id')->get();
+        $service = Service::with('product')->whereIn('id', [3, 4, 5])->orderByDesc('id')->get();
         $result = $this->repository->getListDataQueue($responbility);
         $this->assertEquals($service->toArray(), $result->toArray());
     }
@@ -79,9 +79,9 @@ class ServiceRepoTest extends TestCase
         $usernames = ['2211001', '2211002', '2211003'];
         foreach ($usernames as $key => $username) {
             $product = Product::factory()->create();
-            Service::factory()->count(3)->for($product, 'produk')->create(['usernameTeknisi' => $username]);
+            Service::factory()->count(3)->for($product, 'product')->create(['tecnician_username' => $username]);
         }
-        $service = Service::with('produk')->whereIn('id', [4, 5, 6])->orderByDesc('id')->get();
+        $service = Service::with('product')->whereIn('id', [4, 5, 6])->orderByDesc('id')->get();
         $result = $this->repository->getListDataMyProgress('2211002');
         $this->assertEquals($service->toArray(), $result->toArray());
     }
@@ -91,13 +91,13 @@ class ServiceRepoTest extends TestCase
         $code = ['221108001', '221108002', '221108003'];
         $products = Product::factory()->count(3)->create();
         foreach ($products as $key => $product) {
-            Service::factory()->for($product, 'produk')->has(Broken::factory()->count(3), 'kerusakan')->has(History::factory()->count(4), 'riwayat')->create(['kode' => $code[$key]]);
+            Service::factory()->for($product, 'product')->has(Broken::factory()->count(3), 'broken')->has(History::factory()->count(4), 'history')->create(['code' => $code[$key]]);
         }
-        $service = Service::with(['produk', 'kerusakan' => function ($q) {
+        $service = Service::with(['product', 'broken' => function ($q) {
             $q->orderByDesc('id');
-        }, 'riwayat' => function ($q) {
+        }, 'history' => function ($q) {
             $q->orderByDesc('id');
-        }])->where('kode', '221108002')->first();
+        }])->where('code', '221108002')->first();
         $result = $this->repository->getDataByCode('221108002');
 
         $this->assertEquals($service->toArray(), $result->toArray());
@@ -107,10 +107,10 @@ class ServiceRepoTest extends TestCase
     {
         $date = Carbon::now('GMT+7');
         $code = $date->format('y') . $date->format('m') . $date->format('d') . sprintf("%03d", 2);
-        Service::factory()->count(3)->create(['kode' => null]);
+        Service::factory()->count(3)->create(['code' => null]);
         $result = $this->repository->setCodeService(2);
         $service = Service::find(2);
         $this->assertEquals(true, $result);
-        $this->assertEquals($code, $service->kode);
+        $this->assertEquals($code, $service->code);
     }
 }

@@ -13,11 +13,11 @@ class BrokenFactory extends Factory
     public function definition()
     {
         return [
-            'judul' => $this->faker->sentence(3),
-            'disetujui' => null,
-            'deskripsi' => $this->faker->paragraph(2),
-            'idService' => $this->faker->randomNumber(2, false),
-            'biaya' => $this->faker->numberBetween(25000, 1000000)
+            'title' => $this->faker->sentence(3),
+            'is_approved' => null,
+            'description' => $this->faker->paragraph(2),
+            'service_id' => $this->faker->randomNumber(2, false),
+            'cost' => $this->faker->numberBetween(25000, 1000000)
         ];
     }
 }

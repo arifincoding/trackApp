@@ -14,23 +14,23 @@ class ServiceFactory extends Factory
     public function definition()
     {
         return [
-            'kode' => $this->faker->randomNumber(9, true),
-            'keluhan' => $this->faker->paragraph(3, false),
-            'uangMuka' => $this->faker->numberBetween(25000, 500000),
+            'code' => $this->faker->randomNumber(9, true),
+            'complaint' => $this->faker->paragraph(3, false),
+            'down_payment' => $this->faker->numberBetween(25000, 500000),
             'status' => 'antri',
-            'estimasiBiaya' => $this->faker->numberBetween(25000, 1000000),
-            'idCustomer' => $this->faker->randomNumber(2, false),
-            'idProduct' => $this->faker->randomNumber(2, false),
-            'butuhPersetujuan' => true,
-            'disetujui' => null,
-            'konfirmasiBiaya' => false,
-            'diambil' => false,
-            'waktuMasuk' => Carbon::now('GMT+7'),
-            'waktuAmbil' => null,
-            'usernameCS' => $this->faker->randomNumber(7, true),
-            'usernameTeknisi' => $this->faker->randomNumber(7, true),
-            'totalBiaya' => null,
-            'garansi' => null
+            'estimated_cost' => $this->faker->numberBetween(25000, 1000000),
+            'customer_id' => $this->faker->randomNumber(2, false),
+            'product_id' => $this->faker->randomNumber(2, false),
+            'need_approval' => true,
+            'is_approved' => null,
+            'is_cost_confirmation' => false,
+            'is_take' => false,
+            'entry_at' => Carbon::now('GMT+7'),
+            'taked_at' => null,
+            'cs_username' => $this->faker->randomNumber(7, true),
+            'tecnician_username' => $this->faker->randomNumber(7, true),
+            'total_cost' => null,
+            'warranty' => null
         ];
     }
 }

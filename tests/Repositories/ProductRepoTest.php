@@ -1,11 +1,11 @@
 <?php
 
-use Laravel\Lumen\Testing\DatabaseMigrations;
+use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class ProductRepoTest extends TestCase
 {
 
-    use DatabaseMigrations;
+    use DatabaseTransactions;
 
     private $repository;
 
@@ -18,11 +18,11 @@ class ProductRepoTest extends TestCase
     public function testShouldCreateSingleProductData()
     {
         $inputs = [
-            'nama' => 'asus tuf 505DD',
-            'kategori' => 'laptop',
-            'kelengkapan' => 'baterai, cas',
-            'catatan' => 'tidak ada',
-            'cacatProduk' => 'body tergores'
+            'name' => 'asus tuf 505DD',
+            'category_id' => 1,
+            'completeness' => 'baterai, cas',
+            'note' => 'tidak ada',
+            'product_defects' => 'body tergores'
         ];
         $result = $this->repository->create($inputs);
         $this->assertEquals(1, $result);

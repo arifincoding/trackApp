@@ -25,13 +25,13 @@ class UserFactory extends Factory
         return [
             'username' => $this->faker->randomNumber(7, true),
             'password' => Hash::make('test'),
-            'namaDepan' => $this->faker->firstNameMale(),
-            'namaBelakang' => $this->faker->lastName(),
-            'peran' => 'pemilik',
-            'jenisKelamin' => 'pria',
+            'firstname' => $this->faker->firstNameMale(),
+            'lastname' => $this->faker->lastName(),
+            'role' => 'pemilik',
+            'gender' => 'pria',
             'email' => $this->faker->unique()->safeEmail,
-            'noHp' => $this->faker->numerify('628##########'),
-            'alamat' => $this->faker->address()
+            'telp' => $this->faker->numerify('628##########'),
+            'address' => $this->faker->address()
         ];
     }
 
@@ -39,7 +39,7 @@ class UserFactory extends Factory
     {
         return $this->state(function (array $attributs) {
             return [
-                'peran' => 'teknisi'
+                'role' => 'teknisi'
             ];
         });
     }
@@ -48,7 +48,7 @@ class UserFactory extends Factory
     {
         return $this->state(function (array $attributs) {
             return [
-                'peran' => 'customer service'
+                'role' => 'customer service'
             ];
         });
     }

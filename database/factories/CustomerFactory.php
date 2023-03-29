@@ -13,9 +13,9 @@ class CustomerFactory extends Factory
     public function definition()
     {
         return [
-            'nama' => $this->faker->name(),
-            'noHp' => $this->faker->numerify('628##########'),
-            'bisaWa' => true
+            'name' => $this->faker->name(),
+            'telp' => $this->faker->numerify('628##########'),
+            'is_whatsapp' => true
         ];
     }
 }

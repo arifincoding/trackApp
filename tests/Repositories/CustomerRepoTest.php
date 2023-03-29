@@ -1,11 +1,11 @@
 <?php
 
-use Laravel\Lumen\Testing\DatabaseMigrations;
+use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class CustomerRepoTest extends TestCase
 {
 
-    use DatabaseMigrations;
+    use DatabaseTransactions;
 
     private $repository;
 
@@ -18,9 +18,9 @@ class CustomerRepoTest extends TestCase
     public function testShoudCreateSingleCustomerData()
     {
         $inputs = [
-            'nama' => 'mark',
-            'noHp' => '6285235489032',
-            'bisaWA' => true
+            'name' => 'mark',
+            'telp' => '6285235489032',
+            'is_whatsapp' => true
         ];
 
         $result = $this->repository->create($inputs);

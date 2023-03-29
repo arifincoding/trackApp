@@ -2,11 +2,11 @@
 
 use App\Models\Category;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Laravel\Lumen\Testing\DatabaseMigrations;
+use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class CategoryRepoTest extends TestCase
 {
-    use DatabaseMigrations;
+    use DatabaseTransactions;
 
     private $repository;
 
@@ -19,7 +19,7 @@ class CategoryRepoTest extends TestCase
     public function testShouldGetListData()
     {
         Category::factory()->count(3)->create();
-        $category = Category::select('id as idKategori', 'nama')->get();
+        $category = Category::select('id as category_id', 'name')->get();
         $result = $this->repository->getListData();
         $this->assertEquals($category->toArray(), $result->toArray());
     }
@@ -27,8 +27,8 @@ class CategoryRepoTest extends TestCase
     public function testShouldGetDataById()
     {
         Category::factory()->count(3)->create();
-        $category = Category::select('id as idKategori', 'nama')->where('id', 2)->first();
-        $result = $this->repository->getDataById(2);
+        $category = Category::select('id as category_id', 'name')->orderByDesc('id')->first();
+        $result = $this->repository->getDataById($category->category_id);
         $this->assertEquals($category->toArray(), $result->toArray());
     }
 
@@ -37,9 +37,5 @@ class CategoryRepoTest extends TestCase
         Category::factory()->count(2)->create();
         $this->expectException(ModelNotFoundException::class);
         $result = $this->repository->getDataById(3);
-    }
-
-    public function ShouldGetDataNotInResponbility()
-    {
     }
 }

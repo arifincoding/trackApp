@@ -2,12 +2,12 @@
 
 use App\Models\Category;
 use App\Models\Responbility;
-use Laravel\Lumen\Testing\DatabaseMigrations;
+use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class ResponbilityRepoTest extends TestCase
 {
 
-    use DatabaseMigrations;
+    use DatabaseTransactions;
 
     private $repository;
 
@@ -20,16 +20,16 @@ class ResponbilityRepoTest extends TestCase
     public function testShouldGetListDataByUsername()
     {
         $category = Category::factory()->count(3)->create();
-        Responbility::factory()->for($category[0], 'kategori')->create([
+        Responbility::factory()->for($category[0], 'category')->create([
             'username' => '2210001'
         ]);
-        Responbility::factory()->for($category[1], 'kategori')->create([
+        Responbility::factory()->for($category[1], 'category')->create([
             'username' => '2210005'
         ]);
-        Responbility::factory()->for($category[2], 'kategori')->create([
+        Responbility::factory()->for($category[2], 'category')->create([
             'username' => '2210001'
         ]);
-        $responbility = Responbility::with('kategori')->where('username', '2210001')->get();
+        $responbility = Responbility::with('category')->where('username', '2210001')->get();
         $result = $this->repository->getListDataByUsername('2210001');
         $this->assertEquals($responbility->toArray(), $result->toArray());
     }
@@ -37,7 +37,7 @@ class ResponbilityRepoTest extends TestCase
     public function testShouldCreateManyResponbility()
     {
         $inputs = [
-            'idKategori' => [
+            'category_id' => [
                 2, 3, 4, 5, 6
             ]
         ];
