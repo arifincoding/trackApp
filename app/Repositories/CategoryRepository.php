@@ -42,4 +42,10 @@ class CategoryRepository extends Repository implements CategoryRepoContract
         $data = DB::table('categories')->whereNotIn('id', $responbilityIdCategory)->select('id as category_id', 'name')->get();
         return $data;
     }
+
+    function coba(string $search)
+    {
+        $data = Category::search($search)->get();
+        return $data->toArray();
+    }
 }

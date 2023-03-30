@@ -38,4 +38,13 @@ class CategoryRepoTest extends TestCase
         $this->expectException(ModelNotFoundException::class);
         $result = $this->repository->getDataById(3);
     }
+
+    public function testShouldReturnCoba()
+    {
+        Category::factory()->count(4)->sequence(['name' => 'ahmad'], ['name' => 'arifin'], ['name' => 'mark'], ['name' => 'jonshon'])->create();
+        $data = $this->repository->coba('joni');
+        foreach ($data as $item) {
+            echo $item['name'];
+        }
+    }
 }
