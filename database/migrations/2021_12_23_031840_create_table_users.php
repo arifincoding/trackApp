@@ -24,6 +24,7 @@ class CreateTableUsers extends Migration
             $table->enum('gender', ['pria', 'wanita']);
             $table->string('address')->nullable();
             $table->string('email')->unique();
+            $table->fulltext(['firstname','lastname']);
         });
     }
 

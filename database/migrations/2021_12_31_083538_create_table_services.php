@@ -34,7 +34,7 @@ class CreateTableServices extends Migration
             $table->string('tecnician_username', 70)->nullable();
             $table->foreign('cs_username')->references('username')->on('users');
             $table->foreign('tecnician_username')->references('username')->on('users');
-            $table->fulltext('code');
+            $table->fulltext('complaint');
         });
     }
 
