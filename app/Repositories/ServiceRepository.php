@@ -7,6 +7,7 @@ use App\Repositories\Repository;
 use Illuminate\Support\Carbon;
 use App\Repositories\Contracts\ServiceRepoContract;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 class ServiceRepository extends Repository implements ServiceRepoContract
 {
@@ -17,30 +18,28 @@ class ServiceRepository extends Repository implements ServiceRepoContract
 
     public function getListData(array $inputs = []): Collection
     {
-        $data = $this->model->with('client', 'product')->orderByDesc('id');
-        // filter status service
-        if (isset($inputs['status'])) {
-            $data->where('status', $inputs['status']);
-        }
-        // filter kategori produk
-        if (isset($inputs['category'])) {
-            $data->whereHas('product', function ($q) use ($inputs) {
-                $q->where('name', $inputs['category']);
-            });
-        }
-        //filter cari
-        if (isset($inputs['search'])) {
-            $data->where(function ($q) use ($inputs) {
-                $q->orWhere('code', 'LIKE', '%' . $inputs['search'] . '%');
-            });
-            $data->orWhereHas('client', function ($q) use ($inputs) {
-                $q->where('name', 'LIKE', '%' . $inputs['search'] . '%');
-                $q->orWhere('telp', 'LIKE', '%' . $inputs['search'] . '%');
-            });
-            $data->orWhereHas('product', function ($q) use ($inputs) {
-                $q->where('name', 'LIKE', '%' . $inputs['search'] . '%');
-            });
-        }
+        $search = $inputs['search'] ?? null;
+        $status = $inputs['status'] ?? null;
+        $category = $inputs['category'] ?? null;
+
+        $searchAttributs = [
+            'services.code' => '',
+            'services.complaint' => '',
+            'customers.name',
+            'products.name' => '',
+        ];
+        $this->model->setToSearchableArray($searchAttributs);
+
+        $data = $this->model->search($search)->query(function ($query) use ($status, $category) {
+
+            $attributs = ['services.id as service_id', 'services.code', 'services.complaint', 'services.status', 'services.total_cost', 'services.is_take', 'services.is_approved', 'customers.name as customer_name', 'customers.telp', 'products.name as products_name', 'categories.name as category'];
+
+            $query->select($attributs)->join('customers', 'services.customer_id', 'customers.id')->join('products', 'services.product_id', 'products.id')->join('categories', 'products.category_id', 'categories.id');
+
+            $status ? $query->where('services.status', $status) : '';
+            $category ? $query->where('categories.name', $category) : '';
+            $query->orderByDesc('service_id');
+        });
         return $data->get();
     }
 
@@ -51,50 +50,54 @@ class ServiceRepository extends Repository implements ServiceRepoContract
         }])->where('id', $id)->firstOrFail();
     }
 
-    public function getListDataQueue(?array $responbility = null, array $inputs = []): Collection
+    public function getListDataQueue(string $username, array $inputs = []): Collection
     {
-        if ($responbility === null) {
-            return collect([]);
-        }
-        $resp = [];
-        foreach ($responbility as $item) {
-            array_push($resp, $item['category']['name']);
-        }
-        $data = $this->model->with('product')->where('status', 'antri')->orderByDesc('id');
-        $data->whereHas('product', function ($q) use ($resp) {
-            $q->whereIn('name', $resp);
+        $category = $inputs['category'] ?? null;
+        $search = $inputs['search'] ?? null;
+        $searchAttributs = [
+            'services.code' => '',
+            'services.complaint' => '',
+            'products.name' => '',
+        ];
+        $this->model->setToSearchableArray($searchAttributs);
+        $data = $this->model->search($search)->query(function ($query) use ($username, $category) {
+
+            $attributs = ['services.id as service_id', 'services.code', 'services.complaint', 'services.status', 'services.is_approved', 'products.name as product_name', 'categories.name as category'];
+
+            $query->select($attributs)->join('products', 'services.product_id', 'products.id')->join('categories', 'products.category_id', 'categories.id')->where('services.status', 'antri');
+
+            if (!$category) {
+                $query->whereIn('products.category_id', DB::table('responbilities')->select('category_id')->where('username', $username));
+            } else {
+                $query->where('categories.name', $category);
+            }
+
+            $query->orderByDesc('services.id');
         });
-        if (isset($inputs['category'])) {
-            $data->whereHas('product', function ($q) use ($inputs) {
-                $q->where('name', $inputs['category']);
-            });
-        }
-        if (isset($inputs['search'])) {
-            $data->where('code', 'LIKE', '%' . $inputs['search'] . '%');
-            $data->orWhereHas('product', function ($q) use ($inputs) {
-                $q->where('name', 'LIKE', '%' . $inputs['search'] . '%');
-            });
-        }
+
         return $data->get();
     }
 
     public function getListDataMyProgress(string $username, array $inputs = []): Collection
     {
-        $data = $this->model->with('product')->where('tecnicion_username', $username)->orderByDesc('id');
-        if (isset($inputs['status'])) {
-            $data->where('status', $inputs['status']);
-        }
-        if (isset($inputs['category'])) {
-            $data->whereHas('product', function ($q) use ($inputs) {
-                $q->where('name', $inputs['category']);
-            });
-        }
-        if (isset($inputs['search'])) {
-            $data->where('code', 'LIKE', '%' . $inputs['search'] . '%');
-            $data->orWhereHas('product', function ($q) use ($inputs) {
-                $q->where('name', 'LIKE', '%' . $inputs['search'] . '%');
-            });
-        }
+        $search = $inputs['search'] ?? null;
+        $status = $inputs['status'] ?? null;
+        $category = $inputs['category'] ?? null;
+
+        $searchAttributs = [
+            'services.code' => '',
+            'services.complaint' => '',
+            'products.name' => '',
+        ];
+        $this->model->setToSearchableArray($searchAttributs);
+
+        $data = $this->model->search($search)->query(function ($query) use ($username, $status, $category) {
+            $attributs = ['services.id as service_id', 'sevices.code', 'services.complaint', 'services.status', 'services.is_approved', 'products.name as product_name', 'categories.name as category'];
+            $query->select($attributs)->join('products', 'services.product_id', 'products.id')->join('categories', 'products.category_id', 'categories.id')->where('tecnician_username', $username);
+            $status ? $query->where('services.status', $status) : '';
+            $category ? $query->where('categories.name', $category) : '';
+            $query->orderByDesc('services.id');
+        });
         return $data->get();
     }
 

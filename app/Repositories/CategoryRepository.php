@@ -21,7 +21,7 @@ class CategoryRepository extends Repository implements CategoryRepoContract
         $attributs = ['id as category_id', 'name'];
         $data = $this->model->select($attributs);
         if ($search) {
-            $data->where('name', 'LIKE', '%' . $search . '%');
+            $data->search($search);
         }
         if ($limit) {
             $data->take($limit);
@@ -38,14 +38,7 @@ class CategoryRepository extends Repository implements CategoryRepoContract
 
     function getDataNotInResponbility(string $username): Collection
     {
-        $responbilityIdCategory = DB::table('responbilities')->where('username', $username)->pluck('category_id');
-        $data = DB::table('categories')->whereNotIn('id', $responbilityIdCategory)->select('id as category_id', 'name')->get();
+        $data = $this->model->whereNotIn('id', DB::table('responbilities')->select('category_id')->where('username', $username))->get();
         return $data;
-    }
-
-    function coba(string $search)
-    {
-        $data = Category::search($search)->get();
-        return $data->toArray();
     }
 }

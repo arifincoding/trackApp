@@ -15,13 +15,16 @@ class BrokenRepository extends Repository implements BrokenRepoContract
         parent::__construct($model, 'broken');
     }
 
-    function getListDataByIdService(int $idService, array $whereFilter = []): Collection
+    function getListDataByIdService(int $idService, array $whereFilter = [], string $search = null): Collection
     {
         $data = $this->model->where('service_id', $idService);
         if (sizeof($whereFilter) > 0) {
             foreach ($whereFilter as $key => $where) {
                 $data->where($key, $where);
             }
+        }
+        if ($search) {
+            $data->search($search);
         }
         return $data->get();
     }

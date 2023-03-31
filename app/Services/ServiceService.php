@@ -72,7 +72,7 @@ class ServiceService implements ServiceServiceContract
         $data = [];
         if ($resp) {
             Log::info("list responbility data by username found for accessing service queue data by technician responbility", ['username' => $username, 'filters' => $inputs]);
-            $query = $this->serviceRepository->getListDataQueue($resp->toArray(), $inputs);
+            $query = $this->serviceRepository->getListDataQueue($username, $inputs);
             Log::info("User is accessing all service queue data by technician responbility");
             $fractal = new Manager();
             $data = $fractal->createData(new Collection($query, new ServicequeueTransformer))->toArray();

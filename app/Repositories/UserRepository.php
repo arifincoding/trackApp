@@ -21,6 +21,9 @@ class UserRepository extends Repository implements UserRepoContract
     function getlistData(array $inputs = []): Collection
     {
         $data = $this->model->where('role', '!=', 'pemilik');
+        if ($search = $input['search'] ?? null) {
+            $data->search($search);
+        }
         if ($peran = $inputs['role'] ?? null) {
             $data->where('role', $peran);
         }
