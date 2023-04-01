@@ -18,7 +18,7 @@ class CreateTableHistories extends Migration
             $table->foreignId('service_id')->constrained();
             $table->string('status', 40);
             $table->string('message');
-            $table->timestamp('created_at');
+            $table->timestamp('created_at')->useCurrent();
         });
     }
 

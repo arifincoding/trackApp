@@ -28,7 +28,7 @@ class CreateTableServices extends Migration
             $table->boolean('is_approved')->nullable();
             $table->boolean('is_cost_confirmation');
             $table->boolean('is_take');
-            $table->timestamp('entry_at');
+            $table->timestamp('entry_at')->useCurrent();
             $table->timestamp('taked_at')->nullable();
             $table->string('cs_username', 70);
             $table->string('tecnician_username', 70)->nullable();
