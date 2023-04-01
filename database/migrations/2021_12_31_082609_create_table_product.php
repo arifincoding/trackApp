@@ -16,10 +16,10 @@ class CreateTableProduct extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name', 100);
+            $table->foreignId('customer_id')->constrained();
             $table->foreignId('category_id')->constrained();
             $table->string('product_defects')->nullable();
             $table->string('completeness')->nullable();
-            $table->string('note')->nullable();
             $table->fulltext('name');
         });
     }

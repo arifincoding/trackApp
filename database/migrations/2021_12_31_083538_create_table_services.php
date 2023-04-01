@@ -22,7 +22,6 @@ class CreateTableServices extends Migration
             $table->unsignedInteger('estimated_cost')->default(0);
             $table->unsignedInteger('total_cost')->default(0);
             $table->string('warranty', 20)->nullable();
-            $table->foreignId('customer_id')->constrained();
             $table->foreignId('product_id')->constrained();
             $table->boolean('need_approval');
             $table->boolean('is_approved')->nullable();
@@ -32,6 +31,7 @@ class CreateTableServices extends Migration
             $table->timestamp('taked_at')->nullable();
             $table->string('cs_username', 70);
             $table->string('tecnician_username', 70)->nullable();
+            $table->string('note')->nullable();
             $table->foreign('cs_username')->references('username')->on('users');
             $table->foreign('tecnician_username')->references('username')->on('users');
             $table->fulltext('complaint');

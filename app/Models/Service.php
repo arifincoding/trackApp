@@ -18,16 +18,11 @@ class Service extends Model
     // }
 
     protected $fillable = [
-        'code', 'complaint', 'down_payment', 'status', 'estimated_cost', 'customer_id', 'product_id', 'need_approval', 'is_approved', 'is_cost_confirmation', 'is_take', 'entry_at', 'taked_at', 'cs_username', 'tecnician_username', 'total_cost', 'warranty'
+        'code', 'complaint', 'down_payment', 'status', 'estimated_cost', 'product_id', 'need_approval', 'is_approved', 'is_cost_confirmation', 'is_take', 'entry_at', 'taked_at', 'cs_username', 'tecnician_username', 'total_cost', 'warranty', 'note'
     ];
     public $timestamps = false;
 
     private static array $searchAttributs = [];
-
-    public function client()
-    {
-        return $this->belongsTo(Customer::class, 'customer_id');
-    }
 
     public function product()
     {
@@ -54,11 +49,5 @@ class Service extends Model
     public function toSearchableArray()
     {
         return self::$searchAttributs;
-        // return [
-        //     'code' => $this->code,
-        //     'complaint' => $this->complaint,
-        //     'customers.name' => '',
-        //     'products.name' => '',
-        // ];
     }
 }

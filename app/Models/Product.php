@@ -12,8 +12,13 @@ class Product extends Model
 
     use HasFactory, Searchable;
 
-    protected $fillable = ['name', 'category_id', 'product_defects', 'completeness', 'note'];
+    protected $fillable = ['name', 'category_id', 'product_defects', 'completeness', 'customer_id'];
     public $timestamps = false;
+
+    public function client()
+    {
+        return $this->belongsTo(Customer::class, 'customer_id');
+    }
 
     #[SearchUsingFullText(['name'])]
     public function toSearchableArray()

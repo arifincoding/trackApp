@@ -46,7 +46,7 @@ class ServiceRepository extends Repository implements ServiceRepoContract
                 'categories.name as category'
             ];
 
-            $query->select($attributs)->join('customers', 'services.customer_id', 'customers.id')->join('products', 'services.product_id', 'products.id')->join('categories', 'products.category_id', 'categories.id');
+            $query->select($attributs)->join('products', 'services.product_id', 'products.id')->join('customers', 'products.customer_id', 'customers.id')->join('categories', 'products.category_id', 'categories.id');
 
             $status ? $query->where('services.status', $status) : '';
             $category ? $query->where('categories.name', $category) : '';
@@ -57,7 +57,7 @@ class ServiceRepository extends Repository implements ServiceRepoContract
 
     public function getDataWithRelationById(int $id): Service
     {
-        return $this->model->with(['client', 'product', 'broken' => function ($q) {
+        return $this->model->with(['product', 'product.client', 'broken' => function ($q) {
             $q->orderByDesc('id');
         }])->where('id', $id)->firstOrFail();
     }

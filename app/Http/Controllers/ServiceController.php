@@ -50,16 +50,35 @@ class ServiceController extends Controller implements ServiceControllerContract
         return $this->jsonSuccess($data['message'], 200, $data['data']);
     }
 
+    private function inputService()
+    {
+        $inputs = [
+            'complaint',
+            'need_approval',
+            'down_payment',
+            'estimated_cost',
+            'customer.name',
+            'customer.telp',
+            'customer.is_whatsapp',
+            'product.name',
+            'product.category_id',
+            'product.completeness',
+            'product.product_defects',
+            'note',
+        ];
+        return $inputs;
+    }
+
     function newService(Request $request): JsonResponse
     {
-        $inputs = $request->all();
+        $inputs = $request->only($this->inputService());
         $data = $this->service->newService($inputs);
         return $this->jsonSuccess('sukses', 200, $data);
     }
 
     public function updateService(Request $request, int $id): JsonResponse
     {
-        $inputs = $request->all();
+        $inputs = $request->only($this->inputService());
         $data = $this->service->updateServiceById($inputs, $id);
         return $this->jsonSuccess('sukses', 200, $data);
     }
