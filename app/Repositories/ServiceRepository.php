@@ -32,7 +32,19 @@ class ServiceRepository extends Repository implements ServiceRepoContract
 
         $data = $this->model->search($search)->query(function ($query) use ($status, $category) {
 
-            $attributs = ['services.id as service_id', 'services.code', 'services.complaint', 'services.status', 'services.total_cost', 'services.is_take', 'services.is_approved', 'customers.name as customer_name', 'customers.telp', 'products.name as products_name', 'categories.name as category'];
+            $attributs = [
+                'services.id as service_id',
+                'services.code',
+                'services.complaint',
+                'services.status',
+                'services.total_cost',
+                'services.is_take',
+                'services.is_approved',
+                'customers.name as customer_name',
+                'customers.telp',
+                'products.name as products_name',
+                'categories.name as category'
+            ];
 
             $query->select($attributs)->join('customers', 'services.customer_id', 'customers.id')->join('products', 'services.product_id', 'products.id')->join('categories', 'products.category_id', 'categories.id');
 
@@ -62,7 +74,15 @@ class ServiceRepository extends Repository implements ServiceRepoContract
         $this->model->setToSearchableArray($searchAttributs);
         $data = $this->model->search($search)->query(function ($query) use ($username, $category) {
 
-            $attributs = ['services.id as service_id', 'services.code', 'services.complaint', 'services.status', 'services.is_approved', 'products.name as product_name', 'categories.name as category'];
+            $attributs = [
+                'services.id as service_id',
+                'services.code',
+                'services.complaint',
+                'services.status',
+                'services.is_approved',
+                'products.name as product_name',
+                'categories.name as category'
+            ];
 
             $query->select($attributs)->join('products', 'services.product_id', 'products.id')->join('categories', 'products.category_id', 'categories.id')->where('services.status', 'antri');
 
@@ -89,11 +109,22 @@ class ServiceRepository extends Repository implements ServiceRepoContract
             'services.complaint' => '',
             'products.name' => '',
         ];
-        $this->model->setToSearchableArray($searchAttributs);
 
+        $this->model->setToSearchableArray($searchAttributs);
         $data = $this->model->search($search)->query(function ($query) use ($username, $status, $category) {
-            $attributs = ['services.id as service_id', 'sevices.code', 'services.complaint', 'services.status', 'services.is_approved', 'products.name as product_name', 'categories.name as category'];
+
+            $attributs = [
+                'services.id as service_id',
+                'services.code',
+                'services.complaint',
+                'services.status',
+                'services.is_approved',
+                'products.name as product_name',
+                'categories.name as category'
+            ];
+
             $query->select($attributs)->join('products', 'services.product_id', 'products.id')->join('categories', 'products.category_id', 'categories.id')->where('tecnician_username', $username);
+
             $status ? $query->where('services.status', $status) : '';
             $category ? $query->where('categories.name', $category) : '';
             $query->orderByDesc('services.id');
