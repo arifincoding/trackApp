@@ -17,7 +17,7 @@ class CreateTableCustomers extends Migration
             $table->id();
             $table->string('name');
             $table->unsignedDecimal('telp', 14, 0)->nullable();
-            $table->boolean('is_whatsapp')->nullable();
+            $table->boolean('is_whatsapp')->default(false);
             $table->fulltext('name');
         });
     }
