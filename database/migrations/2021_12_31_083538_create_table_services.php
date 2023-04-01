@@ -18,7 +18,7 @@ class CreateTableServices extends Migration
             $table->string('code', 30)->nullable();
             $table->string('complaint');
             $table->unsignedInteger('down_payment')->default(0);
-            $table->string('status', 30);
+            $table->string('status', 30)->default('antri');
             $table->unsignedInteger('estimated_cost')->default(0);
             $table->unsignedInteger('total_cost')->default(0);
             $table->string('warranty', 20)->nullable();
@@ -26,8 +26,8 @@ class CreateTableServices extends Migration
             $table->foreignId('product_id')->constrained();
             $table->boolean('need_approval');
             $table->boolean('is_approved')->nullable();
-            $table->boolean('is_cost_confirmation');
-            $table->boolean('is_take');
+            $table->boolean('is_cost_confirmation')->default(false);
+            $table->boolean('is_take')->default(false);
             $table->timestamp('entry_at')->useCurrent();
             $table->timestamp('taked_at')->nullable();
             $table->string('cs_username', 70);
