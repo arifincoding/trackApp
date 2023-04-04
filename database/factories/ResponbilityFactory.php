@@ -2,7 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Category;
 use App\Models\Responbility;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 
@@ -13,9 +15,11 @@ class ResponbilityFactory extends Factory
 
     public function definition()
     {
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
         return [
-            'username' => $this->faker->randomNumber(7, true),
-            'category_id' => $this->faker->randomNumber(2, false)
+            'username' => $user->username,
+            'category_id' => $category->id
         ];
     }
 }
