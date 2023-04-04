@@ -20,6 +20,11 @@ class Product extends Model
         return $this->belongsTo(Customer::class, 'customer_id');
     }
 
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
+    }
+
     #[SearchUsingFullText(['name'])]
     public function toSearchableArray()
     {
