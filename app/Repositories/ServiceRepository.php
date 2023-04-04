@@ -57,7 +57,7 @@ class ServiceRepository extends Repository implements ServiceRepoContract
 
     public function getDataWithRelationById(int $id): Service
     {
-        return $this->model->with(['product', 'product.client', 'broken' => function ($q) {
+        return $this->model->with(['product', 'product.client', 'product.category', 'broken' => function ($q) {
             $q->orderByDesc('id');
         }])->where('id', $id)->firstOrFail();
     }
@@ -134,7 +134,7 @@ class ServiceRepository extends Repository implements ServiceRepoContract
 
     public function getDataByCode(string $code): ?Service
     {
-        $data = $this->model->with(['product', 'broken' => function ($q) {
+        $data = $this->model->with(['product', 'product.category', 'broken' => function ($q) {
             $q->orderByDesc('id');
         }, 'history' => function ($q) {
             $q->orderByDesc('id');
