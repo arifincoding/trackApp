@@ -17,7 +17,7 @@ class HistoryFactory extends Factory
         $service = Service::factory()->create();
         return [
             'service_id' => $service->id,
-            'status' => 'antri',
+            'status' => $this->faker->randomElement(['antri', 'mulai diagnosa', 'selesai diagnosa', 'proses', 'selesai']),
             'message' => $this->faker->sentence(4),
             'created_at' => Carbon::now('GMT+7')
         ];

@@ -23,7 +23,7 @@ class ServiceFactory extends Factory
             'code' => $this->faker->randomNumber(9, true),
             'complaint' => $this->faker->paragraph(3, false),
             'down_payment' => $this->faker->numberBetween(25000, 500000),
-            'status' => 'tunggu',
+            'status' => $this->faker->randomElement(['antri', 'mulai diagnosa', 'selesai diagnosa', 'proses', 'selesai']),
             'estimated_cost' => $this->faker->numberBetween(25000, 1000000),
             'product_id' => $product->id,
             'need_approval' => true,
