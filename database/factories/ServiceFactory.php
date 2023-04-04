@@ -16,7 +16,7 @@ class ServiceFactory extends Factory
     public function definition()
     {
 
-        $user = User::factory()->count(2)->sequence(['role' => 'pemilik'], ['role' => 'teknisi'])->create();
+        $user = User::factory()->count(2)->sequence(['role' => 'customer service'], ['role' => 'teknisi'])->create();
         $product = Product::factory()->create();
 
         return [
