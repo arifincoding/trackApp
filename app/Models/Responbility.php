@@ -13,8 +13,8 @@ class Responbility extends Model
     protected $fillable = ['username', 'category_id'];
     public $timestamps = false;
 
-    public function kategori()
+    public function category()
     {
-        return $this->belongsTo(Category::class, 'idKategori');
+        return $this->belongsTo(Category::class, 'category_id');
     }
 }
