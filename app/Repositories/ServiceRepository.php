@@ -16,6 +16,16 @@ class ServiceRepository extends Repository implements ServiceRepoContract
         parent::__construct($model, 'service');
     }
 
+    public function create(array $attributs, int $productId, string $usernameCs)
+    {
+        $attributs[] += [
+            'product_id' => $productId,
+            'cs_username' => $usernameCs
+        ];
+        $data = $this->save($attributs);
+        return $data;
+    }
+
     public function getListData(array $inputs = []): Collection
     {
         $search = $inputs['search'] ?? null;

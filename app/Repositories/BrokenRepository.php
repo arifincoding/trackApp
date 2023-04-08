@@ -23,23 +23,13 @@ class BrokenRepository extends Repository implements BrokenRepoContract
                 $data->where($key, $where);
             }
         }
-        if ($search) {
-            $data->search($search);
-        }
+        $search ? $data->search($search) : null;
         return $data->get();
     }
 
     function getDataById(int $id): Broken
     {
-        $attributs = [
-            'id as broken_id',
-            'service_id',
-            'title',
-            'description',
-            'cost',
-            'is_approved'
-        ];
-        $data = $this->findById($id, $attributs);
+        $data = $this->findById($id);
         $data->is_approved = Formatter::boolval($data->is_approved);
         $data->costString = Formatter::currency($data->cost);
         return $data;

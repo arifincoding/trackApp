@@ -4,5 +4,5 @@ namespace App\Repositories\Contracts;
 
 interface ProductRepoContract
 {
-    public function create(array $attributs): int;
+    public function create(array $attributs, int $customerId): int;
 }

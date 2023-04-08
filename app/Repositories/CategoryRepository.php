@@ -18,7 +18,7 @@ class CategoryRepository extends Repository implements CategoryRepoContract
 
     function getListData(?int $limit = null, ?string $search = null): Collection
     {
-        $attributs = ['id as category_id', 'name'];
+        $attributs = ['id', 'name'];
         $data = $this->model->select($attributs);
         if ($search) {
             $data->search($search);
@@ -26,19 +26,18 @@ class CategoryRepository extends Repository implements CategoryRepoContract
         if ($limit) {
             $data->take($limit);
         }
-        return $data->get();
+        return $data->orderBy('name', 'asc')->get();
     }
 
     function getDataById(int $id): Category
     {
-        $attributs = ['id as category_id', 'name'];
-        $data = $this->findById($id, $attributs);
+        $data = $this->findById($id);
         return $data;
     }
 
     function getDataNotInResponbility(string $username): Collection
     {
-        $data = $this->model->whereNotIn('id', DB::table('responbilities')->select('category_id')->where('username', $username))->get();
+        $data = $this->model->whereNotIn('id', DB::table('responbilities')->select('category_id')->where('username', $username))->orderByDesc('id')->get();
         return $data;
     }
 }

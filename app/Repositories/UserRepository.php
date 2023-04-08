@@ -21,29 +21,21 @@ class UserRepository extends Repository implements UserRepoContract
     function getlistData(array $inputs = []): Collection
     {
         $data = $this->model->where('role', '!=', 'pemilik');
-        if ($search = $input['search'] ?? null) {
-            $data->search($search);
-        }
-        if ($peran = $inputs['role'] ?? null) {
-            $data->where('role', $peran);
-        }
-        if ($limit = $inputs['limit'] ?? null) {
-            $data->take($limit);
-        }
+        isset($inputs['search']) ? $data->search($inputs['search']) : null;
+        isset($inputs['role']) ? $data->where('role', $inputs['role']) : null;
+        isset($inputs['limit']) ? $data->take($inputs['limit']) : null;
         return $data->get();
     }
 
     function getDataById(int $id): User
     {
-        $attributs = ['id as employee_id', 'username', 'firstname', 'lastname', 'gender', 'telp', 'role', 'email', 'address'];
-        $data = $this->findById($id, $attributs);
+        $data = $this->findById($id);
         return $data;
     }
 
     function findByUsername(string $username): User
     {
-        $attributs = ['id', 'username', 'firstname', 'lastname', 'gender', 'telp', 'role', 'email', 'address'];
-        $data = $this->model->select($attributs)->where('username', $username)->first();
+        $data = $this->model->where('username', $username)->first();
         return $data;
     }
 
