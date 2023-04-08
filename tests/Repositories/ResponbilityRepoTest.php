@@ -2,6 +2,8 @@
 
 use App\Models\Category;
 use App\Models\Responbility;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\Sequence;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class ResponbilityRepoTest extends TestCase
@@ -19,50 +21,55 @@ class ResponbilityRepoTest extends TestCase
 
     public function testShouldGetListDataByUsername()
     {
-        $category = Category::factory()->count(3)->create();
-        Responbility::factory()->for($category[0], 'category')->create([
-            'username' => '2210001'
-        ]);
-        Responbility::factory()->for($category[1], 'category')->create([
-            'username' => '2210005'
-        ]);
-        Responbility::factory()->for($category[2], 'category')->create([
-            'username' => '2210001'
-        ]);
-        $responbility = Responbility::with('category')->where('username', '2210001')->get();
-        $result = $this->repository->getListDataByUsername('2210001');
+        $userFactory = User::factory()->count(2)->create();
+        $categoryFactory = Category::factory()->count(4)->create();
+        $responbilityFactory =  Responbility::factory()->count(8)->state(new Sequence(
+            ['username' => $userFactory[0]->username, 'category_id' => $categoryFactory[1]->id],
+            ['username' => $userFactory[1]->username, 'category_id' => $categoryFactory[0]->id],
+            ['username' => $userFactory[0]->username, 'category_id' => $categoryFactory[2]->id],
+            ['username' => $userFactory[1]->username, 'category_id' => $categoryFactory[3]->id],
+        ))->create();
+        $responbility = Responbility::with('category')->whereIn('id', [
+            $responbilityFactory[1]->id,
+            $responbilityFactory[3]->id,
+            $responbilityFactory[5]->id,
+            $responbilityFactory[7]->id,
+        ])->get();
+        $result = $this->repository->getListDataByUsername($userFactory[1]->username);
         $this->assertEquals($responbility->toArray(), $result->toArray());
     }
 
     public function testShouldCreateManyResponbility()
     {
-        $inputs = [
-            'category_id' => [
-                2, 3, 4, 5, 6
-            ]
-        ];
-        $username = '2210001';
-        $result = $this->repository->create($inputs, $username);
+        $userFactory = User::factory()->create();
+        $categoryFactory = Category::factory()->count(3)->create();
+        $categoryId = [];
+        foreach ($categoryFactory as $item) {
+            $categoryId[] += $item->id;
+        }
+        $result = $this->repository->create(['category_id' => $categoryId], $userFactory->username);
         $this->assertEquals(true, $result);
+        $this->assertEquals(3, Responbility::where('username', $userFactory->username)->whereIn('category_id', $categoryId)->count());
     }
 
     public function testShouldDeleteListResponbilityByUsername()
     {
-        Responbility::factory()->count(2)->create();
-        Responbility::factory()->count(3)->create([
-            'username' => '2210003'
-        ]);
-        Responbility::factory()->create();
-        $result = $this->repository->deleteByUsername('2210003');
+        $userFactory = User::factory()->count(3)->create();
+        Responbility::factory()->count(6)->state(new Sequence(
+            ['username' => $userFactory[0]->username],
+            ['username' => $userFactory[1]->username],
+            ['username' => $userFactory[2]->username],
+        ))->withCategory()->create();
+        $result = $this->repository->deleteByUsername($userFactory[1]->username);
         $this->assertEquals(true, $result);
+        $this->assertEquals(0, Responbility::where('username', $userFactory[1]->username)->count());
     }
 
     public function testDeleteListResponbilityByUsernameShouldReturnFalse()
     {
-        Responbility::factory()->count(3)->create([
-            'username' => '2210001'
-        ]);
-        $result = $this->repository->deleteByUsername('2210002');
+        $responbilityFactory = Responbility::factory()->withRelation()->create();
+        Responbility::where('id', $responbilityFactory->id)->delete();
+        $result = $this->repository->deleteByUsername($responbilityFactory->username);
         $this->assertEquals(false, $result);
     }
 }

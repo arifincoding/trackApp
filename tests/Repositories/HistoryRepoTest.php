@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\History;
+use App\Models\Service;
+use Illuminate\Database\Eloquent\Factories\Sequence;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class HistoryRepoTest extends TestCase
@@ -18,20 +20,21 @@ class HistoryRepoTest extends TestCase
 
     public function testShouldDeleteListHistoryByIdService()
     {
-        $id = [1, 1, 2, 2, 2, 3];
-        History::factory()->count(6)->sequence(function ($sequence) use ($id) {
-            return  ['service_id' => $id[$sequence->index]];
-        })->create();
-        $result = $this->repository->deleteByIdService(2);
+        $service = Service::factory()->count(2)->create();
+        History::factory()->count(6)->state(new Sequence(['service_id' => $service[0]->id], ['service_id' => $service[1]->id]))->create();
+        $result = $this->repository->deleteByIdService($service[1]->id);
         $this->assertEquals(true, $result);
+        $this->assertEquals(0, History::where('service_id', $service[1]->id)->count());
+        $this->assertEquals(3, History::where('service_id', $service[0]->id)->count());
     }
 
     public function testDeleteListHistoryByIdServiceShouldReturnFalse()
     {
+        $service = Service::factory()->count(2)->create();
         History::factory()->count(3)->create([
-            'service_id' => 1
+            'service_id' => $service[1]->id
         ]);
-        $result = $this->repository->deleteByIdService(2);
+        $result = $this->repository->deleteByIdService($service[0]->id);
         $this->assertEquals(false, $result);
     }
 }

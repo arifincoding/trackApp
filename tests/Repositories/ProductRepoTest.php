@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Category;
+use App\Models\Customer;
+use App\Models\Product;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class ProductRepoTest extends TestCase
@@ -17,14 +20,17 @@ class ProductRepoTest extends TestCase
 
     public function testShouldCreateSingleProductData()
     {
+        $category = Category::factory()->create();
         $inputs = [
             'name' => 'asus tuf 505DD',
-            'category_id' => 1,
+            'category_id' => $category->id,
             'completeness' => 'baterai, cas',
-            'note' => 'tidak ada',
+            'customer_id' => 'tidak ada',
             'product_defects' => 'body tergores'
         ];
-        $result = $this->repository->create($inputs);
-        $this->assertEquals(1, $result);
+        $customer = Customer::factory()->create();
+        $result = $this->repository->create($inputs, $customer->id);
+        $product = Product::select('id')->orderByDesc('id')->first();
+        $this->assertEquals($product->id, $result);
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Customer;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class CustomerRepoTest extends TestCase
@@ -24,6 +25,7 @@ class CustomerRepoTest extends TestCase
         ];
 
         $result = $this->repository->create($inputs);
-        $this->assertEquals(1, $result);
+        $customer = Customer::select('id')->orderByDesc('id')->first();
+        $this->assertEquals($customer->id, $result);
     }
 }

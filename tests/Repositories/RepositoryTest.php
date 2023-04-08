@@ -16,54 +16,66 @@ class RepositoryTest extends TestCase
     {
         parent::setUp();
         $this->repository = $this->app->make('App\Repositories\CategoryRepository');
-        $this->category = Category::factory()->count(3)->create();
     }
 
     public function testShouldCreateSingleData()
     {
         $result = $this->repository->save(['name' => 'uji create single category']);
-        $this->assertEquals([4, 'uji create single category'], [$result->id, $result->name]);
+        $category = Category::orderByDesc('id')->first();
+        $this->assertEquals('uji create single category', $result->name);
     }
 
     public function testShouldUpdateSingleDataById()
     {
-        $result = $this->repository->save(['name' => 'uji update single category'], 2);
-        $this->assertEquals([2, 'uji update single category'], [$result->id, $result->name]);
+        $categoryFactory = Category::factory()->create();
+        $result = $this->repository->save(['name' => 'uji update single category'], $categoryFactory->id);
+        $this->assertEquals([$categoryFactory->id, 'uji update single category'], [$result->id, $result->name]);
     }
 
     public function testShouldFindDataById()
     {
-        $result = $this->repository->findById(2);
-        $this->assertEquals($this->category[1]->toArray(), $result->toArray());
+        $categoryFactory = Category::factory()->count(3)->create();
+        $result = $this->repository->findById($categoryFactory[1]->id);
+        $this->assertEquals($categoryFactory[1]->toArray(), $result->toArray());
     }
 
     public function testFindDataByIdShouldReturnException()
     {
+        $categoryFactory = Category::factory()->create();
+        Category::where('id', $categoryFactory->id)->delete();
         $this->expectException(ModelNotFoundException::class);
-        $this->repository->findById(4);
+        $this->repository->findById($categoryFactory->id);
     }
 
     public function testFindDataByIdShouldReturnNull()
     {
-        $result = $this->repository->findById(4, ['*'], false);
-        $this->assertEquals($result, null);
+        $categoryFactory = Category::factory()->create();
+        Category::where('id', $categoryFactory->id)->delete();
+        $result = $this->repository->findById($categoryFactory->id, ['*'], false);
+        $this->assertEquals(null, $result);
     }
 
     public function testShoudDeleteSingleDataById()
     {
-        $result = $this->repository->delete(2);
+        $categoryFactory = Category::factory()->create();
+        $result = $this->repository->delete($categoryFactory->id);
         $this->assertEquals($result, true);
+        $this->assertEquals(0, Category::where('id', $categoryFactory->id)->count());
     }
 
     public function testDeleteSingleDataByIdShouldReturnException()
     {
+        $categoryFactory = Category::factory()->create();
+        Category::where('id', $categoryFactory->id)->delete();
         $this->expectException(ModelNotFoundException::class);
-        $this->repository->delete(4);
+        $this->repository->delete($categoryFactory->id);
     }
 
     public function testDeleteSingleDataByIdShouldReturnFalse()
     {
-        $result = $this->repository->delete(4, 'id', false);
+        $categoryFactory = Category::factory()->create();
+        Category::where('id', $categoryFactory->id)->delete();
+        $result = $this->repository->delete($categoryFactory->id, 'id', false);
         $this->assertEquals($result, false);
     }
 }

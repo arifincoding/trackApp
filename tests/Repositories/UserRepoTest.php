@@ -23,43 +23,35 @@ class UserRepoTest extends TestCase
 
     public function testShouldGetSingleDataById()
     {
-        User::factory()->count(3)->cs()->create();
-        $user = User::select(['id as employee_id', 'username', 'firstname', 'lastname', 'gender', 'telp', 'role', 'email', 'address'])->where('id', 2)->first();
-        $result = $this->repository->getDataById(2);
-        $this->assertEquals($result, $user);
+        $userFactory = User::factory()->count(3)->cs()->create();
+        $result = $this->repository->getDataById($userFactory[1]->id);
+        $this->assertEquals($userFactory[1]->toArray(), $result->toArray());
     }
 
     public function testShouldFindSingleDataByUsername()
     {
-        User::factory()->create();
-        $user = User::factory()->create([
-            'username' => '2210002'
-        ]);
-        User::factory()->cs()->create();
-        $result = $this->repository->findByUsername('2210002');
-        $this->assertEquals($user->toArray(), $result->toArray());
+        $userFactory = User::factory()->count(3)->create();
+        $result = $this->repository->findByUsername($userFactory[1]->username);
+        $this->assertEquals($userFactory[1]->toArray(), $result->toArray());
     }
 
     public function testShouldChangePasswordUser()
     {
-        User::factory()->create();
-        User::factory()->cs()->create([
-            'username' => '2210002'
-        ]);
-        User::factory()->cs()->create();
-        $result = $this->repository->changePassword(['new_password' => 'rahasia'], '2210002');
+        $userFactory = User::factory()->create();
+        $result = $this->repository->changePassword(['new_password' => 'rahasia'], $userFactory->username);
         $this->assertEquals(true, $result);
     }
 
     public function testShouldRegisterUser()
     {
-        User::factory()->count(3)->create([
+        $userFactory = User::factory()->count(2)->create([
             'username' => null,
             'password' => null
         ]);
-        $result = $this->repository->registerUser(2);
+        $result = $this->repository->registerUser($userFactory[1]->id);
         unset($result['password']);
-        $user = User::find(2);
-        $this->assertEquals(['email' => $user->email, 'username' => $user->username], $result);
+        $user = User::whereIn('id', [$userFactory[0]->id, $userFactory[1]->id])->get();
+        $this->assertEquals(['email' => $user[1]->email, 'username' => $user[1]->username], $result);
+        $this->assertEquals(null, $user[0]->username);
     }
 }

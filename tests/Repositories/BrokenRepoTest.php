@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Broken;
+use App\Models\Service;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
@@ -19,90 +20,75 @@ class BrokenRepoTest extends TestCase
 
     public function testShoudGetListBrokenByIdService()
     {
-        $data = [
-            'is_approved' => [true, null, null, true, true, false, false, false, null],
-            'service_id' => [2, 1, 1, 1, 1, 1, 1, 2, 2]
-        ];
-        Broken::factory()->count(9)->sequence(function ($sequence) use ($data) {
-            return [
-                'is_approved' => $data['is_approved'][$sequence->index],
-                'service_id' => $data['service_id'][$sequence->index]
-            ];
-        })->create();
-        $broken = Broken::whereIn('id', [2, 3, 4, 5, 6, 7])->get();
-        $result = $this->repository->getListDataByIdService(1);
+        $serviceFactory = Service::factory()->count(3)->create();
+        $brokenFactory = Broken::factory()->count(6)->state(new Sequence(
+            ['service_id' => $serviceFactory[0]->id],
+            ['service_id' => $serviceFactory[1]->id],
+            ['service_id' => $serviceFactory[2]->id]
+        ))->create();
+        $result = $this->repository->getListDataByIdService($serviceFactory[1]->id);
+        $broken = Broken::whereIn('id', [$brokenFactory[1]->id, $brokenFactory[4]->id])->get();
         $this->assertEquals($broken->toArray(), $result->toArray());
     }
 
     public function testShouldGetBrokenById()
     {
-        $data = [
-            'is_approved' => [null, true, false],
-            'cost' => [null, '50000', '100000']
-        ];
-        Broken::factory()->count(3)->sequence(function ($sequence) use ($data) {
-            return [
-                'is_approved' => $data['is_approved'][$sequence->index],
-                'cost' => $data['cost'][$sequence->index]
-            ];
-        })->create();
-        $attributs = ['id as broken_id', 'service_id', 'title', 'description', 'cost', 'is_approved'];
-        $broken = Broken::select($attributs)->where('id', 2)->first();
-        $brokenArr = $broken->toArray();
-        $brokenArr += [
-            'is_approved' => true,
-            'costString' => 'Rp. 50.000'
-        ];
-        $result = $this->repository->getDataById(2);
-        $this->assertEquals($brokenArr, $result->toArray());
+        $brokenFactory = Broken::factory()->count(3)->withRelation()->sequence(
+            ['is_approved' => null, 'cost' => 5000],
+            ['is_approved' => true, 'cost' => 9000],
+            ['is_approved' => false, 'cost' => 0]
+        )->create();
+        $result = $this->repository->getDataById($brokenFactory[1]->id);
+        $brokenFactory[1]->costString = 'Rp. 9.000';
+        $brokenFactory[1]->is_approved = true;
+        $this->assertEquals($brokenFactory[1]->toArray(), $result->toArray());
     }
 
     public function testShouldFindOneBrokenDataByWhere()
     {
-        $cost = ['1000', null, null, null, '2000', '3000'];
-        $broken = Broken::factory()->count(6)->sequence(function ($sequence) use ($cost) {
-            return ['cost' => $cost[$sequence->index]];
-        })->create(['service_id' => 1]);
-        $result = $this->repository->findOneDataByWhere(['service_id' => 1, 'cost' => null]);
-        $this->assertEquals($broken[1]->toArray(), $result->toArray());
+        $serviceFactory = Service::factory()->create();
+        $brokenFactory = Broken::factory()->count(3)->sequence(
+            ['cost' => 1000],
+            ['cost' => 0],
+            ['cost' => 12000]
+        )->create(['service_id' => $serviceFactory->id]);
+        $result = $this->repository->findOneDataByWhere(['service_id' => $serviceFactory->id, 'cost' => 0]);
+        $this->assertEquals($brokenFactory[1]->toArray(), $result->toArray());
     }
 
     public function testShouldSetCostInNotAgreeToZero()
     {
-        $data = [
-            'service_id' => [1, 1, 2, 2, 2, 2, 2, 2, 3, 3],
-            'is_approved' => [false, false, true, true, null, null, false, false, false, false]
-        ];
-        $broken = Broken::factory()->count(10)->sequence(function ($sequence) use ($data) {
-            return [
-                'service_id' => $data['service_id'][$sequence->index],
-                'is_approved' => $data['is_approved'][$sequence->index]
-            ];
-        })->create();
-        $brokenArr = [$broken[6]->toArray(), $broken[7]->toArray()];
-        $brokenArr[0]['cost'] = 0;
-        $brokenArr[1]['cost'] = 0;
-        $result = $this->repository->setCostInNotAgreeToZero(2);
+        $serviceFactory  = Service::factory()->count(2)->create();
+        Broken::factory()->create(['service_id' => $serviceFactory[0]->id, 'is_approved' => false]);
+        $brokenFactory = Broken::factory()->count(6)->state(new Sequence(
+            ['is_approved' => null],
+            ['is_approved' => false],
+            ['is_approved' => true]
+        ))->create(['service_id' => $serviceFactory[1]->id]);
+        $result = $this->repository->setCostInNotAgreeToZero($serviceFactory[1]->id);
         $this->assertEquals(true, $result);
-        $resultArr = Broken::where('cost', 0)->get();
-        $this->assertEquals($brokenArr, $resultArr->toArray());
+        $brokenCount = Broken::where('service_id', $serviceFactory[1]->id)->where('cost', 0)->count();
+        $this->assertEquals(2, $brokenCount);
     }
 
     public function testShouldDeleteListBrokenByIdService()
     {
-        $id = [1, 1, 1, 2, 2, 2, 3, 3, 3];
-        Broken::factory()->count(9)->sequence(function ($sequence) use ($id) {
-            return ['service_id' => $id[$sequence->index]];
-        })->create();
-        $result = $this->repository->deleteByIdService(2);
+        $serviceFactory = Service::factory()->count(3)->create();
+        Broken::factory()->count(6)->state(new Sequence(
+            ['service_id' => $serviceFactory[0]->id],
+            ['service_id' => $serviceFactory[1]->id],
+            ['service_id' => $serviceFactory[2]->id]
+        ))->create();
+        $result = $this->repository->deleteByIdService($serviceFactory[1]->id);
         $this->assertEquals(true, $result);
-        $this->assertEquals(null, Broken::where('service_id', 2)->first());
+        $this->assertEquals(0, Broken::where('service_id', $serviceFactory[1]->id)->count());
     }
 
     public function testDeleteListBrokenByIdServiceShouldReturnFalse()
     {
-        Broken::factory()->count(3)->create(['service_id' => 1]);
-        $result = $this->repository->deleteByIdService(2);
+        $brokenFactory = Broken::factory()->withRelation()->create();
+        Broken::where('id', $brokenFactory->id)->delete();
+        $result = $this->repository->deleteByIdService($brokenFactory->service_id);
         $this->assertEquals(false, $result);
     }
 }

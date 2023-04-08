@@ -1,6 +1,9 @@
 <?php
 
 use App\Models\Category;
+use App\Models\Responbility;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
@@ -18,46 +21,39 @@ class CategoryRepoTest extends TestCase
 
     public function testShouldGetListData()
     {
-        $this->markTestSkipped();
         Category::factory()->count(3)->create();
-        $category = Category::select('id as category_id', 'name')->get();
+        $category = Category::orderBy('name', 'asc')->get();
         $result = $this->repository->getListData();
         $this->assertEquals($category->toArray(), $result->toArray());
     }
 
     public function testShouldGetDataById()
     {
-        $this->markTestSkipped();
-        Category::factory()->count(3)->create();
-        $category = Category::select('id as category_id', 'name')->orderByDesc('id')->first();
-        $result = $this->repository->getDataById($category->category_id);
-        $this->assertEquals($category->toArray(), $result->toArray());
+        $categoryFactory = Category::factory()->count(3)->create();
+        $result = $this->repository->getDataById($categoryFactory[1]->id);
+        $this->assertEquals($categoryFactory[1]->toArray(), $result->toArray());
     }
 
     public function testGetDataByIdShouldReturnException()
     {
-        $this->markTestSkipped();
-        Category::factory()->count(2)->create();
+        $categoryFactory = Category::factory()->create();
+        Category::where('id', $categoryFactory->id)->delete();
         $this->expectException(ModelNotFoundException::class);
-        $result = $this->repository->getDataById(3);
-    }
-
-    public function testShouldReturnCoba()
-    {
-        $this->markTestSkipped();
-        Category::factory()->count(4)->sequence(['name' => 'ahmad'], ['name' => 'arifin'], ['name' => 'mark'], ['name' => 'jonshon'])->create();
-        $data = $this->repository->coba('jon');
-        foreach ($data as $item) {
-            echo $item['name'];
-        }
+        $this->repository->getDataById($categoryFactory->id);
     }
 
     public function testShouldReturnCategoriesNotInUsernameResponbilities()
     {
-        $data = $this->repository->getDataNotInResponbility('30031999');
-        foreach ($data as $item) {
-            echo PHP_EOL . 'id = ' . $item->id;
-        }
-        // var_dump($data);
+        $categoryFactory = Category::factory()->count(5)->create();
+        $user = User::factory()->create();
+        Responbility::factory()->count(3)->sequence(function (Sequence $sequence) use ($categoryFactory, $user) {
+            return [
+                'username' => $user->username,
+                'category_id' => $categoryFactory[$sequence->index + 1]->id
+            ];
+        })->create();
+        $result = $this->repository->getDataNotInResponbility($user->username);
+        $category = Category::whereIn('id', [$categoryFactory[0]->id, $categoryFactory[4]->id])->orderByDesc('id')->get();
+        $this->assertEquals($result->toArray(), $category->toArray());
     }
 }
