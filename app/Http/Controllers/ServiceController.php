@@ -52,7 +52,7 @@ class ServiceController extends Controller implements ServiceControllerContract
 
     private function inputService()
     {
-        $inputs = [
+        return [
             'complaint',
             'need_approval',
             'down_payment',
@@ -66,7 +66,6 @@ class ServiceController extends Controller implements ServiceControllerContract
             'product.product_defects',
             'note',
         ];
-        return $inputs;
     }
 
     function newService(Request $request): JsonResponse
