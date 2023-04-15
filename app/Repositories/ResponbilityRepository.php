@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Responbility;
 use App\Repositories\Repository;
 use App\Repositories\Contracts\ResponbilityRepoContract;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class ResponbilityRepository extends Repository implements ResponbilityRepoContract
@@ -18,9 +19,19 @@ class ResponbilityRepository extends Repository implements ResponbilityRepoContr
     function getListDataByUsername(string $username): ?Collection
     {
         $data = $this->model->with('category')->where('username', $username)->get();
-        if ($data->toArray() == []) {
-            return null;
-        }
+        return $data;
+    }
+
+    function findOneDataByUsername(string $username)
+    {
+        return $this->model->where('username', $username)->first();
+    }
+
+    function findOneByUsernameAndCategory(string $username, string $category)
+    {
+        $data = $this->model->with('category')->where('username', $username)->whereHas('category', function (Builder $q) use ($category) {
+            $q->where('name', $category);
+        })->first();
         return $data;
     }
 

@@ -18,12 +18,10 @@ class BrokenRepository extends Repository implements BrokenRepoContract
     function getListDataByIdService(int $idService, array $whereFilter = [], string $search = null): Collection
     {
         $data = $this->model->where('service_id', $idService);
-        if (sizeof($whereFilter) > 0) {
-            foreach ($whereFilter as $key => $where) {
-                $data->where($key, $where);
-            }
-        }
         $search ? $data->search($search) : null;
+        foreach ($whereFilter as $key => $where) {
+            $data->where($key, $where);
+        }
         return $data->get();
     }
 
@@ -42,6 +40,15 @@ class BrokenRepository extends Repository implements BrokenRepoContract
             $data->where($key, $filter);
         }
         return $data->first();
+    }
+
+    function sumCostByServiceId(int $serviceId, array $filters = []): int
+    {
+        $data = $this->model->where('service_id', $serviceId);
+        foreach ($filters as $key => $item) {
+            $data->where($key, $item);
+        }
+        return $data->sum('cost');
     }
 
     function setCostInNotAgreeToZero(int $idService): bool

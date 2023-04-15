@@ -20,12 +20,8 @@ class CategoryRepository extends Repository implements CategoryRepoContract
     {
         $attributs = ['id', 'name'];
         $data = $this->model->select($attributs);
-        if ($search) {
-            $data->search($search);
-        }
-        if ($limit) {
-            $data->take($limit);
-        }
+        $search ? $data->search($search) : null;
+        $limit ? $data->take($limit) : null;
         return $data->orderBy('name', 'asc')->get();
     }
 

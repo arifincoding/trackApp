@@ -43,7 +43,7 @@ class ServiceRepository extends Repository implements ServiceRepoContract
         $data = $this->model->search($search)->query(function ($query) use ($status, $category) {
 
             $attributs = [
-                'services.id as service_id',
+                'services.id',
                 'services.code',
                 'services.complaint',
                 'services.status',
