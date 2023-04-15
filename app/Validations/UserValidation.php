@@ -40,12 +40,12 @@ class UserValidation extends Validation
     function post($id = null)
     {
         $this->rules = [
-            'namaDepan' => 'required|regex:/^[\pL\s\-]+$/u',
-            'namaBelakang' => 'required|regex:/^[\pL\s\-]+$/u',
-            'jenisKelamin' => 'required|regex:/^[\pL\s\-]+$/u',
-            'noHp' => 'required|numeric',
+            'firstname' => 'required|regex:/^[\pL\s\-]+$/u',
+            'lastname' => 'required|regex:/^[\pL\s\-]+$/u',
+            'gender' => 'required|regex:/^[\pL\s\-]+$/u',
+            'telp' => 'required|numeric',
             'email' => 'required|unique:users|email',
-            'peran' => 'required'
+            'role' => 'required'
         ];
         if ($id !== null) {
             $this->rules['email'] = 'required|email|unique:users,email,' . $id;
@@ -55,9 +55,9 @@ class UserValidation extends Validation
     public function update(int $id)
     {
         $this->rules = [
-            'noHp' => 'required|numeric',
+            'telp' => 'required|numeric',
             'email' => 'required|email|unique:users,email,' . $id,
-            'alamat' => 'required'
+            'address' => 'required'
         ];
     }
 
@@ -65,7 +65,7 @@ class UserValidation extends Validation
     {
         $data = User::where('username', Auth::payload()->get('username'))->first();
         $this->rules = [
-            'sandiLama' => [
+            'old_password' => [
                 'required',
                 function ($attribute, $value, $fail) use ($data) {
                     if (!(Hash::check($value, $data->password))) {
@@ -73,7 +73,7 @@ class UserValidation extends Validation
                     }
                 }
             ],
-            'sandiBaru' => 'required|min:8'
+            'new_password' => 'required|min:8'
         ];
     }
 }

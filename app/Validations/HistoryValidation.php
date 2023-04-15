@@ -11,7 +11,7 @@ class HistoryValidation extends Validation
     {
         $this->rules = [
             'status' => 'required',
-            'pesan' => 'required'
+            'message' => 'required'
         ];
         $this->exceptionMessages = [
             'create' => 'could not create a single history data caused the given data is invalid'

@@ -9,8 +9,8 @@ class BrokenValidation extends Validation
     function __construct()
     {
         $this->rules = [
-            'judul' => 'required',
-            'deskripsi' => 'required'
+            'title' => 'required',
+            'description' => 'required'
         ];
         $this->exceptionMessages = [
             'create' => 'could not create a single broken data caused the given data is invalid',
@@ -22,13 +22,13 @@ class BrokenValidation extends Validation
     function confirm()
     {
         $this->rules = [
-            'disetujui' => 'required|boolean'
+            'is_approved' => 'required|boolean'
         ];
     }
     function cost()
     {
         $this->rules = [
-            'biaya' => 'required|numeric'
+            'cost' => 'required|numeric'
         ];
     }
 }

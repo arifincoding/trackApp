@@ -18,18 +18,18 @@ class ResponbilityValidation extends Validation
     {
         $data = User::where('id', $id)->firstOrFail();
         $this->rules = [
-            'idKategori' => 'required|array',
+            'category_id' => 'required|array',
         ];
-        if (is_array($input['idKategori'])) {
-            foreach ($input['idKategori'] as $key => $item) {
-                $this->rules['idKategori.' . $key] = [
+        if (is_array($input['category_id'])) {
+            foreach ($input['category_id'] as $key => $item) {
+                $this->rules['category_id.' . $key] = [
                     'filled',
                     'exists:categories,id',
-                    Rule::unique('responbilities', 'idKategori')->where(function ($q) use ($data) {
+                    Rule::unique('responbilities', 'category_id')->where(function ($q) use ($data) {
                         return $q->where('username', $data->username);
                     }),
                     function ($attribute, $value, $fail) use ($input, $key) {
-                        foreach ($input['idKategori'] as $i => $ktgr) {
+                        foreach ($input['category_id'] as $i => $ktgr) {
                             if ($key !== $i) {
                                 if ($value == $ktgr) {
                                     $fail($attribute . ' tidak boleh sama');
@@ -41,8 +41,8 @@ class ResponbilityValidation extends Validation
             }
         }
         $this->attributes = [
-            'idKategori' => 'kategori',
-            'idKategori.*' => 'kategori'
+            'category_id' => 'kategori',
+            'category_id.*' => 'kategori'
         ];
     }
 }

@@ -19,16 +19,16 @@ class CategoryValidation extends Validation
     {
         $this->rules = [
             'limit' => 'filled|numeric',
-            'cari' => 'filled'
+            'search' => 'filled'
         ];
     }
     function post(string $id = null)
     {
         $this->rules = [
-            'nama' => 'required|unique:categories,nama'
+            'name' => 'required|unique:categories,nama'
         ];
         if ($id !== null) {
-            $this->rules = ['nama' => 'required|unique:categories,nama,' . $id];
+            $this->rules = ['name' => 'required|unique:categories,nama,' . $id];
         }
     }
 }

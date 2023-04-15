@@ -31,7 +31,7 @@ class Validation
 
     public function setExceptionMessage(string $messages)
     {
-        $this->exceptionMessage = $messages;
+        $this->exceptionMessages = $messages;
     }
 
     public function validate(array $input = [], string $action)

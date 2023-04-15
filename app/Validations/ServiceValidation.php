@@ -10,15 +10,15 @@ class ServiceValidation extends Validation
     function __construct()
     {
         $this->rules = [
-            'namaCustomer' => 'required|regex:/^[\pL\s\-]+$/u',
-            'noHp' => 'nullable|numeric',
-            'bisaWA' => 'boolean',
-            'namaProduk' => 'required',
-            'kategori' => 'required|exists:categories,nama',
-            'keluhan' => 'required',
-            'butuhPersetujuan' => 'required|boolean',
-            'estimasiBiaya' => 'nullable|numeric',
-            'uangMuka' => 'nullable|numeric'
+            'customer.name' => 'required|regex:/^[\pL\s\-]+$/u',
+            'customer.telp' => 'required|nullable|numeric',
+            'customer.is_whatsapp' => 'required|boolean',
+            'product.name' => 'required',
+            'product.category_id' => 'required|exists:categories,id',
+            'complaint' => 'required',
+            'need_approval' => 'boolean',
+            'estimated_cost' => 'numeric',
+            'down_payment' => 'numeric'
         ];
         $this->exceptionMessages = [
             'create' => 'could not create a single service data caused the given data is invalid',
@@ -39,14 +39,14 @@ class ServiceValidation extends Validation
     function serviceWarranty()
     {
         $this->rules = [
-            'garansi' => 'required'
+            'warranty' => 'required'
         ];
     }
 
     function confirmation()
     {
         $this->rules = [
-            'disetujui' => 'required|boolean'
+            'is_approved' => 'required|boolean'
         ];
     }
 }
