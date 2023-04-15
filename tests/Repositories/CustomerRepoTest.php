@@ -25,7 +25,7 @@ class CustomerRepoTest extends TestCase
         ];
 
         $result = $this->repository->create($inputs);
-        $customer = Customer::select('id')->orderByDesc('id')->first();
-        $this->assertEquals($customer->id, $result);
+        $customer = Customer::orderByDesc('id')->first();
+        $this->assertEquals($customer->toArray(), $result->toArray());
     }
 }

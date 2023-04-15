@@ -91,4 +91,18 @@ class BrokenRepoTest extends TestCase
         $result = $this->repository->deleteByIdService($brokenFactory->service_id);
         $this->assertEquals(false, $result);
     }
+
+    public function testShouldSumCostByServiceId()
+    {
+        $serviceFactory = Service::factory()->count(2)->create();
+        Broken::factory()->count(5)->sequence(
+            ['cost' => 2000, 'service_id' => $serviceFactory[0]->id],
+            ['cost' => 1000, 'service_id' => $serviceFactory[1]->id],
+            ['cost' => 5000, 'service_id' => $serviceFactory[1]->id],
+            ['cost' => 3000, 'service_id' => $serviceFactory[0]->id],
+            ['cost' => 8000, 'service_id' => $serviceFactory[1]->id]
+        )->create();
+        $result = $this->repository->sumCostByServiceId($serviceFactory[1]->id);
+        $this->assertEquals(14000, $result);
+    }
 }

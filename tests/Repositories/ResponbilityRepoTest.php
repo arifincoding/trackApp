@@ -72,4 +72,19 @@ class ResponbilityRepoTest extends TestCase
         $result = $this->repository->deleteByUsername($responbilityFactory->username);
         $this->assertEquals(false, $result);
     }
+
+    public function testShouldFindDataByUsernameAndCategory()
+    {
+        $user = User::factory()->count(2)->create();
+        $category = Category::factory()->count(2)->create();
+        $responbilityFactory = Responbility::factory()->count(8)->state(new Sequence(
+            ['username' => $user[0]->username, 'category_id' => $category[0]->id],
+            ['username' => $user[1]->username, 'category_id' => $category[1]->id],
+            ['username' => $user[0]->username, 'category_id' => $category[1]->id],
+            ['username' => $user[1]->username, 'category_id' => $category[0]->id],
+        ))->create([]);
+        $result = $this->repository->findOneByUsernameAndCategory($user[1]->username, $category[1]->name);
+        $responbility = Responbility::where('id', $responbilityFactory[1]->id)->with('category')->first();
+        $this->assertEquals($responbility->toArray(), $result->toArray());
+    }
 }

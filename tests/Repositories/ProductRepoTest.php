@@ -30,7 +30,7 @@ class ProductRepoTest extends TestCase
         ];
         $customer = Customer::factory()->create();
         $result = $this->repository->create($inputs, $customer->id);
-        $product = Product::select('id')->orderByDesc('id')->first();
-        $this->assertEquals($product->id, $result);
+        $product = Product::orderByDesc('id')->first();
+        $this->assertEquals($product->toArray(), $result->toArray());
     }
 }
