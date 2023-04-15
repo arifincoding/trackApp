@@ -11,9 +11,9 @@ class BrokensTransformer extends TransformerAbstract{
     public function transform(Broken $data){
         return [
             'id'=>$data->id,
-            'judul'=>$data->judul,
-            'biaya'=>Formatter::currency($data->biaya),
-            'disetujui'=>Formatter::boolval($data->disetujui)
+            'title'=>$data->title,
+            'cost'=>Formatter::currency($data->cost),
+            'is_approved'=>Formatter::boolval($data->is_approved)
         ];
     }
 }

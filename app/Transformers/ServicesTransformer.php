@@ -4,32 +4,31 @@ namespace App\Transformers;
 
 use App\Models\Service;
 use League\Fractal\TransformerAbstract;
-use App\Transformers\CustomerTransformer;
-use App\Transformers\ProductTransformer;
 use App\Helpers\Formatter;
 
-class ServicesTransformer extends TransformerAbstract{
+class ServicesTransformer extends TransformerAbstract
+{
 
-    protected array $defaultIncludes = ['klien','produk'];
-
-    public function transform(Service $service){
+    public function transform(Service $service)
+    {
         return [
-            'id'=>$service->id,
-            'kode'=>$service->kode,
-            'keluhan'=>$service->keluhan,
-            'status'=>$service->status,
-            'totalBiaya'=>Formatter::currency($service->totalBiaya),
-            'diambil'=>Formatter::boolval($service->diambil),
-            'disetujui'=>Formatter::boolval($service->disetujui)
+            'id' => $service->id,
+            'code' => $service->code,
+            'complaint' => $service->complaint,
+            'status' => $service->status,
+            'total_cost' => Formatter::currency($service->total_cost),
+            'is_take' => Formatter::boolval($service->is_take),
+            'is_approved' => Formatter::boolval($service->is_approved),
+            'product' => [
+                'name' => $service->product_name,
+                'category' => [
+                    'name' => $service->category
+                ],
+                'customer' => [
+                    'name' => $service->customer_name,
+                    'telp' => $service->telp
+                ]
+            ]
         ];
     }
-
-    public function includeKlien(Service $service){
-        return $this->item($service->klien, new CustomersTransformer);
-    }
-    public function includeProduk(Service $service){
-        return $this->item($service->produk, new ProductTransformer);
-    }
 }
-
-?>

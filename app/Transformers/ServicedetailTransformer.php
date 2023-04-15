@@ -6,60 +6,55 @@ use App\Models\Service;
 use League\Fractal\TransformerAbstract;
 use App\Helpers\Formatter;
 use Illuminate\Support\Carbon;
-use App\Transformers\CustomerTransformer;
 use App\Transformers\ProductDetailTransformer;
 use App\Transformers\BrokensTransformer;
 
-class ServicedetailTransformer extends TransformerAbstract{
+class ServicedetailTransformer extends TransformerAbstract
+{
     protected array $availableIncludes = [
-        'klien','produk','kerusakan'
+        'product', 'broken'
     ];
 
-    public function transform(Service $data){
-        $yangHarusDibayar = $data->totalBiaya;
-        if($data->uangMuka !== null){
-            $yangHarusDibayar = $data->totalBiaya - $data->uangMuka;
-        }
-        $tanggalAmbil = null;
-        $jamAmbil = null;
-        if($data->waktuAmbil !== null){
-            $tanggalAmbil = Carbon::parse($data->waktuAmbil)->format('d-m-Y');
-            $jamAmbil = Carbon::parse($data->waktuAmbil)->format('H:i');
+    public function transform(Service $data)
+    {
+        $toBePaid = $data->total_cost - $data->down_payment;
+        $takedDate = null;
+        $takedTime = null;
+        if ($data->taked_at) {
+            $takedDate = Carbon::parse($data->taked_at)->format('d-m-Y');
+            $takedTime = Carbon::parse($data->taked_at)->format('H:i');
         }
         return [
-            'id' => $data->id
-            ,'kode' => $data->kode
-            ,'keluhan' => $data->keluhan
-            ,'status' => $data->status
-            ,'totalBiaya' => $data->totalBiaya
-            ,'totalBiayaString'=>Formatter::currency($data->totalBiaya)
-            ,'diambil' => Formatter::boolval($data->diambil)
-            ,'disetujui'=> Formatter::boolval($data->disetujui)
-            ,'estimasiBiaya'=> $data->estimasiBiaya
-            ,'estimasiBiayaString'=>Formatter::currency($data->estimasiBiaya)
-            ,'uangMuka'=>$data->uangMuka
-            ,'uangMukaString'=>Formatter::currency($data->uangMuka)
-            ,'yangHarusDibayar'=> Formatter::currency($yangHarusDibayar)
-            ,'tanggalMasuk'=>Carbon::parse($data->waktuMasuk)->format('d-m-Y')
-            ,'jamMasuk'=>Carbon::parse($data->waktuMasuk)->format('H:i')
-            ,'tanggalAmbil'=>$tanggalAmbil
-            ,'jamAmbil'=>$jamAmbil
-            ,'garansi'=>$data->garansi
-            ,'usernameCS'=>$data->usernameCS
-            ,'usernameTeknisi'=>$data->usernameTeknisi
-            ,'butuhPersetujuan'=> Formatter::boolval($data->butuhPersetujuan)
-            ,'sudahKonfirmasiBiaya'=> Formatter::boolval($data->konfirmasiBiaya)
+            'id' => $data->id,
+            'code' => $data->code,
+            'complaint' => $data->complaint,
+            'status' => $data->status,
+            'total_cost' => $data->total_cost,
+            'total_cost_string' => Formatter::currency($data->total_cost),
+            'is_take' => Formatter::boolval($data->is_take),
+            'is_approved' => Formatter::boolval($data->is_approved),
+            'estimated_cost' => $data->estimated_cost,
+            'estimated_cost_string' => Formatter::currency($data->estimated_cost),
+            'down_payment' => $data->down_payment,
+            'down_payment_string' => Formatter::currency($data->down_payment),
+            'to_be_paid' => Formatter::currency($toBePaid),
+            'entry_date' => Carbon::parse($data->entry_at)->format('d-m-Y'),
+            'entry_time' => Carbon::parse($data->entry_at)->format('H:i'),
+            'taked_date' => $takedDate,
+            'taked_time' => $takedTime,
+            'warranty' => $data->warranty,
+            'cs_username' => $data->cs_username,
+            'tecnician_username' => $data->tecnician_username,
+            'need_approval' => Formatter::boolval($data->need_approval),
+            'is_cost_confirmation' => Formatter::boolval($data->is_cost_confirmation)
         ];
     }
-    public function includeKlien(Service $data){
-        return $this->item($data->klien, new CustomerTransformer);
+    public function includeProduct(Service $data)
+    {
+        return $this->item($data->product, new ProductDetailTransformer);
     }
-    public function includeProduk(Service $data){
-        return $this->item($data->produk, new ProductDetailTransformer);
-    }
-    public function includeKerusakan(Service $data){
-        return $this->collection($data->kerusakan, new BrokensTransformer);
+    public function includeBroken(Service $data)
+    {
+        return $this->collection($data->broken, new BrokensTransformer);
     }
 }
-
-?>

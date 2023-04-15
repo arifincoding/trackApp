@@ -2,16 +2,25 @@
 
 namespace App\Transformers;
 
+use App\Models\Category;
 use App\Models\Product;
 use League\Fractal\TransformerAbstract;
+use App\Transformers\CategoryTransformer;
 
-class ProductTransformer extends TransformerAbstract{
-    public function transform(Product $customer){
+class ProductTransformer extends TransformerAbstract
+{
+
+    protected array $defaultIncludes = ['category'];
+
+    public function transform(Product $product)
+    {
         return [
-            'nama'=>$customer->nama,
-            'kategori'=>$customer->kategori,
+            'name' => $product->name
         ];
     }
-}
 
-?>
+    public function includeCategory(Category $data)
+    {
+        return $this->item($data->category, new CategoryTransformer);
+    }
+}

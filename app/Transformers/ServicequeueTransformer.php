@@ -4,26 +4,24 @@ namespace App\Transformers;
 
 use App\Models\Service;
 use League\Fractal\TransformerAbstract;
-use App\Transformers\ProductTransformer;
 use App\Helpers\Formatter;
 
-class ServicequeueTransformer extends TransformerAbstract{
-
-    protected array $defaultIncludes = ['produk'];
-
-    public function transform(Service $service){
+class ServicequeueTransformer extends TransformerAbstract
+{
+    public function transform(Service $service)
+    {
         return [
-            'id'=>$service->id,
-            'kode'=>$service->kode,
-            'keluhan'=>$service->keluhan,
-            'status'=>$service->status,
-            'disetujui'=>Formatter::boolval($service->disetujui)
+            'id' => $service->id,
+            'code' => $service->code,
+            'complaint' => $service->complaint,
+            'status' => $service->status,
+            'is_approved' => Formatter::boolval($service->is_approved),
+            'product' => [
+                'name' => $service->product_name,
+                'category' => [
+                    'name' => $service->category
+                ]
+            ]
         ];
     }
-    
-    public function includeProduk(Service $service){
-        return $this->item($service->produk, new ProductTransformer);
-    }
 }
-
-?>

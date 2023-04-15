@@ -9,11 +9,9 @@ use App\Helpers\Formatter;
 class CustomerTransformer extends TransformerAbstract{
     public function transform(Customer $customer){
         return [
-            'nama'=>$customer->nama,
-            'noHp'=>$customer->noHp,
-            'bisaWA'=>Formatter::boolval($customer->bisaWA)
+            'name'=>$customer->name,
+            'telp'=>$customer->telp,
+            'is_whatsapp'=>Formatter::boolval($customer->is_whatsapp)
         ];
     }
 }
-
-?>

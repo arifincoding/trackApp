@@ -9,28 +9,33 @@ use App\Transformers\BrokentrackTransformer;
 use App\Transformers\HistorytrackTransformer;
 use League\Fractal\TransformerAbstract;
 
-class ServicetrackTransformer extends TransformerAbstract{
-    
-    protected array $defaultIncludes = ['produk','kerusakan','riwayat'];
+class ServicetrackTransformer extends TransformerAbstract
+{
 
-    public function transform(Service $data){
+    protected array $defaultIncludes = ['product', 'broken', 'history'];
+
+    public function transform(Service $data)
+    {
         return [
-            'kode'=>$data->kode,
-            'status'=>$data->status,
-            'disetujui'=>Formatter::boolval($data->disetujui),
-            'totalBiaya'=>Formatter::currency($data->totalBiaya)
+            'code' => $data->code,
+            'status' => $data->status,
+            'is_approved' => Formatter::boolval($data->is_approved),
+            'total_cost' => Formatter::currency($data->total_cost)
         ];
     }
 
-    public function includeProduk(Service $data){
-        return $this->item($data->produk,new ProductTransformer);
+    public function includeProduct(Service $data)
+    {
+        return $this->item($data->product, new ProductTransformer);
     }
 
-    public function includeKerusakan(Service $data){
-        return $this->collection($data->kerusakan,new BrokentrackTransformer);
+    public function includeBroken(Service $data)
+    {
+        return $this->collection($data->broken, new BrokentrackTransformer);
     }
 
-    public function includeRiwayat(Service $data){
-        return $this->collection($data->riwayat,new HistorytrackTransformer);
+    public function includeHistory(Service $data)
+    {
+        return $this->collection($data->history, new HistorytrackTransformer);
     }
 }

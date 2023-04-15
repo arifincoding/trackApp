@@ -5,11 +5,13 @@ namespace App\Transformers;
 use App\Models\Category;
 use League\Fractal\TransformerAbstract;
 
-class CategoryTransformer extends TransformerAbstract{
+class CategoryTransformer extends TransformerAbstract
+{
 
-    public function transform(Category $data){
+    public function transform(Category $data)
+    {
         return [
-            'nama'=>$data->nama
+            'name' => $data->name
         ];
     }
-} 
+}
