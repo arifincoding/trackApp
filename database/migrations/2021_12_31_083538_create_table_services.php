@@ -23,7 +23,7 @@ class CreateTableServices extends Migration
             $table->unsignedInteger('total_cost')->default(0);
             $table->string('warranty', 20)->nullable();
             $table->foreignId('product_id')->constrained();
-            $table->boolean('need_approval');
+            $table->boolean('need_approval')->default(false);
             $table->boolean('is_approved')->nullable();
             $table->boolean('is_cost_confirmation')->default(false);
             $table->boolean('is_take')->default(false);

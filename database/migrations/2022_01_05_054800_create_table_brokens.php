@@ -16,10 +16,10 @@ class CreateTableBrokens extends Migration
         Schema::create('brokens', function (Blueprint $table) {
             $table->id();
             $table->string('title', 100);
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->foreignId('service_id')->constrained();
             $table->boolean('is_approved')->nullable();
-            $table->unsignedInteger('cost')->default(0);
+            $table->unsignedInteger('cost')->nullable();
             $table->fulltext(['title', 'description']);
         });
     }
