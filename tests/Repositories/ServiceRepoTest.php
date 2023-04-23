@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Broken;
+use App\Models\Category;
 use App\Models\Customer;
 use App\Models\History;
 use App\Models\Product;
@@ -29,7 +30,7 @@ class ServiceRepoTest extends TestCase
         Service::factory()->count(3)->create();
 
         $attributs = [
-            'services.id as service_id',
+            'services.id',
             'services.code',
             'services.complaint',
             'services.status',
@@ -67,11 +68,9 @@ class ServiceRepoTest extends TestCase
 
     public function testShouldGetListServiceQueue()
     {
-
         $serviceFactory = Service::factory()->count(3)->create(['tecnician_username' => null, 'status' => 'antri']);
-
         $attributs = [
-            'services.id as service_id',
+            'services.id',
             'services.code',
             'services.complaint',
             'services.status',
@@ -79,17 +78,11 @@ class ServiceRepoTest extends TestCase
             'products.name as product_name',
             'categories.name as category'
         ];
-
-        $user = User::factory()->create(['role' => 'teknisi', 'username' => '30031999']);
-
         $product = Product::whereIn('id', [$serviceFactory[0]->product_id, $serviceFactory[1]->product_id])->get();
-
+        $user = User::factory()->create(['role' => 'teknisi']);
         Responbility::factory()->count(2)->sequence(['category_id' => $product[0]->category_id, 'username' => $user->username], ['category_id' => $product[1]->category_id, 'username' => $user->username])->create();
-
         $service = Service::select($attributs)->join('products', 'services.product_id', 'products.id')->join('categories', 'products.category_id', 'categories.id')->whereIn('services.id', [$serviceFactory[0]->id, $serviceFactory[1]->id])->orderByDesc('services.id')->get();
-
         $result = $this->repository->getListDataQueue($user->username);
-
         $this->assertEquals($service->toArray(), $result->toArray());
     }
 
@@ -107,7 +100,7 @@ class ServiceRepoTest extends TestCase
         )->create();
 
         $attributs = [
-            'services.id as service_id',
+            'services.id',
             'services.code',
             'services.complaint',
             'services.status',
@@ -139,11 +132,11 @@ class ServiceRepoTest extends TestCase
 
     public function testShouldSetCodeServiceInSingleServiceDataById()
     {
-        $serviceFactory = Service::factory()->count(3)->create(['code' => null]);
+        $serviceFactory = Service::factory()->create(['code' => null]);
         $date = Carbon::now('GMT+7');
-        $code = $date->format('y') . $date->format('m') . $date->format('d') . sprintf("%03d", $serviceFactory[1]->id);
-        $result = $this->repository->setCodeService($serviceFactory[1]->id);
-        $service = Service::find($serviceFactory[1]->id);
+        $code = $date->format('y') . $date->format('m') . $date->format('d') . sprintf("%03d", $serviceFactory->id);
+        $result = $this->repository->setCodeService($serviceFactory->id);
+        $service = Service::find($serviceFactory->id);
         $this->assertEquals(true, $result);
         $this->assertEquals($code, $service->code);
     }

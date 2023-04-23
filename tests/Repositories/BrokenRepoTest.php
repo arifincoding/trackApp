@@ -33,7 +33,7 @@ class BrokenRepoTest extends TestCase
 
     public function testShouldGetBrokenById()
     {
-        $brokenFactory = Broken::factory()->count(3)->withRelation()->sequence(
+        $brokenFactory = Broken::factory()->count(3)->sequence(
             ['is_approved' => null, 'cost' => 5000],
             ['is_approved' => true, 'cost' => 9000],
             ['is_approved' => false, 'cost' => 0]
@@ -86,7 +86,7 @@ class BrokenRepoTest extends TestCase
 
     public function testDeleteListBrokenByIdServiceShouldReturnFalse()
     {
-        $brokenFactory = Broken::factory()->withRelation()->create();
+        $brokenFactory = Broken::factory()->create();
         Broken::where('id', $brokenFactory->id)->delete();
         $result = $this->repository->deleteByIdService($brokenFactory->service_id);
         $this->assertEquals(false, $result);

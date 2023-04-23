@@ -59,7 +59,7 @@ class ResponbilityRepoTest extends TestCase
             ['username' => $userFactory[0]->username],
             ['username' => $userFactory[1]->username],
             ['username' => $userFactory[2]->username],
-        ))->withCategory()->create();
+        ))->create();
         $result = $this->repository->deleteByUsername($userFactory[1]->username);
         $this->assertEquals(true, $result);
         $this->assertEquals(0, Responbility::where('username', $userFactory[1]->username)->count());
@@ -67,7 +67,7 @@ class ResponbilityRepoTest extends TestCase
 
     public function testDeleteListResponbilityByUsernameShouldReturnFalse()
     {
-        $responbilityFactory = Responbility::factory()->withRelation()->create();
+        $responbilityFactory = Responbility::factory()->create();
         Responbility::where('id', $responbilityFactory->id)->delete();
         $result = $this->repository->deleteByUsername($responbilityFactory->username);
         $this->assertEquals(false, $result);
