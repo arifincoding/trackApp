@@ -13,12 +13,10 @@ class ProductFactory extends Factory
 
     public function definition()
     {
-        $customer = Customer::factory()->create();
-        $category = Category::factory()->create();
         return [
             'name' => $this->faker->word(),
-            'category_id' => $category->id,
-            'customer_id' => $customer->id,
+            'category_id' => Category::factory(),
+            'customer_id' => Customer::factory(),
             'product_defects' => $this->faker->paragraph(3, false),
             'completeness' => $this->faker->sentence(3, false),
         ];

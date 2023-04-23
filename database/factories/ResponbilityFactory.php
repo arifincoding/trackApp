@@ -16,30 +16,11 @@ class ResponbilityFactory extends Factory
     public function definition()
     {
         return [
-            'username' => '',
-            'category_id' => ''
+            'username' => function (array $attributes) {
+                $user = User::factory()->create(['role' => 'teknisi']);
+                return $user->username;
+            },
+            'category_id' => Category::factory()
         ];
-    }
-
-    public function withRelation(): Factory
-    {
-        $user = User::factory()->create();
-        $category = Category::factory()->create();
-        return $this->state(function (array $attributes) use ($user, $category) {
-            return [
-                'username' => $user->username,
-                'category_id' => $category->id
-            ];
-        });
-    }
-
-    public function withCategory(): Factory
-    {
-        $category = Category::factory()->create();
-        return $this->state(function (array $attributes) use ($category) {
-            return [
-                'category_id' => $category->id
-            ];
-        });
     }
 }

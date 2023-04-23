@@ -15,20 +15,10 @@ class HistoryFactory extends Factory
     public function definition()
     {
         return [
-            'service_id' => null,
+            'service_id' => Service::factory(),
             'status' => $this->faker->randomElement(['antri', 'mulai diagnosa', 'selesai diagnosa', 'proses', 'selesai']),
             'message' => $this->faker->sentence(4),
             'created_at' => Carbon::now('GMT+7')
         ];
-    }
-
-    public function withRelation(): Factory
-    {
-        $service = Service::factory()->create();
-        return $this->state(function (array $attributes) use ($service) {
-            return [
-                'service_id' => $service->id
-            ];
-        });
     }
 }
