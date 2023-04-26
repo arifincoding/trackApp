@@ -53,7 +53,7 @@ class ServiceService implements ServiceServiceContract
     {
         $query = $this->serviceRepository->getDataWithRelationById($id);
         $fractal = new Manager();
-        $inputs['include'] ? $fractal->parseIncludes($inputs['include']) : null;
+        isset($inputs['include']) ? $fractal->parseIncludes($inputs['include']) : null;
         $data = $fractal->createData(new Item($query, new ServicedetailTransformer))->toArray();
         return $data;
     }
@@ -188,8 +188,9 @@ class ServiceService implements ServiceServiceContract
     public function deleteServiceById(int $id): string
     {
         $find = $this->serviceRepository->findById($id);
-        $this->customerRepository->delete($find->idCustomer);
-        $this->productRepository->delete($find->idProduct);
+        $findProduct = $this->productRepository->findById($find->product_id);
+        $this->customerRepository->delete($findProduct->customer_id);
+        $this->productRepository->delete($find->product_id);
         $this->serviceRepository->delete($id);
         $this->historyRepository->deleteByIdService($id);
         $this->brokenRepository->deleteByIdService($id);

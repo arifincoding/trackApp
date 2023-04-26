@@ -36,9 +36,7 @@ class  ResponbilityService implements ResponbilityServiceContract
         $this->validator->post($idUser, $inputs);
         $this->validator->validate($inputs, 'create');
         $findUser = $this->userRepository->findById($idUser);
-        if ($findUser->role !== 'teknisi') {
-            abort(400, 'gagal tambah tanggung jawab karena pegawai ini bukan teknisi');
-        }
+        $findUser->role !== 'teknisi' ? abort(400, 'gagal tambah tanggung jawab karena pegawai ini bukan teknisi') : null;
         $this->responbilityRepository->create($inputs, $findUser->username);
         return [
             'success' => true,

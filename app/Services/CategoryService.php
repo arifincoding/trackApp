@@ -17,7 +17,7 @@ class CategoryService implements CategoryServiceContract
         $this->validator = $validator;
     }
 
-    public function getAllCategory(array $inputs): array
+    public function getAllCategory(array $inputs = []): array
     {
         $this->validator->query();
         $this->validator->validate($inputs, 'categories');

@@ -102,7 +102,7 @@ class UserService implements UserServiceContract
         $this->validator->validate($inputs, 'create');
         $data = $this->userRepository->save($inputs);
         $register = $this->userRepository->registerUser($data->id);
-        Mail::to($register['email'])->send(new EmployeeMail($register['username'], $register['password']));
+        // Mail::to($register['email'])->send(new EmployeeMail($register['username'], $register['password']));
         return ['user_id' => $data->id];
     }
 
@@ -119,7 +119,7 @@ class UserService implements UserServiceContract
     {
         $find = $this->userRepository->findById($id);
         $delete = $this->userRepository->delete($id);
-        $delete === true ? $this->responbilityRepository->deleteByUsername($find->username) : null;
+        $this->responbilityRepository->deleteByUsername($find->username);
         return 'sukses hapus data pegawai';
     }
 }
