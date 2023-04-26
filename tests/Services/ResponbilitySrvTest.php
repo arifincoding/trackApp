@@ -8,17 +8,18 @@ use App\Repositories\UserRepository;
 use App\Services\ResponbilityService;
 use App\Transformers\ResponbilitiesTransformer;
 use App\Validations\ResponbilityValidation;
-use Laravel\Lumen\Testing\DatabaseMigrations;
+use Illuminate\Database\Eloquent\Factories\Sequence;
+use Laravel\Lumen\Testing\DatabaseTransactions;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 
 class ResponbilitySrvTest extends TestCase
 {
-    use DatabaseMigrations;
+    use DatabaseTransactions;
 
-    private ResponbilityRepository $responbilityRepository;
-    private UserRepository $userRepository;
-    private ResponbilityValidation $validator;
+    private $responbilityRepository;
+    private $userRepository;
+    private $validator;
     private ResponbilityService $service;
 
     public function setUp(): void
@@ -32,21 +33,22 @@ class ResponbilitySrvTest extends TestCase
 
     public function testShouldGetAllUserResponbilities()
     {
-        $category = Category::factory()->create();
-        $responbilities = Responbility::factory()->count(3)->for($category, 'kategori')->create(['username' => '2211001']);
+        $username = '2211001';
+        Responbility::factory()->count(3)->create(['username' => $username]);
+        $responbilities = Responbility::with('category')->where('username', $username)->orderByDesc('id')->get();
         $this->responbilityRepository->expects($this->once())->method('getListDataByUsername')->willReturn($responbilities);
         $fractal = new Manager();
         $responbilitiesFormatted = $fractal->createData(new Collection($responbilities, new ResponbilitiesTransformer))->toArray();
-        $result = $this->service->getAllRespobilities('2211001');
+        $result = $this->service->getAllRespobilities($username);
         $this->assertEquals($responbilitiesFormatted, $result);
         $this->assertEquals($responbilitiesFormatted[2]['id'], $result[2]['id']);
     }
 
     public function testShouldNewManyUserResponbilities()
     {
-        $user = User::factory()->make(['id' => 1, 'peran' => 'teknisi']);
+        $user = User::factory()->make(['id' => 1, 'role' => 'teknisi']);
         $input = [
-            'idKategori' => [1, 2, 3, 4, 5]
+            'category_id' => [1, 2, 3, 4, 5]
         ];
         $this->validator->expects($this->once())->method('post');
         $this->validator->expects($this->once())->method('validate')->willReturn(true);

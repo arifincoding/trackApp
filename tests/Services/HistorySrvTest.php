@@ -4,15 +4,15 @@ use App\Models\History;
 use App\Repositories\HistoryRepository;
 use App\Services\HistoryService;
 use App\Validations\HistoryValidation;
-use Laravel\Lumen\Testing\DatabaseMigrations;
+use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class HistorySrvTest extends TestCase
 {
 
-    use DatabaseMigrations;
+    use DatabaseTransactions;
 
-    private HistoryRepository $repository;
-    private HistoryValidation $validator;
+    private $repository;
+    private $validator;
     private HistoryService $service;
 
     public function setUp(): void
@@ -25,18 +25,11 @@ class HistorySrvTest extends TestCase
 
     public function testShouldNewSingleHistory()
     {
-        $input = [
-            'id' => 1,
-            'status' => 'antri',
-            'pesan' => 'test antri',
-            'idService' => 34
-        ];
-        $history = History::factory()->make($input);
+        $input = ['status' => 'antri', 'message' => 'test antri'];
+        $history = History::factory()->sequence($input)->make(['id' => 1, 'service_id' => 2]);
         $this->validator->expects($this->once())->method('validate')->willReturn(true);
         $this->repository->expects($this->once())->method('save')->willReturn($history);
-        unset($input['id']);
-        unset($input['idService']);
-        $result = $this->service->newHistory($input, 34);
-        $this->assertEquals(['idRiwayat' => 1], $result);
+        $result = $this->service->newHistory($input, 2);
+        $this->assertEquals(['history_id' => 1], $result);
     }
 }

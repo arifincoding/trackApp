@@ -4,16 +4,17 @@ use App\Models\Category;
 use App\Repositories\CategoryRepository;
 use App\Services\CategoryService;
 use App\Validations\CategoryValidation;
-use Laravel\Lumen\Testing\DatabaseMigrations;
+use Illuminate\Database\Eloquent\Factories\Sequence;
+use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class CategorySrvTest extends TestCase
 {
 
-    use DatabaseMigrations;
+    use DatabaseTransactions;
 
-    private CategoryRepository $repository;
+    private $repository;
     private CategoryService $service;
-    private CategoryValidation $validator;
+    private $validator;
 
     public function setUp(): void
     {
@@ -25,7 +26,7 @@ class CategorySrvTest extends TestCase
 
     public function testShouldGetAllCategory()
     {
-        $category = Category::factory()->count(3)->create();
+        $category = Category::factory()->count(3)->sequence(fn (Sequence $sequence) => ['id' => $sequence->index + 1])->make();
         $this->validator->expects($this->once())->method('query');
         $this->validator->expects($this->once())->method('validate')->willReturn(true);
         $this->repository->expects($this->once())->method('getListData')->willReturn($category);
@@ -35,9 +36,7 @@ class CategorySrvTest extends TestCase
 
     public function testShouldGetCategoryById()
     {
-        $category = Category::factory()->create();
-        $category->idKategori = $category->id;
-        unset($category->id);
+        $category = Category::factory()->make(['id' => 1]);
         $this->repository->expects($this->once())->method('getDataById')->willReturn($category);
         $result = $this->service->getCategoryById(1);
         $this->assertEquals($category->toArray(), $result);
@@ -45,7 +44,7 @@ class CategorySrvTest extends TestCase
 
     public function testShouldGetCategoryNotInResponbility()
     {
-        $category = Category::factory()->count(3)->create();
+        $category = Category::factory()->count(3)->sequence(fn (Sequence $sequence) => ['id' => $sequence->index + 1])->make();
         $this->repository->expects($this->once())->method('getDataNotInResponbility')->willReturn($category);
         $result = $this->service->getCategoryNotInResponbility('2211001');
         $this->assertEquals($category->toArray(), $result);
@@ -53,22 +52,24 @@ class CategorySrvTest extends TestCase
 
     public function testShouldNewSingleCategory()
     {
-        $category = Category::factory()->make(['id' => 1, 'nama' => 'test ctgr']);
+        $input = ['name' => 'test tambah kategori'];
+        $category = Category::factory()->sequence($input)->make(['id' => 1]);
         $this->validator->expects($this->once())->method('post');
         $this->validator->expects($this->once())->method('validate')->willReturn(true);
         $this->repository->expects($this->once())->method('save')->willReturn($category);
-        $result = $this->service->newCategory(['nama' => 'test ctgr']);
-        $this->assertEquals(['idKategori' => 1], $result);
+        $result = $this->service->newCategory($input);
+        $this->assertEquals(['category_id' => 1], $result);
     }
 
     public function testShouldUpdateSingleCategoryById()
     {
-        $category = Category::factory()->make(['id' => 1, 'nama' => 'test ctgr']);
+        $input = ['name' => 'test update kategori'];
+        $category = Category::factory()->sequence($input)->make(['id' => 1]);
         $this->validator->expects($this->once())->method('post');
         $this->validator->expects($this->once())->method('validate')->willReturn(true);
         $this->repository->expects($this->once())->method('save')->willReturn($category);
-        $result = $this->service->updateCategoryById(['nama' => 'test ctgr'], 1);
-        $this->assertEquals(['idKategori' => 1], $result);
+        $result = $this->service->updateCategoryById($input, 1);
+        $this->assertEquals(['category_id' => 1], $result);
     }
 
     public function testShouldDeleteSingleCategoryById()

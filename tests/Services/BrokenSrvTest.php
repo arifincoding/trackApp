@@ -4,21 +4,22 @@ use App\Repositories\BrokenRepository;
 use App\Repositories\ServiceRepository;
 use App\Services\BrokenService;
 use App\Validations\BrokenValidation;
-use Laravel\Lumen\Testing\DatabaseMigrations;
 use App\Models\Broken;
 use App\Models\Service;
 use App\Transformers\BrokensTransformer;
+use Illuminate\Database\Eloquent\Factories\Sequence;
+use Laravel\Lumen\Testing\DatabaseTransactions;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 
 class BrokenSrvTest extends TestCase
 {
 
-    use DatabaseMigrations;
+    use DatabaseTransactions;
 
-    private BrokenRepository $brokenRepository;
-    private ServiceRepository $serviceRepository;
-    private BrokenValidation $validator;
+    private $brokenRepository;
+    private $serviceRepository;
+    private $validator;
     private BrokenService $service;
 
     public function setUp(): void
@@ -32,7 +33,7 @@ class BrokenSrvTest extends TestCase
 
     public function testShouldGetListBrokenByIdService()
     {
-        $broken = Broken::factory()->count(3)->create(['idService' => 1]);
+        $broken = Broken::factory()->count(3)->sequence(fn (Sequence $sequence) => ['id' => $sequence->index + 1])->make(['service_id' => 1]);
         $this->brokenRepository->expects($this->once())->method('getListDataByIdService')->willReturn($broken);
         $fractal = new Manager();
         $brokenFormated = $fractal->createData(new Collection($broken, new BrokensTransformer))->toArray();
@@ -42,24 +43,20 @@ class BrokenSrvTest extends TestCase
 
     public function testShouldNewSingleBrokenDataByIdService()
     {
-        $service = Service::factory()->make(['id' => 1]);
+
+        $service = Service::factory()->make(['id' => 2]);
         $this->validator->expects($this->once())->method('validate')->willReturn(true);
         $this->serviceRepository->expects($this->once())->method('findById')->willReturn($service);
-        $input = [
-            'id' => 1,
-            'judul' => 'test',
-            'deskripsi' => 'ini adalah test'
-        ];
-        $broken = Broken::factory()->make($input);
+        $input = ['title' => 'ini test', 'description' => 'ini test untuk tambah data kerusakan'];
+        $broken = Broken::factory()->sequence($input)->make(['id' => 1, 'service_id' => $service->id]);
         $this->brokenRepository->expects($this->once())->method('save')->willReturn($broken);
-        unset($input['id']);
-        $result = $this->service->newBrokenByIdService($input, 1);
-        $this->assertEquals(['idKerusakan' => 1], $result);
+        $result = $this->service->newBrokenByIdService($input, 2);
+        $this->assertEquals(['broken_id' => 1], $result);
     }
 
     public function testShouldGetSingleBrokenById()
     {
-        $broken = Broken::factory()->make(['idKerusakan' => 1]);
+        $broken = Broken::factory()->make(['id' => 1, 'service_id' => 2]);
         $this->brokenRepository->expects($this->once())->method('getDataById')->willReturn($broken);
         $result = $this->service->getBrokenById(1);
         $this->assertEquals($broken->toArray(), $result);
@@ -67,43 +64,34 @@ class BrokenSrvTest extends TestCase
 
     public function testShouldUpdateSingleBrokenById()
     {
-        $input = [
-            'id' => 1,
-            'judul' => 'test',
-            'deskripsi' => 'ini adalah deskripsi',
-            'idService' => 24
-        ];
-        $broken = Broken::factory()->make($input);
+        $input = ['title' => 'ini test', 'description' => 'test untuk update data kerusakan'];
+        $broken = Broken::factory()->sequence($input)->make(['id' => 1, 'service_id' => 2]);
         $this->validator->expects($this->once())->method('validate')->willReturn(true);
         $this->brokenRepository->expects($this->once())->method('save')->willReturn($broken);
-        unset($input['id']);
-        unset($input['idService']);
         $result = $this->service->updateBroken($input, 1);
-        $this->assertEquals(['idKerusakan' => 1, 'idService' => 24], $result);
+        $this->assertEquals(['broken_id' => 1, 'service_id' => 2], $result);
     }
 
     public function testShouldUpdateCostInSingleBrokenDataById()
     {
-        $input = ['biaya' => 25000, 'id' => 1];
-        $broken = Broken::factory()->make($input);
-        unset($input['id']);
+        $input = ['cost' => 25000];
+        $broken = Broken::factory()->sequence($input)->make(['id' => 1]);
         $this->validator->expects($this->once())->method('cost');
         $this->validator->expects($this->once())->method('validate')->willReturn(true);
         $this->brokenRepository->expects($this->once())->method('save')->willReturn($broken);
         $result = $this->service->updateBrokenCost($input, 1);
-        $this->assertEquals(['idKerusakan' => 1], $result);
+        $this->assertEquals(['broken_id' => 1], $result);
     }
 
     public function testShouldUpdateConfirmationInSingleBrokenDataById()
     {
-        $input = ['disetujui' => true, 'id' => 1];
-        $broken = Broken::factory()->make($input);
-        unset($input['id']);
+        $input = ['is_approved' => true];
+        $broken = Broken::factory()->sequence($input)->make(['id' => 1, 'service_id' => 2]);
         $this->validator->expects($this->once())->method('confirm');
-        $this->validator->expects($this->once())->method('validate');
+        $this->validator->expects($this->once())->method('validate')->willReturn(true);
         $this->brokenRepository->expects($this->once())->method('save')->willReturn($broken);
         $result = $this->service->updateBrokenConfirmation($input, 1);
-        $this->assertEquals(['idKerusakan' => 1], $result);
+        $this->assertEquals(['broken_id' => 1], $result);
     }
 
     public function testShouldDeleteSingleBrokenById()
