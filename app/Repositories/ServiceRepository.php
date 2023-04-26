@@ -60,7 +60,7 @@ class ServiceRepository extends Repository implements ServiceRepoContract
 
             $status ? $query->where('services.status', $status) : '';
             $category ? $query->where('categories.name', $category) : '';
-            $query->orderByDesc('service_id');
+            $query->orderByDesc('services.id');
         });
         return $data->get();
     }
@@ -85,7 +85,7 @@ class ServiceRepository extends Repository implements ServiceRepoContract
         $data = $this->model->search($search)->query(function ($query) use ($username, $category) {
 
             $attributs = [
-                'services.id as service_id',
+                'services.id',
                 'services.code',
                 'services.complaint',
                 'services.status',
@@ -124,7 +124,7 @@ class ServiceRepository extends Repository implements ServiceRepoContract
         $data = $this->model->search($search)->query(function ($query) use ($username, $status, $category) {
 
             $attributs = [
-                'services.id as service_id',
+                'services.id',
                 'services.code',
                 'services.complaint',
                 'services.status',

@@ -27,7 +27,7 @@ class ResponbilityRepository extends Repository implements ResponbilityRepoContr
         return $this->model->where('username', $username)->first();
     }
 
-    function findOneByUsernameAndCategory(string $username, string $category)
+    function findOneByUsernameAndCategory(string $username, ?string $category)
     {
         $data = $this->model->with('category')->where('username', $username)->whereHas('category', function (Builder $q) use ($category) {
             $q->where('name', $category);
