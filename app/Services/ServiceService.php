@@ -19,6 +19,7 @@ use App\Transformers\ServicedetailTransformer;
 use App\Transformers\ServicetrackTransformer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ServiceService implements ServiceServiceContract
 {
@@ -101,23 +102,27 @@ class ServiceService implements ServiceServiceContract
     {
         $this->validator->validate($inputs, 'create');
         $inputs['customer']['is_whatsapp'] = $inputs['customer']['telp'] ? $inputs['customer']['is_whatsapp'] : false;
+        DB::beginTransaction();
         $customer = $this->customerRepository->create($inputs['customer']);
         $product = $this->productRepository->create($inputs['product'], $customer->id);
         unset($inputs['customer'], $inputs['product']);
         $data = $this->serviceRepository->create($inputs, $product->id, Auth::payload()->get('username'));
         $this->serviceRepository->setCodeService($data->id);
+        DB::commit();
         return ['service_id' => $data->id];
     }
 
     public function updateServiceById(array $inputs, int $id): array
     {
         $this->validator->validate($inputs, 'update');
-        $find = $this->serviceRepository->findById($id);
         $inputs['customer']['is_whatsapp'] = $inputs['customer']['telp'] ? $inputs['customer']['is_whatsapp'] : false;
+        DB::beginTransaction();
+        $find = $this->serviceRepository->findById($id);
         $this->customerRepository->save($inputs['customer'], $find->idCustomer);
         $this->productRepository->save($inputs['product'], $find->idProduct);
         unset($inputs['customer'], $inputs['product']);
         $data = $this->serviceRepository->save($inputs, $id);
+        DB::commit();
         return ['service_id' => $data->id];
     }
 
@@ -173,12 +178,14 @@ class ServiceService implements ServiceServiceContract
     {
         $this->validator->confirmation($inputs);
         $this->validator->validate($inputs, 'updateConfirmation');
+        DB::beginTransaction();
         $find = $this->brokenRepository->findOneDataByWhere(['idService' => $id, 'disetujui' => null]);
         $find ? abort(400, 'data kerusakan masih ada yang belum diberi persetujuan') : null;
         $totalCost = $this->brokenRepository->sumCostByServiceId($id, ['is_approved' => true]);
         $inputs['total_cost'] = $totalCost;
         $data = $this->serviceRepository->save($inputs, $id);
         $this->brokenRepository->setCostInNotAgreeToZero($id);
+        DB::commit();
         return [
             'success' => true,
             'data' => ["service_id" => $data->id]
@@ -187,6 +194,7 @@ class ServiceService implements ServiceServiceContract
 
     public function deleteServiceById(int $id): string
     {
+        DB::beginTransaction();
         $find = $this->serviceRepository->findById($id);
         $findProduct = $this->productRepository->findById($find->product_id);
         $this->customerRepository->delete($findProduct->customer_id);
@@ -194,6 +202,7 @@ class ServiceService implements ServiceServiceContract
         $this->serviceRepository->delete($id);
         $this->historyRepository->deleteByIdService($id);
         $this->brokenRepository->deleteByIdService($id);
+        DB::commit();
         return 'data service berhasil dihapus';
     }
 }

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use App\Transformers\UsersTransformer;
+use Illuminate\Support\Facades\DB;
 
 class UserService implements UserServiceContract
 {
@@ -100,9 +101,11 @@ class UserService implements UserServiceContract
     {
         $this->validator->post();
         $this->validator->validate($inputs, 'create');
+        DB::beginTransaction();
         $data = $this->userRepository->save($inputs);
         $register = $this->userRepository->registerUser($data->id);
         // Mail::to($register['email'])->send(new EmployeeMail($register['username'], $register['password']));
+        DB::commit();
         return ['user_id' => $data->id];
     }
 
@@ -110,16 +113,20 @@ class UserService implements UserServiceContract
     {
         $this->validator->post($id);
         $this->validator->validate($inputs, 'update');
+        DB::beginTransaction();
         $data = $this->userRepository->save($inputs, $id);
         $inputs['role'] !== 'teknisi' ? $this->responbilityRepository->deleteByUsername($data->username) : null;
+        DB::commit();
         return ['user_id' => $data->id];
     }
 
     public function deleteUserById(int $id): string
     {
+        DB::beginTransaction();
         $find = $this->userRepository->findById($id);
-        $delete = $this->userRepository->delete($id);
+        $this->userRepository->delete($id);
         $this->responbilityRepository->deleteByUsername($find->username);
+        DB::commit();
         return 'sukses hapus data pegawai';
     }
 }
