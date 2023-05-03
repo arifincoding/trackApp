@@ -274,7 +274,7 @@ class ServiceSrvTest extends TestCase
     public function testShouldDeleteServiceById()
     {
         $service = Service::factory()->make(['id' => 1, 'product_id' => 2]);
-        $product = Product::factory()->make(['id' => 1, 'customer-id' => 3, 'category_id' => 4]);
+        $product = Product::factory()->make(['id' => 1, 'customer_id' => 3, 'category_id' => 4]);
         $this->serviceRepository->expects($this->once())->method('findById')->willReturn($service);
         $this->productRepository->expects($this->once())->method('findById')->willReturn($product);
         $this->customerRepository->expects($this->once())->method('delete')->willReturn(true);
