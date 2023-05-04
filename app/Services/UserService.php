@@ -101,11 +101,12 @@ class UserService implements UserServiceContract
     {
         $this->validator->post();
         $this->validator->validate($inputs, 'create');
-        DB::beginTransaction();
-        $data = $this->userRepository->save($inputs);
-        $register = $this->userRepository->registerUser($data->id);
-        // Mail::to($register['email'])->send(new EmployeeMail($register['username'], $register['password']));
-        DB::commit();
+        $data = DB::transaction(function () use ($inputs) {
+            $data = $this->userRepository->save($inputs);
+            $register = $this->userRepository->registerUser($data->id);
+            // Mail::to($register['email'])->send(new EmployeeMail($register['username'], $register['password']));
+            return $data;
+        });
         return ['user_id' => $data->id];
     }
 
@@ -113,20 +114,21 @@ class UserService implements UserServiceContract
     {
         $this->validator->post($id);
         $this->validator->validate($inputs, 'update');
-        DB::beginTransaction();
-        $data = $this->userRepository->save($inputs, $id);
-        $inputs['role'] !== 'teknisi' ? $this->responbilityRepository->deleteByUsername($data->username) : null;
-        DB::commit();
+        $data = DB::transaction(function () use ($inputs, $id) {
+            $data = $this->userRepository->save($inputs, $id);
+            $inputs['role'] !== 'teknisi' ? $this->responbilityRepository->deleteByUsername($data->username) : null;
+            return $data;
+        });
         return ['user_id' => $data->id];
     }
 
     public function deleteUserById(int $id): string
     {
-        DB::beginTransaction();
-        $find = $this->userRepository->findById($id);
-        $this->userRepository->delete($id);
-        $this->responbilityRepository->deleteByUsername($find->username);
-        DB::commit();
+        DB::transaction(function () use ($id) {
+            $find = $this->userRepository->findById($id);
+            $this->userRepository->delete($id);
+            $this->responbilityRepository->deleteByUsername($find->username);
+        });
         return 'sukses hapus data pegawai';
     }
 }

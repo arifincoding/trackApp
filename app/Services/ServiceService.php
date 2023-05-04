@@ -102,13 +102,14 @@ class ServiceService implements ServiceServiceContract
     {
         $this->validator->validate($inputs, 'create');
         $inputs['customer']['is_whatsapp'] = $inputs['customer']['telp'] ? $inputs['customer']['is_whatsapp'] : false;
-        DB::beginTransaction();
-        $customer = $this->customerRepository->create($inputs['customer']);
-        $product = $this->productRepository->create($inputs['product'], $customer->id);
-        unset($inputs['customer'], $inputs['product']);
-        $data = $this->serviceRepository->create($inputs, $product->id, Auth::payload()->get('username'));
-        $this->serviceRepository->setCodeService($data->id);
-        DB::commit();
+        $data = DB::transaction(function () use ($inputs) {
+            $customer = $this->customerRepository->create($inputs['customer']);
+            $product = $this->productRepository->create($inputs['product'], $customer->id);
+            unset($inputs['customer'], $inputs['product']);
+            $data = $this->serviceRepository->create($inputs, $product->id, Auth::payload()->get('username'));
+            $this->serviceRepository->setCodeService($data->id);
+            return $data;
+        });
         return ['service_id' => $data->id];
     }
 
@@ -116,13 +117,15 @@ class ServiceService implements ServiceServiceContract
     {
         $this->validator->validate($inputs, 'update');
         $inputs['customer']['is_whatsapp'] = $inputs['customer']['telp'] ? $inputs['customer']['is_whatsapp'] : false;
-        DB::beginTransaction();
-        $find = $this->serviceRepository->findById($id);
-        $this->customerRepository->save($inputs['customer'], $find->idCustomer);
-        $this->productRepository->save($inputs['product'], $find->idProduct);
-        unset($inputs['customer'], $inputs['product']);
-        $data = $this->serviceRepository->save($inputs, $id);
-        DB::commit();
+        $data = DB::transaction(function () use ($inputs, $id) {
+            $find = $this->serviceRepository->findById($id);
+            $findProduct = $this->productRepository->findById($find->product_id);
+            $this->customerRepository->save($inputs['customer'], $findProduct->customer_id);
+            $this->productRepository->save($inputs['product'], $find->product_id);
+            unset($inputs['customer'], $inputs['product']);
+            $data = $this->serviceRepository->save($inputs, $id);
+            return $data;
+        });
         return ['service_id' => $data->id];
     }
 
@@ -178,14 +181,15 @@ class ServiceService implements ServiceServiceContract
     {
         $this->validator->confirmation($inputs);
         $this->validator->validate($inputs, 'updateConfirmation');
-        DB::beginTransaction();
-        $find = $this->brokenRepository->findOneDataByWhere(['idService' => $id, 'disetujui' => null]);
-        $find ? abort(400, 'data kerusakan masih ada yang belum diberi persetujuan') : null;
-        $totalCost = $this->brokenRepository->sumCostByServiceId($id, ['is_approved' => true]);
-        $inputs['total_cost'] = $totalCost;
-        $data = $this->serviceRepository->save($inputs, $id);
-        $this->brokenRepository->setCostInNotAgreeToZero($id);
-        DB::commit();
+        $data = DB::transaction(function () use ($id) {
+            $find = $this->brokenRepository->findOneDataByWhere(['service_id' => $id, 'is_approved' => null]);
+            $find ? abort(400, 'data kerusakan masih ada yang belum diberi persetujuan') : null;
+            $totalCost = $this->brokenRepository->sumCostByServiceId($id, ['is_approved' => true]);
+            $inputs['total_cost'] = $totalCost;
+            $data = $this->serviceRepository->save($inputs, $id);
+            $this->brokenRepository->setCostInNotAgreeToZero($id);
+            return $data;
+        });
         return [
             'success' => true,
             'data' => ["service_id" => $data->id]
@@ -194,15 +198,15 @@ class ServiceService implements ServiceServiceContract
 
     public function deleteServiceById(int $id): string
     {
-        DB::beginTransaction();
-        $find = $this->serviceRepository->findById($id);
-        $findProduct = $this->productRepository->findById($find->product_id);
-        $this->customerRepository->delete($findProduct->customer_id);
-        $this->productRepository->delete($find->product_id);
-        $this->serviceRepository->delete($id);
-        $this->historyRepository->deleteByIdService($id);
-        $this->brokenRepository->deleteByIdService($id);
-        DB::commit();
+        DB::transaction(function () use ($id) {
+            $find = $this->serviceRepository->findById($id);
+            $findProduct = $this->productRepository->findById($find->product_id);
+            $this->historyRepository->deleteByIdService($id);
+            $this->brokenRepository->deleteByIdService($id);
+            $this->serviceRepository->delete($id);
+            $this->productRepository->delete($find->product_id);
+            $this->customerRepository->delete($findProduct->customer_id);
+        });
         return 'data service berhasil dihapus';
     }
 }
