@@ -22,12 +22,12 @@ class ProductDetailTransformer extends TransformerAbstract
         ];
     }
 
-    public function includeCategory(Category $data)
+    public function includeCategory(Product $data)
     {
         return $this->item($data->category, new CategoryTransformer);
     }
 
-    public function includeClient(Customer $data)
+    public function includeClient(Product $data)
     {
         return $this->item($data->client, new CustomerTransformer);
     }

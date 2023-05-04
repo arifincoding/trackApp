@@ -29,24 +29,37 @@ class ServicedetailTransformer extends TransformerAbstract
             'code' => $data->code,
             'complaint' => $data->complaint,
             'status' => $data->status,
-            'total_cost' => $data->total_cost,
-            'total_cost_string' => Formatter::currency($data->total_cost),
+            'total_cost' => [
+                'int' => $data->total_cost,
+                'string' => Formatter::currency($data->total_cost)
+            ],
             'is_take' => Formatter::boolval($data->is_take),
             'is_approved' => Formatter::boolval($data->is_approved),
-            'estimated_cost' => $data->estimated_cost,
-            'estimated_cost_string' => Formatter::currency($data->estimated_cost),
-            'down_payment' => $data->down_payment,
-            'down_payment_string' => Formatter::currency($data->down_payment),
+            'estimated_cost' => [
+                'int' => $data->estimated_cost,
+                'string' => Formatter::currency($data->estimated_cost)
+            ],
+            'down_payment' => [
+                'int' => $data->down_payment,
+                'string' => Formatter::currency($data->down_payment)
+            ],
             'to_be_paid' => Formatter::currency($toBePaid),
-            'entry_date' => Carbon::parse($data->entry_at)->format('d-m-Y'),
-            'entry_time' => Carbon::parse($data->entry_at)->format('H:i'),
-            'taked_date' => $takedDate,
-            'taked_time' => $takedTime,
+            'entry' => [
+                'date' => Carbon::parse($data->entry_at)->format('d-m-Y'),
+                'time' => Carbon::parse($data->entry_at)->format('H:i')
+            ],
+            'taked' => [
+                'date' => $takedDate,
+                'time' => $takedTime
+            ],
             'warranty' => $data->warranty,
-            'cs_username' => $data->cs_username,
-            'tecnician_username' => $data->tecnician_username,
+            'username' => [
+                'cs' => $data->cs_username,
+                'tecnician' => $data->tecnician_username
+            ],
             'need_approval' => Formatter::boolval($data->need_approval),
-            'is_cost_confirmation' => Formatter::boolval($data->is_cost_confirmation)
+            'is_cost_confirmation' => Formatter::boolval($data->is_cost_confirmation),
+            'note' => $data->note
         ];
     }
     public function includeProduct(Service $data)

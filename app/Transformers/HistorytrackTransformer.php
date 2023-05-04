@@ -14,8 +14,10 @@ class HistorytrackTransformer extends TransformerAbstract
         return [
             'status' => $data->status,
             'message' => $data->message,
-            'date' => Carbon::parse($data->created_at)->format('d-m-Y'),
-            'time' => Carbon::parse($data->created_at)->format('H:i')
+            'created' => [
+                'date' => Carbon::parse($data->created_at)->format('d-m-Y'),
+                'time' => Carbon::parse($data->created_at)->format('H:i')
+            ]
         ];
     }
 }
