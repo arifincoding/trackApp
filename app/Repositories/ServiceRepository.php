@@ -18,7 +18,7 @@ class ServiceRepository extends Repository implements ServiceRepoContract
 
     public function create(array $attributs, int $productId, string $usernameCs)
     {
-        $attributs[] += [
+        $attributs += [
             'product_id' => $productId,
             'cs_username' => $usernameCs
         ];
