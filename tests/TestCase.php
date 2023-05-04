@@ -19,7 +19,7 @@ abstract class TestCase extends BaseTestCase
 
     public function getToken(string $role)
     {
-        User::factory()->create(['username' => '2211001', 'password' => Hash::make('rahasia'), 'peran' => $role]);
+        User::factory()->create(['username' => '2211001', 'password' => Hash::make('rahasia'), 'role' => $role]);
         return Auth::attempt(['username' => '2211001', 'password' => 'rahasia']);
     }
 }
