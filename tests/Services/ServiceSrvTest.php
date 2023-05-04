@@ -206,6 +206,7 @@ class ServiceSrvTest extends TestCase
         ];
         $this->validator->expects($this->once())->method('validate')->willReturn(true);
         $this->serviceRepository->expects($this->once())->method('findById')->willReturn($service);
+        $this->productRepository->expects($this->once())->method('findById')->willReturn($product);
         $this->customerRepository->expects($this->once())->method('save')->willReturn($customer);
         $this->productRepository->expects($this->once())->method('save')->willReturn($product);
         $this->serviceRepository->expects($this->once())->method('save')->willReturn($service);
