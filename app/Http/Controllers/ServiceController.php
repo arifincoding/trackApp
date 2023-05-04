@@ -19,7 +19,7 @@ class ServiceController extends Controller implements ServiceControllerContract
 
     function getListService(Request $request): JsonResponse
     {
-        $inputs = $request->only('status', 'kategori', 'cari');
+        $inputs = $request->only('status', 'category', 'search');
         $data = $this->service->getListService($inputs);
         return $this->jsonSuccess('sukses', 200, $data);
     }
@@ -32,14 +32,14 @@ class ServiceController extends Controller implements ServiceControllerContract
 
     function getServiceQueue(Request $request, string $id): JsonResponse
     {
-        $inputs = $request->only('kategori', 'cari');
+        $inputs = $request->only('category', 'search');
         $data = $this->service->getServiceQueue($id, $inputs);
         return $this->jsonSuccess('sukses', 200, $data);
     }
 
     function getProgressService(Request $request, string $id): JsonResponse
     {
-        $inputs = $request->only('status', 'kategori', 'cari');
+        $inputs = $request->only('status', 'category', 'search');
         $data = $this->service->getProgressService($id, $inputs);
         return $this->jsonSuccess('sukses', 200, $data);
     }
@@ -109,14 +109,14 @@ class ServiceController extends Controller implements ServiceControllerContract
 
     public function updateWarranty(Request $request, int $id): JsonResponse
     {
-        $inputs = $request->only('garansi');
+        $inputs = $request->only('warranty');
         $data = $this->service->updateServiceWarranty($inputs, $id);
         return $this->jsonSuccess('sukses', 200, $data);
     }
 
     public function setConfirmation(Request $request, int $id): JsonResponse
     {
-        $inputs =  $request->only('disetujui');
+        $inputs =  $request->only('is_approved');
         $data = $this->service->setServiceConfirmation($inputs, $id);
         if ($data['success'] === false) {
             return $this->jsonValidationError($data['message']);

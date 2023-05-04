@@ -19,7 +19,7 @@ class HistoryController extends Controller implements HistoryControllerContract
 
     public function create(Request $request, int $id): JsonResponse
     {
-        $inputs = $request->only(['status', 'pesan']);
+        $inputs = $request->only(['status', 'message']);
         $data = $this->service->newHistory($inputs, $id);
         return $this->jsonSuccess('sukses', 200, $data);
     }

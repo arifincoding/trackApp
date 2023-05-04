@@ -25,7 +25,7 @@ class ResponbilityController extends Controller implements ResponbilityControlle
 
     function create(Request $request, int $id): JsonResponse
     {
-        $inputs = $request->only(['idKategori']);
+        $inputs = $request->only(['category_id']);
         $data = $this->service->newResponbilities($inputs, $id);
         if ($data['success'] === false) {
             return $this->jsonValidationError($data['message']);

@@ -19,7 +19,7 @@ class CategoryController extends Controller implements CategoryControllerContrac
 
     function all(Request $request): JsonResponse
     {
-        $inputs = $request->only(['limit', 'cari']);
+        $inputs = $request->only(['limit', 'search']);
         $data = $this->service->getAllCategory($inputs);
         return $this->jsonSuccess('sukses', 200, $data);
     }
@@ -38,14 +38,14 @@ class CategoryController extends Controller implements CategoryControllerContrac
 
     function create(Request $request): JsonResponse
     {
-        $inputs = $request->only('nama');
+        $inputs = $request->only('name');
         $data = $this->service->newCategory($inputs);
         return $this->jsonSuccess('sukses', 200, $data);
     }
 
     function update(Request $request, int $id): JsonResponse
     {
-        $inputs = $request->only('nama');
+        $inputs = $request->only('name');
         $data = $this->service->updateCategoryById($inputs, $id);
         return $this->jsonSuccess('sukses', 200, $data);
     }

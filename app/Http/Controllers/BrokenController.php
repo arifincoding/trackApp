@@ -25,7 +25,7 @@ class BrokenController extends Controller implements BrokenControllerContract
 
     public function newByIdService(Request $request, int $id): JsonResponse
     {
-        $inputs = $request->only('judul', 'deskripsi');
+        $inputs = $request->only('title', 'description');
         $data = $this->brokenService->newBrokenByIdService($inputs, $id);
         return $this->jsonSuccess('sukses', 200, $data);
     }
@@ -38,21 +38,21 @@ class BrokenController extends Controller implements BrokenControllerContract
 
     public function update(Request $request, int $id): JsonResponse
     {
-        $inputs = $request->only('judul', 'deskripsi');
+        $inputs = $request->only('title', 'description');
         $data = $this->brokenService->updateBroken($inputs, $id);
         return $this->jsonSuccess('sukses', 200, $data);
     }
 
     public function updateCost(Request $request, int $id): JsonResponse
     {
-        $inputs = $request->only('biaya');
+        $inputs = $request->only('cost');
         $data = $this->brokenService->updateBrokenCost($inputs, $id);
         return $this->jsonSuccess('sukses', 200, $data);
     }
 
     public function updateCofirmation(Request $request, int $id): JsonResponse
     {
-        $inputs = $request->only('disetujui');
+        $inputs = $request->only('is_approved');
         $data = $this->brokenService->updateBrokenConfirmation($inputs, $id);
         return $this->jsonSuccess('sukses', 200, $data);
     }

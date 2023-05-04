@@ -47,21 +47,21 @@ class UserController extends Controller implements UserControllerContract
 
     function updateMyAccount(Request $request): JsonResponse
     {
-        $inputs = $request->only(['email', 'noHp', 'alamat']);
+        $inputs = $request->only(['email', 'telp', 'address']);
         $data = $this->service->updateMyAccount($inputs);
         return $this->jsonMessageOnly($data);
     }
 
     function changePassword(Request $request): JsonResponse
     {
-        $inputs = $request->only(['sandiLama', 'sandiBaru']);
+        $inputs = $request->only(['old_password', 'new_password']);
         $data = $this->service->changePassword($inputs);
         return $this->jsonMessageOnly($data);
     }
 
     function all(Request $request): JsonResponse
     {
-        $inputs = $request->only(['limit', 'peran']);
+        $inputs = $request->only(['limit', 'role']);
         $data = $this->service->getListUser($inputs);
         return $this->jsonSuccess('sukses', 200, $data);
     }
@@ -72,34 +72,29 @@ class UserController extends Controller implements UserControllerContract
         return $this->jsonSuccess('sukses', 200, $data);
     }
 
-    function create(Request $request): JsonResponse
+    private function inputUser()
     {
-        $attributs = [
-            'namaDepan',
-            'namaBelakang',
-            'jenisKelamin',
-            'noHp',
-            'alamat',
-            'peran',
+        return [
+            'firstname',
+            'lastname',
+            'gender',
+            'telp',
+            'address',
+            'role',
             'email'
         ];
-        $inputs = $request->only($attributs);
+    }
+
+    function create(Request $request): JsonResponse
+    {
+        $inputs = $request->only($this->inputUser());
         $data = $this->service->newUser($inputs);
         return $this->jsonSuccess('sukses', 200, $data);
     }
 
     function update(Request $request, int $id): JsonResponse
     {
-        $attributs = [
-            'namaDepan',
-            'namaBelakang',
-            'jenisKelamin',
-            'noHp',
-            'alamat',
-            'peran',
-            'email'
-        ];
-        $inputs = $request->only($attributs);
+        $inputs = $request->only($this->inputUser());
         $data = $this->service->updateUserById($inputs, $id);
         return $this->jsonSuccess('sukses', 200, $data);
     }
