@@ -3,11 +3,11 @@
 use App\Models\Service;
 use App\Models\Customer;
 use Illuminate\Support\Carbon;
-use Laravel\Lumen\Testing\DatabaseMigrations;
+use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class whatsappTest extends TestCase
 {
-    use DatabaseMigrations;
+    use DatabaseTransactions;
     // send message
     private function create()
     {

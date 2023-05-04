@@ -1,28 +1,28 @@
 <?php
 
-use App\Models\History;
 use App\Models\Service;
-use Laravel\Lumen\Testing\DatabaseMigrations;
+use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class HistoryTest extends TestCase
 {
 
-    use DatabaseMigrations;
+    use DatabaseTransactions;
 
     // create
     public function testShouldCreateHistory()
     {
+        $service = Service::factory()->create();
         $params = [
             'status' => 'perbaikan selesai',
-            'pesan' => 'perbaikan selesai cuy'
+            'message' => 'perbaikan selesai cuy'
         ];
-        $this->post('/services/1/history', $params, ['Authorization' => 'Bearer ' . $this->getToken('teknisi')]);
+        $this->post("/services/$service->id/history", $params, ['Authorization' => 'Bearer ' . $this->getToken('teknisi')]);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
             'message',
             'data' => [
-                'idRiwayat'
+                'history_id'
             ]
         ]);
     }

@@ -2,11 +2,11 @@
 
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Laravel\Lumen\Testing\DatabaseMigrations;
+use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class AuthTest extends TestCase
 {
-    use DatabaseMigrations;
+    use DatabaseTransactions;
     // login and get token
     public function testShouldReturnLoginToken()
     {

@@ -1,27 +1,27 @@
 <?php
 
 use App\Models\Category;
-use Laravel\Lumen\Testing\DatabaseMigrations;
+use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class CategoryTest extends TestCase
 {
-    use DatabaseMigrations;
+    use DatabaseTransactions;
     // getAll
     public function setUp(): void
     {
         parent::setUp();
-        Category::factory()->count(3)->create();
     }
     public function testShouldReturnAllCategories()
     {
+        Category::factory()->count(3)->create();
         $this->get('/categories', ['Authorization' => 'Bearer ' . $this->getToken('pemilik')]);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
             'message',
             'data' => ['*' => [
-                'idKategori',
-                'nama'
+                'id',
+                'name'
             ]]
         ]);
     }
@@ -29,14 +29,15 @@ class CategoryTest extends TestCase
     // getById
     public function testShouldReturnCategory()
     {
-        $this->get('/categories/1', ['Authorization' => 'Bearer ' . $this->getToken('pemilik')]);
+        $category = Category::factory()->create();
+        $this->get("/categories/$category->id", ['Authorization' => 'Bearer ' . $this->getToken('pemilik')]);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
             'message',
             'data' => [
-                'idKategori',
-                'nama'
+                'id',
+                'name'
             ]
         ]);
     }
@@ -44,13 +45,13 @@ class CategoryTest extends TestCase
     // create
     public function testShouldCreateCategory()
     {
-        $this->post('/categories', ['nama' => 'testing'], ['Authorization' => 'Bearer ' . $this->getToken('pemilik')]);
+        $this->post("/categories", ['name' => 'testing create category'], ['Authorization' => 'Bearer ' . $this->getToken('pemilik')]);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
             'message',
             'data' => [
-                'idKategori'
+                'category_id'
             ]
         ]);
     }
@@ -58,13 +59,14 @@ class CategoryTest extends TestCase
     // update
     public function testShouldUpdateCategory()
     {
-        $this->put('/categories/1', ['nama' => 'php test'], ['Authorization' => 'Bearer ' . $this->getToken('pemilik')]);
+        $category = Category::factory()->create();
+        $this->put("/categories/$category->id", ['name' => 'testing update category'], ['Authorization' => 'Bearer ' . $this->getToken('pemilik')]);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
             'message',
             'data' => [
-                'idKategori'
+                'category_id'
             ]
         ]);
     }
@@ -72,7 +74,8 @@ class CategoryTest extends TestCase
     // delete
     public function testShouldDeleteCategory()
     {
-        $this->delete('/categories/1', ['Authorization' => 'Bearer ' . $this->getToken('pemilik')]);
+        $category = Category::factory()->create();
+        $this->delete("/categories/$category->id", ['Authorization' => 'Bearer ' . $this->getToken('pemilik')]);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',

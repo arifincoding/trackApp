@@ -1,11 +1,11 @@
 <?php
 
-use Laravel\Lumen\Testing\DatabaseMigrations;
+use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class UserTest extends TestCase
 {
 
-    use DatabaseMigrations;
+    use DatabaseTransactions;
     // get by id
     public function testShouldReturnAccount()
     {
@@ -17,13 +17,13 @@ class UserTest extends TestCase
             'data' => [
                 'id',
                 'username',
-                'namaDepan',
-                'namaBelakang',
-                'jenisKelamin',
-                'noHp',
-                'peran',
+                'firstname',
+                'lastname',
+                'gender',
+                'telp',
+                'role',
                 'email',
-                'alamat'
+                'address'
             ]
         ]);
     }
@@ -33,8 +33,8 @@ class UserTest extends TestCase
     {
         $params = [
             'email' => 'mark@yahoo.com',
-            'noHp' => '085235690084',
-            'alamat' => 'pojok kampung'
+            'telp' => 6285235690084,
+            'address' => 'pojok kampung'
         ];
         $this->put('/user/account', $params, ['Authorization' => 'Bearer ' . $this->getToken('customer service')]);
         $this->seeStatusCode(200);
@@ -48,8 +48,8 @@ class UserTest extends TestCase
     public function testShouldChangePassword()
     {
         $params = [
-            'sandiLama' => 'rahasia',
-            'sandiBaru' => 'GuBjhG6I'
+            'old_password' => 'rahasia',
+            'new_password' => 'GuBjhG6I'
         ];
         $this->put('/user/change-password', $params, ['Authorization' => 'Bearer ' . $this->getToken('customer service')]);
         $this->seeStatusCode(200);

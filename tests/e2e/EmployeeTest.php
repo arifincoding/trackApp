@@ -1,28 +1,27 @@
 <?php
 
 use App\Models\User;
-use Laravel\Lumen\Testing\DatabaseMigrations;
+use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class EmployeeTest extends TestCase
 {
 
-    use DatabaseMigrations;
+    use DatabaseTransactions;
 
     public function setUp(): void
     {
         parent::setUp();
-        User::factory()->count(2)->create(['peran' => 'teknisi']);
     }
     // create employee
     public function testShouldCreateEmployee()
     {
         $parameters = [
-            'namaDepan' => 'pikachu',
-            'namaBelakang' => 'testing',
-            'jenisKelamin' => 'pria',
-            'noHp' => '088678987655',
-            'alamat' => 'jl coba kota testing',
-            'peran' => 'teknisi',
+            'firstname' => 'pikachu',
+            'lastname' => 'testing',
+            'gender' => 'pria',
+            'telp' => 6288678987655,
+            'address' => 'jl coba kota testing',
+            'role' => 'teknisi',
             'email' => 'pikachu@yahoo.com'
         ];
         $header = ['Authorization' => 'Bearer ' . $this->getToken('pemilik')];
@@ -33,7 +32,7 @@ class EmployeeTest extends TestCase
             'status',
             'message',
             'data' => [
-                'idPegawai'
+                'user_id'
             ]
         ]);
     }
@@ -41,6 +40,10 @@ class EmployeeTest extends TestCase
     // get all employee
     public function testShouldReturnAllEmployee()
     {
+        User::factory()->count(2)->sequence(
+            ['role' => 'teknisi'],
+            ['role' => 'customer service']
+        )->create();
         $header = ['Authorization' => 'Bearer ' . $this->getToken('pemilik')];
         $this->get('/employes', $header);
         $this->seeStatusCode(200);
@@ -48,11 +51,11 @@ class EmployeeTest extends TestCase
             'status',
             'message',
             'data' => ['*' => [
-                'idPegawai',
+                'id',
                 'username',
-                'nama',
-                'noHp',
-                'peran'
+                'name',
+                'telp',
+                'role'
             ]]
         ]);
     }
@@ -60,24 +63,25 @@ class EmployeeTest extends TestCase
     // update employee
     public function testShouldUpdateEmployee()
     {
+        $user = User::factory()->cs()->create();
         $parameters = [
-            'namaDepan' => 'saitama',
-            'namaBelakang' => 'coba testing',
-            'jenisKelamin' => 'wanita',
-            'noHp' => '088678987656',
-            'alamat' => 'jl test kota testing',
-            'peran' => 'teknisi',
+            'firstname' => 'saitama',
+            'lastname' => 'coba testing',
+            'gender' => 'wanita',
+            'telp' => 6288678987656,
+            'address' => 'jl test kota testing',
+            'role' => 'teknisi',
             'email' => 'saitama@gmail.com'
         ];
         $header = ['Authorization' => 'Bearer ' . $this->getToken('pemilik')];
 
-        $this->put('/employes/1', $parameters, $header);
+        $this->put("/employes/$user->id", $parameters, $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
             'message',
             'data' => [
-                'idPegawai'
+                'user_id'
             ]
         ]);
     }
@@ -85,22 +89,23 @@ class EmployeeTest extends TestCase
     // get employee by id
     public function testShouldReturnEmployee()
     {
+        $user = User::factory()->tecnician()->create();
         $header = ['Authorization' => 'Bearer ' . $this->getToken('pemilik')];
-        $this->get('/employes/1', $header);
+        $this->get("/employes/$user->id", $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
             'message',
             'data' => [
-                'idPegawai',
+                'id',
                 'username',
-                'namaDepan',
-                'namaBelakang',
-                'jenisKelamin',
-                'noHp',
-                'peran',
+                'firstname',
+                'lastname',
+                'gender',
+                'telp',
+                'role',
                 'email',
-                'alamat'
+                'address'
             ]
         ]);
     }
@@ -108,8 +113,9 @@ class EmployeeTest extends TestCase
     // delete employee
     public function testShouldDeleteEmployee()
     {
+        $user = User::factory()->create();
         $header = ['Authorization' => 'Bearer ' . $this->getToken('pemilik')];
-        $this->delete('/employes/1', $header);
+        $this->delete("/employes/$user->id", $header);
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'status',
