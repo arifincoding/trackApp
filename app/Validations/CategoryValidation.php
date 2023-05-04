@@ -25,10 +25,10 @@ class CategoryValidation extends Validation
     function post(string $id = null)
     {
         $this->rules = [
-            'name' => 'required|unique:categories,nama'
+            'name' => 'required|unique:categories,name'
         ];
         if ($id !== null) {
-            $this->rules = ['name' => 'required|unique:categories,nama,' . $id];
+            $this->rules = ['name' => 'required|unique:categories,name,' . $id];
         }
     }
 }
