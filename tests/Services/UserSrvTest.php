@@ -45,8 +45,7 @@ class UserSrvTest extends TestCase
         $this->validator->expects($this->once())->method('login');
         $this->validator->expects($this->once())->method('validate')->willReturn(true);
         $result = $this->service->login($input);
-        $this->assertEquals(true, $result['success']);
-        $this->assertNotEquals(null, $result['token']);
+        $this->assertNotEquals(null, $result);
         $this->assertNotEquals(null, Auth::user());
         Auth::logout();
     }

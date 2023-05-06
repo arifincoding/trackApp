@@ -161,7 +161,7 @@ class ServiceSrvTest extends TestCase
             ],
             'product' => [
                 'name' => $product->name,
-                'category_id' => 1,
+                'category_id' => $product->category_id,
                 'completeness' => $product->completeness,
                 'product_defects' => $product->product_defects
             ],
@@ -194,7 +194,7 @@ class ServiceSrvTest extends TestCase
             ],
             'product' => [
                 'name' => $product->name,
-                'category_id' => 4,
+                'category_id' => $product->category_id,
                 'completeness' => $product->completeness,
                 'product_defects' => $product->product_defects
             ],
