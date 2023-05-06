@@ -13,6 +13,7 @@ use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use App\Transformers\UsersTransformer;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class UserService implements UserServiceContract
 {
@@ -27,24 +28,14 @@ class UserService implements UserServiceContract
         $this->validator = $validator;
     }
 
-    public function login(array $inputs): array
+    public function login(array $inputs): string
     {
         $this->validator->login();
         $this->validator->validate($inputs, 'login');
         if (!$token = Auth::attempt($inputs)) {
-            return [
-                'success' => false,
-                'error' => [
-                    'password' => [
-                        'password salah'
-                    ]
-                ]
-            ];
+            throw ValidationException::withMessages(['password' => 'password yang anda masukkan salah']);
         }
-        return [
-            'success' => true,
-            'token' => $token
-        ];
+        return $token;
     }
 
     public function createRefreshToken(): string

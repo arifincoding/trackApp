@@ -4,7 +4,7 @@ namespace App\Services\Contracts;
 
 interface UserServiceContract
 {
-    public function login(array $inputs): array;
+    public function login(array $inputs): string;
     public function createRefreshToken(): string;
     public function logout(): string;
     public function getMyAccount(): array;
