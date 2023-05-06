@@ -3,11 +3,11 @@
 use App\Models\Category;
 use App\Models\User;
 use App\Validations\ResponbilityValidation;
-use Laravel\Lumen\Testing\DatabaseMigrations;
+use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class ResponbilityVldTest extends TestCase
 {
-    use DatabaseMigrations;
+    use DatabaseTransactions;
     private ResponbilityValidation $validator;
 
     public function setUp(): void
@@ -18,10 +18,10 @@ class ResponbilityVldTest extends TestCase
 
     public function testShouldSuccessValidateInput()
     {
-        User::factory()->create();
-        Category::factory()->count(2)->create();
-        $input = ['idKategori' => [1, 2]];
-        $this->validator->post(1, $input);
+        $user = User::factory()->create();
+        $category = Category::factory()->count(2)->create();
+        $input = ['category_id' => [$category[0]->id, $category[1]->id]];
+        $this->validator->post($user->id, $input);
         $result = $this->validator->validate($input, 'create');
         $this->assertEquals(true, $result);
     }

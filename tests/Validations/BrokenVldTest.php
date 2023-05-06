@@ -14,14 +14,14 @@ class BrokenVldTest extends TestCase
 
     public function testShouldSuccessValidateInput()
     {
-        $input = ['judul' => 'test', 'deskripsi' => 'testing broken'];
+        $input = ['title' => 'test', 'description' => 'testing broken'];
         $result = $this->validator->validate($input, 'create');
         $this->assertEquals(true, $result);
     }
 
     public function testShouldSuccessValidateInputConfirmation()
     {
-        $input = ['disetujui' => true];
+        $input = ['is_approved' => true];
         $this->validator->confirm();
         $result = $this->validator->validate($input, 'updateConfirm');
         $this->assertEquals(true, $result);
@@ -29,7 +29,7 @@ class BrokenVldTest extends TestCase
 
     public function testShouldSuccessValidateInputCost()
     {
-        $input = ['biaya' => 1000];
+        $input = ['cost' => 1000];
         $this->validator->cost();
         $result = $this->validator->validate($input, 'updateCost');
         $this->assertEquals(true, $result);

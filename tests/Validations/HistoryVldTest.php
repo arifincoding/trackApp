@@ -14,7 +14,7 @@ class HistoryVldTest extends TestCase
 
     public function testShouldSuccessValidateInput()
     {
-        $input = ['status' => 'mulai diagnosa', 'pesan' => 'testing history'];
+        $input = ['status' => 'mulai diagnosa', 'message' => 'testing history'];
         $result = $this->validator->validate($input, 'create');
         $this->assertEquals(true, $result);
     }

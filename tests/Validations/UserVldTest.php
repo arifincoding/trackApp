@@ -2,12 +2,12 @@
 
 use App\Models\User;
 use App\Validations\UserValidation;
-use Laravel\Lumen\Testing\DatabaseMigrations;
+use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class UserVldTest extends TestCase
 {
 
-    use DatabaseMigrations;
+    use DatabaseTransactions;
 
     private UserValidation $validator;
 
@@ -20,12 +20,12 @@ class UserVldTest extends TestCase
     public function testShouldSuccessValidateInput()
     {
         $input = [
-            'namaDepan' => 'son',
-            'namaBelakang' => 'goku',
-            'jenisKelamin' => 'pria',
-            'noHp' => 6286777888999,
+            'firstname' => 'son',
+            'lastname' => 'goku',
+            'gender' => 'pria',
+            'telp' => 6286777888999,
             'email' => 'songoku@test.com',
-            'peran' => 'teknisi'
+            'role' => 'teknisi'
         ];
         $this->validator->post();
         $result = $this->validator->validate($input, 'create');
@@ -34,16 +34,16 @@ class UserVldTest extends TestCase
 
     public function testShouldSuccessValidateInputUpdate()
     {
-        User::factory()->create(['email' => 'songoku@test.com']);
+        $user = User::factory()->create(['email' => 'songoku@test.com']);
         $input = [
-            'namaDepan' => 'son',
-            'namaBelakang' => 'goku',
-            'jenisKelamin' => 'pria',
-            'noHp' => 6286777888999,
+            'firstname' => 'son',
+            'lastname' => 'goku',
+            'gender' => 'pria',
+            'telp' => 6286777888999,
             'email' => 'songoku@test.com',
-            'peran' => 'teknisi'
+            'role' => 'teknisi'
         ];
-        $this->validator->post(1);
+        $this->validator->post($user->id);
         $result = $this->validator->validate($input, 'update');
         $this->assertEquals(true, $result);
     }
@@ -70,23 +70,23 @@ class UserVldTest extends TestCase
 
     public function testShouldSuccessValidateInputUpdateAccount()
     {
-        User::factory()->create();
+        $user = User::factory()->create();
         $input = [
             'email' => 'songoku@test.com',
-            'noHp' => 625777222333,
-            'alamat' => 'testing kota'
+            'telp' => 625777222333,
+            'address' => 'testing kota'
         ];
-        $this->validator->update(1);
+        $this->validator->update($user->id);
         $result = $this->validator->validate($input, 'updateAccount');
         $this->assertEquals(true, $result);
     }
 
     public function testShouldSuccessValidateInputChangePassword()
     {
-        $this->getToken('customer service');
+        $this->getToken('pemilik');
         $input = [
-            'sandiLama' => 'rahasia',
-            'sandiBaru' => 'testingg'
+            'old_password' => 'rahasia',
+            'new_password' => 'testingg'
         ];
         $this->validator->changePassword();
         $result = $this->validator->validate($input, 'changePassword');

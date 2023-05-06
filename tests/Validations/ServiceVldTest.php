@@ -2,11 +2,11 @@
 
 use App\Models\Category;
 use App\Validations\ServiceValidation;
-use Laravel\Lumen\Testing\DatabaseMigrations;
+use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class ServiceVldTest extends TestCase
 {
-    use DatabaseMigrations;
+    use DatabaseTransactions;
     private ServiceValidation $validator;
 
     public function setUp(): void
@@ -18,17 +18,24 @@ class ServiceVldTest extends TestCase
     public function testShouldSuccessValidateInput()
     {
 
-        Category::factory()->create(['nama' => 'test']);
+        $category = Category::factory()->create();
         $input = [
-            'namaCustomer' => 'test',
-            'noHp' => 6285667889876,
-            'bisaWA' => true,
-            'namaProduk' => 'testing',
-            'kategori' => 'test',
-            'keluhan' => 'testing coba',
-            'butuhPersetujuan' => true,
-            'estimasiBiaya' => 2000,
-            'uangMuka' => 1000
+            'customer' => [
+                'name' => 'test',
+                'telp' => 6285667889876,
+                'is_whatsapp' => true,
+            ],
+            'product' => [
+                'name' => 'testing',
+                'category_id' => $category->id,
+                'completeness' => 'beterai, charger',
+                'product_defects' => 'layar garis'
+            ],
+            'complaint' => 'testing coba',
+            'need_approval' => true,
+            'estimated_cost' => 2000,
+            'down_payment' => 1000,
+            'note' => 'ini adalah note'
         ];
         $result = $this->validator->validate($input, 'create');
         $this->assertEquals(true, $result);
@@ -44,7 +51,7 @@ class ServiceVldTest extends TestCase
 
     public function testShouldSuccessValidateInputServiceWarranty()
     {
-        $input = ['garansi' => '1 bulan'];
+        $input = ['warranty' => '1 bulan'];
         $this->validator->serviceWarranty();
         $result = $this->validator->validate($input, 'updateWarranty');
         $this->assertEquals(true, $result);
@@ -52,7 +59,7 @@ class ServiceVldTest extends TestCase
 
     public function testShouldSuccessValidateInputConfirmation()
     {
-        $input = ['disetujui' => true];
+        $input = ['is_approved' => true];
         $this->validator->confirmation();
         $result = $this->validator->validate($input, 'updateConfirmation');
         $this->assertEquals(true, $result);
