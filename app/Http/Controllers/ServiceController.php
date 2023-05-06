@@ -92,18 +92,12 @@ class ServiceController extends Controller implements ServiceControllerContract
     public function setServiceTake(int $id): JsonResponse
     {
         $data = $this->service->setServiceTake($id);
-        if ($data['success'] === false) {
-            return $this->jsonValidationError($data['message']);
-        }
         return $this->jsonSuccess('sukses', 200, $data['data']);
     }
 
     public function setConfirmCost(int $id): JsonResponse
     {
         $data = $this->service->setServiceConfirmCost($id);
-        if ($data['success'] === false) {
-            return $this->jsonValidationError($data['message']);
-        }
         return $this->jsonSuccess('sukses', 200, $data['data']);
     }
 
@@ -118,9 +112,6 @@ class ServiceController extends Controller implements ServiceControllerContract
     {
         $inputs =  $request->only('is_approved');
         $data = $this->service->setServiceConfirmation($inputs, $id);
-        if ($data['success'] === false) {
-            return $this->jsonValidationError($data['message']);
-        }
         return $this->jsonSuccess('sukses', 200, $data['data']);
     }
 

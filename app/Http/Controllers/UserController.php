@@ -21,10 +21,7 @@ class UserController extends Controller implements UserControllerContract
     {
         $credentials = $request->only('username', 'password');
         $data = $this->service->login($credentials);
-        if ($data['success'] === false) {
-            return $this->jsonValidationError($data['error']);
-        }
-        return $this->jsonToken($data['token']);
+        return $this->jsonToken($data);
     }
 
     public function createRefreshToken(): JsonResponse
