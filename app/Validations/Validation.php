@@ -29,11 +29,6 @@ class Validation
 
     protected array $attributes = [];
 
-    public function setExceptionMessage(string $messages)
-    {
-        $this->exceptionMessages = $messages;
-    }
-
     public function validate(array $input = [], string $action)
     {
         $validator = Validator::make($input, $this->rules, $this->messages, $this->attributes);
